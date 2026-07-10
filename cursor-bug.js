@@ -220,15 +220,55 @@ window.addEventListener('contextmenu', (e) => {
 });
 
 // ═══════════════════════════════════════════════════════════
+// 5.6 點擊吃蟲互動 (避開選單點擊，僅在空白處點擊觸發)
+// ═══════════════════════════════════════════════════════════
+let isEatingMode = false;
+let isRespawning = false;
+let eatProgress = 0;
+let respawnProgress = 0;
+let eatStartX = 0, eatStartY = 0;
+// 守宮嘴巴張開的世界座標（中心點），使用者可視實際微調
+const mouthWorldPos = new THREE.Vector3(0, -0.18, 0);
+
+window.addEventListener('click', (e) => {
+    // 避開選單、按鈕等互動元素的點擊
+    if (e.target.closest('a, button, .nav-link, .btn-request, [role="button"]')) {
+        return;
+    }
+    // 若已經被咬食、正在被吸入中或正在復活中，則跳過
+    if (window.isBugEaten || isEatingMode || isRespawning) return;
+
+    // 啟動咬食模式
+    window.isBugEaten = true;
+    isEatingMode = true;
+    eatProgress = 0;
+    eatStartX = curX;
+    eatStartY = curY;
+});
+
+// 註冊全域復活昆蟲函式
+window.respawnBug = function () {
+    isRespawning = true;
+    respawnProgress = 0;
+    bugGroup.visible = true;
+    // 瞬間將平滑跟隨位置移到目前滑鼠位置，防止從中央跳躍
+    curX = mouseWorldX;
+    curY = mouseWorldY;
+    bugGroup.position.set(curX, curY, 0);
+    bugGroup.scale.set(0, 0, 0);
+    window.isBugEaten = false;
+};
+
+// ═══════════════════════════════════════════════════════════
 // 6. 載入 FBX
 // ═══════════════════════════════════════════════════════════
 const loader = new FBXLoader();
-const BASE_URL = '/3D%20BUG/';
+const BASE_URL = '/守宮/3D%20BUG/';
 
 // 手動載入貼圖以防止路徑解析與編碼問題
 const texLoader = new THREE.TextureLoader();
-const basecolorMap = texLoader.load('/3D%20BUG/beetle_3d_model_basecolor.JPEG');
-const normalMap = texLoader.load('/3D%20BUG/beetle_3d_model_normal.JPEG');
+const basecolorMap = texLoader.load('/守宮/3D%20BUG/beetle_3d_model_basecolor.JPEG');
+const normalMap = texLoader.load('/守宮/3D%20BUG/beetle_3d_model_normal.JPEG');
 basecolorMap.colorSpace = THREE.SRGBColorSpace;
 
 let   loadedCnt  = 0;
@@ -391,12 +431,51 @@ function animate() {
     requestAnimationFrame(animate);
     const t = (performance.now() - t0) / 1000;  // 秒
 
-    // 8.1 位置平滑跟隨
-    curX += (mouseWorldX - curX) * LERP_POS;
-    curY += (mouseWorldY - curY) * LERP_POS;
+    // 8.1 位置平滑跟隨 與 咬食 / 復活動畫
+    if (isEatingMode) {
+        eatProgress += 0.055; // 約 18 幀 (約 300ms) 飛向嘴巴
+        if (eatProgress > 1.0) eatProgress = 1.0;
+
+        // 磁吸吸入：二次方加速 (Ease-in)
+        const tEase = eatProgress * eatProgress;
+        curX = eatStartX + (mouthWorldPos.x - eatStartX) * tEase;
+        curY = eatStartY + (mouthWorldPos.y - eatStartY) * tEase;
+
+        // 縮小
+        bugGroup.scale.setScalar(1.0 - eatProgress);
+
+        if (eatProgress >= 1.0) {
+            isEatingMode = false;
+            bugGroup.visible = false;
+            // 觸發播放守宮吃蟲影片
+            if (window.playGeckoEat) {
+                window.playGeckoEat();
+            }
+        }
+    } else if (isRespawning) {
+        respawnProgress += 0.05; // 20 幀 (約 330ms) 孵化變大
+        if (respawnProgress > 1.0) respawnProgress = 1.0;
+
+        // 正常跟隨
+        curX += (mouseWorldX - curX) * LERP_POS;
+        curY += (mouseWorldY - curY) * LERP_POS;
+
+        // 漸漸放大
+        bugGroup.scale.setScalar(respawnProgress);
+
+        if (respawnProgress >= 1.0) {
+            isRespawning = false;
+        }
+    } else if (!window.isBugEaten) {
+        // 正常跟隨滑鼠
+        curX += (mouseWorldX - curX) * LERP_POS;
+        curY += (mouseWorldY - curY) * LERP_POS;
+        bugGroup.scale.setScalar(1.0);
+    }
 
     // 8.2 懸浮呼吸感（輕微 Y 波動）
-    const hover = Math.sin(t * 2.8) * 0.04;
+    // 當被咬食消失時，我們停止呼吸跳動
+    const hover = window.isBugEaten ? 0 : Math.sin(t * 2.8) * 0.04;
     const bugYWithHover = curY + hover;
 
     bugGroup.position.set(curX, bugYWithHover, 0);
@@ -408,7 +487,8 @@ function animate() {
     const rightTipX = curX + Math.cos(currentYaw - Math.PI / 2) * 0.16;
     const rightTipY = bugYWithHover + Math.sin(currentYaw - Math.PI / 2) * 0.16;
 
-    if (window.lastLeftTipX !== undefined) {
+    // 僅在昆蟲可見且正在運動時才生成拉線軌跡，避免隱藏時在中央產生幽靈軌跡
+    if (bugGroup.visible && window.lastLeftTipX !== undefined) {
         const dist = Math.hypot(leftTipX - window.lastLeftTipX, leftTipY - window.lastLeftTipY);
         // 若移動距離大於閾值，在前後幀路徑上線性插值插滿粒子，形成不斷裂的拉線效果
         if (dist > 0.004) {
@@ -448,7 +528,7 @@ function animate() {
     currentYaw += yawDiff * LERP_ROT;
 
     // 8.4 俯仰（Pitch）與翻滾（Roll）— 動態設定
-    // 1) 懸停在可點擊元素上：X 軸角度為 -90 度 (-Math.PI / 2)，Z 軸為 180 度 (Math.PI)
+    // 1) 懸停在可點擊元素上：X 軸角度為 -90 度 (-Math.PI / 2), Z 軸為 180 度 (Math.PI)
     // 2) 靜止時：X 軸角度為 0 度，Z 軸為 0 度
     // 3) 一般運動時：X 軸角度為 20 度 (20 * Math.PI / 180)，Z 軸為 0 度
     const isStopped = (performance.now() - lastMoveTime > 200);
@@ -474,7 +554,9 @@ function animate() {
 
     // 8.6 翅膀振翅（每片翅膀獨立旋轉軸）
     for (const wd of wingAnimData) {
-        const wave = Math.sin(t * Math.PI * 2 * wd.freq + wd.phase);
+        // 如果正在被吸入嘴巴（掙扎中），振翅頻率變為 2.5 倍
+        const speedMultiplier = isEatingMode ? 2.5 : 1.0;
+        const wave = Math.sin(t * Math.PI * 2 * wd.freq * speedMultiplier + wd.phase);
         // 移除手動鏡像負號（FBX 已內建鏡像座標），使雙翅對稱上下振動
         wd.pivot.rotation.z = wave * wd.ampZ;
         // X 旋轉 = 翅膀輕微的前後扭動

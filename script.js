@@ -68,6 +68,7 @@
     /* ── 滑鼠位移計算 ──────────────────────────────── */
     function processX(currentX) {
         if (!ready) return;
+        if (window.isBugEaten) return; // 正在咬食中，不接收滑鼠控制影片
 
         if (prevX === null) {
             prevX = currentX;
@@ -87,10 +88,15 @@
     /* ── 掛載事件（在 DOM 就緒後執行） ─────────────── */
     function mount() {
         video = document.getElementById('bg-video');
+        var eatVideo = document.getElementById('eat-video');
+
         if (!video) {
             console.error('[HAIN] 找不到 #bg-video');
             return;
         }
+
+        // 初始化全域吃蟲狀態
+        window.isBugEaten = false;
 
         /* seeked：解鎖並追趕 */
         video.addEventListener('seeked', function () {
@@ -129,6 +135,49 @@
         document.addEventListener('mouseleave', function () {
             prevX = null;
         });
+
+        /* 實作咬食影片播控 */
+        window.playGeckoEat = function () {
+            if (!eatVideo) return;
+            
+            // 隱藏轉頭影片，顯示咬食影片
+            video.style.display = 'none';
+            eatVideo.style.display = 'block';
+            
+            eatVideo.currentTime = 0;
+            var playPromise = eatVideo.play();
+            
+            if (playPromise !== undefined) {
+                playPromise.catch(function (error) {
+                    console.warn('[HAIN] 咬食影片播放受限 (無瀏覽器互動許可)，執行自動復原:', error);
+                    // 備份：萬一播放失敗，1秒後強制復原
+                    setTimeout(function () {
+                        if (window.respawnBug) window.respawnBug();
+                    }, 1000);
+                });
+            }
+        };
+
+        /* 監聽咬食結束事件，切換回轉頭影片並觸發昆蟲重生 */
+        if (eatVideo) {
+            eatVideo.addEventListener('ended', function () {
+                eatVideo.style.display = 'none';
+                video.style.display = 'block';
+
+                // 將轉頭影片的目標時間軸平滑重設為中間（正對前方）
+                targetTime = duration / 2;
+                try {
+                    video.currentTime = targetTime;
+                } catch (e) {}
+
+                // 吞嚥後等待 1000ms（消化延遲），觸發昆蟲在滑鼠位置重生
+                setTimeout(function () {
+                    if (window.respawnBug) {
+                        window.respawnBug();
+                    }
+                }, 1000);
+            });
+        }
     }
 
     /* ── 入口 ──────────────────────────────────────── */
