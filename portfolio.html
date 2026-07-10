@@ -303,10 +303,10 @@
         .slider-arrow {
             position: absolute;
             top: 50%;
-            transform: translateY(-50%);
-            background: rgba(20, 18, 16, 0.6);
+            transform: translateY(-50%) scale(0.92);
+            background: rgba(20, 18, 16, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             color: #fff;
-            border: none;
             width: 48px;
             height: 48px;
             font-size: 1.25rem;
@@ -315,12 +315,16 @@
             align-items: center;
             justify-content: center;
             border-radius: 50%;
-            transition: background 0.3s;
+            opacity: 0.35; /* 預設虛化淡出，不遮擋作品視野 */
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
             z-index: 10;
         }
 
         .slider-arrow:hover {
             background: var(--accent);
+            border-color: var(--accent);
+            opacity: 0.9;
+            transform: translateY(-50%) scale(1.05); /* 懸停時清晰並略微變大 */
         }
 
         .arrow-left { left: 20px; }
@@ -1446,7 +1450,19 @@
             closeBtn.addEventListener('click', closeModal);
             backdrop.addEventListener('click', closeModal);
             document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') closeModal();
+                if (!modal.classList.contains('open')) return;
+                
+                if (e.key === 'Escape') {
+                    closeModal();
+                } else if (e.key === 'ArrowLeft' || e.key === 'Left') {
+                    let nextIdx = currentMediaIndex - 1;
+                    if (nextIdx < 0) nextIdx = mediaList.length - 1;
+                    showMedia(nextIdx);
+                } else if (e.key === 'ArrowRight' || e.key === 'Right') {
+                    let nextIdx = currentMediaIndex + 1;
+                    if (nextIdx >= mediaList.length) nextIdx = 0;
+                    showMedia(nextIdx);
+                }
             });
         });
     </script>
