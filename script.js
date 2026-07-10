@@ -28,6 +28,7 @@
     function tryInit() {
         if (ready) return;
         if (!video) return;
+        if (video.readyState < 1) return; // 確保中繼資料已就緒，防堵 Chrome 未加載 readyState
 
         var d = video.duration;
         if (!d || d !== d || !isFinite(d) || d <= 0) return; // NaN / Infinity / 0
@@ -43,6 +44,8 @@
 
     function doSeek() {
         if (!ready || seeking) return;
+        if (video.readyState < 1) return; // 確保 readyState 允許尋軌
+
         var diff = Math.abs(video.currentTime - targetTime);
         if (diff < 0.005) return; // 差距極小，跳過
 
@@ -93,6 +96,14 @@
         if (!video) {
             console.error('[HAIN] 找不到 #bg-video');
             return;
+        }
+
+        // 強制影片載入，解決 Chrome/Edge 有時卡在 readyState=0 的問題
+        try {
+            video.load();
+            if (eatVideo) eatVideo.load();
+        } catch (e) {
+            console.warn('[HAIN] 影片加載啟動受阻:', e);
         }
 
         // 初始化全域吃蟲狀態

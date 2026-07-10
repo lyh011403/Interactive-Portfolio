@@ -326,7 +326,16 @@ function buildInsect() {
     const w1   = fbxObjs.w1;
     const w2   = fbxObjs.w2;
 
-    // ── 7.0 套用手動載入的貼圖與材質（設定為雙面渲染）──
+    // ── 7.0 暫時重置 bugGroup 的旋轉、位置與縮放，防止 BBox 在載入時受滑鼠動畫影響而偏移 ──
+    const savedPos   = bugGroup.position.clone();
+    const savedRot   = bugGroup.rotation.clone();
+    const savedScale = bugGroup.scale.clone();
+    bugGroup.position.set(0, 0, 0);
+    bugGroup.rotation.set(0, 0, 0);
+    bugGroup.scale.set(1, 1, 1);
+    bugGroup.updateMatrixWorld(true);
+
+    // ── 7.05 套用手動載入的貼圖與材質（設定為雙面渲染）──
     const insectMaterial = new THREE.MeshStandardMaterial({
         map: basecolorMap,
         normalMap: normalMap,
@@ -428,6 +437,12 @@ function buildInsect() {
         ampX:    0.08,
         phase:   0.18          // 小相位差讓雙翅略有不同步感
     });
+
+    // ── 7.6 恢復 bugGroup 載入前的旋轉與位置 ──
+    bugGroup.position.copy(savedPos);
+    bugGroup.rotation.copy(savedRot);
+    bugGroup.scale.copy(savedScale);
+    bugGroup.updateMatrixWorld(true);
 
     console.log('[BugCursor] ✅ 昆蟲組裝完成，共', bugGroup.children.length, '個子節點');
 }
