@@ -220,7 +220,7 @@ window.addEventListener('contextmenu', (e) => {
 });
 
 // ═══════════════════════════════════════════════════════════
-// 5.6 點擊吃蟲互動 (避開選單點擊，僅在空白處點擊觸發)
+// 5.6 點擊選單 (nav-link) 觸發吃蟲與網頁轉場效果
 // ═══════════════════════════════════════════════════════════
 let isEatingMode = false;
 let isRespawning = false;
@@ -229,22 +229,35 @@ let respawnProgress = 0;
 let eatStartX = 0, eatStartY = 0;
 // 守宮嘴巴張開的世界座標（中心點），使用者可視實際微調
 const mouthWorldPos = new THREE.Vector3(0, -0.18, 0);
+let transitionTargetHref = '';
 
 window.addEventListener('click', (e) => {
-    // 避開選單、按鈕等互動元素的點擊
-    if (e.target.closest('a, button, .nav-link, .btn-request, [role="button"]')) {
-        return;
-    }
-    // 若已經被咬食、正在被吸入中或正在復活中，則跳過
+    // 只有點擊 nav-link 這類導覽連結時才會發生吃蟲與轉場
+    const navLink = e.target.closest('.nav-link, .btn-request');
+    if (!navLink) return;
+
+    e.preventDefault();
+    
+    // 若已經被咬食、正在被吸入中或正在轉場中，則跳過
     if (window.isBugEaten || isEatingMode || isRespawning) return;
 
-    // 啟動咬食模式
+    transitionTargetHref = navLink.getAttribute('href') || '#';
+
+    // 啟動轉場與咬食模式
     window.isBugEaten = true;
     isEatingMode = true;
     eatProgress = 0;
     eatStartX = curX;
     eatStartY = curY;
+
+    // 啟動 CSS 畫面縮放與 UI 隱藏
+    document.body.classList.add('transition-active');
 });
+
+// 註冊給 script.js 呼叫的跳轉網址 Getter
+window.getTransitionHref = function () {
+    return transitionTargetHref;
+};
 
 // 註冊全域復活昆蟲函式
 window.respawnBug = function () {
@@ -433,7 +446,7 @@ function animate() {
 
     // 8.1 位置平滑跟隨 與 咬食 / 復活動畫
     if (isEatingMode) {
-        eatProgress += 0.055; // 約 18 幀 (約 300ms) 飛向嘴巴
+        eatProgress += 0.022; // 降速：約 45 幀 (約 750ms) 飛向嘴巴，動作更滑順不突兀
         if (eatProgress > 1.0) eatProgress = 1.0;
 
         // 磁吸吸入：二次方加速 (Ease-in)
@@ -447,6 +460,13 @@ function animate() {
         if (eatProgress >= 1.0) {
             isEatingMode = false;
             bugGroup.visible = false;
+            
+            // 啟動全螢幕黑幕轉場遮罩
+            const overlay = document.querySelector('.transition-overlay');
+            if (overlay) {
+                overlay.classList.add('active');
+            }
+
             // 觸發播放守宮吃蟲影片
             if (window.playGeckoEat) {
                 window.playGeckoEat();
