@@ -29,6 +29,13 @@
     margin: 0; padding: 0; box-sizing: border-box;
 }
 
+/* 啟用 GPU 硬體加速，防止大影片/大量資產解碼時產生卡頓 */
+video, img {
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    will-change: transform;
+}
+
 html {
     scroll-behavior: smooth;
 }
