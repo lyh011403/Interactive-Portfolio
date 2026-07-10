@@ -203,20 +203,11 @@ window.addEventListener('mouseover', (e) => {
         if (clickable.classList.contains('filter-btn') || 
             clickable.closest('.work-card') || 
             clickable.closest('.modal')) {
+            isHoveringInteractive = false;
             return;
         }
         isHoveringInteractive = true;
-    }
-});
-
-window.addEventListener('mouseout', (e) => {
-    const clickable = e.target.closest('a, button, .nav-link, .btn-request, [role="button"]');
-    if (clickable) {
-        if (clickable.classList.contains('filter-btn') || 
-            clickable.closest('.work-card') || 
-            clickable.closest('.modal')) {
-            return;
-        }
+    } else {
         isHoveringInteractive = false;
     }
 });

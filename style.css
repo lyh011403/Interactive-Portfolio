@@ -449,3 +449,101 @@ body.transition-active #bug-cursor-canvas {
     transform: scale(11) rotate(8deg); /* 放大 11 倍並帶有 8 度旋轉，營造吸入漩渦深淵的效果 */
     filter: blur(8px) brightness(0.55) contrast(1.4); /* 增加動態模糊與高對比暗化特效 */
 }
+
+/* ═══════════════════════════════════════════════════════════
+   樹葉陰影與丁達爾光束特效 (Leaf Shadows & Tyndall God Rays)
+   =========================================================== */
+
+/* 1. 樹葉陰影 overlay */
+.leaf-shadow-overlay {
+    position: fixed;
+    pointer-events: none;
+    z-index: 1; /* 位於背景之上，文字 UI 之下 */
+    mix-blend-mode: multiply; /* 水墨般自然融於宣紙色 */
+    opacity: 0.09; /* 非常淡，營造低調的氛圍感 */
+    filter: blur(28px); /* 羽化為非常柔和的葉影 */
+    width: 50vw;
+    max-width: 600px;
+    height: 50vw;
+    max-height: 600px;
+    will-change: transform;
+}
+
+.leaf-shadow-overlay svg {
+    width: 100%;
+    height: 100%;
+}
+
+/* 各角落葉影擺動動畫 (模擬微風吹拂) */
+@keyframes leafSwayTL {
+    0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+    100% { transform: translate(8px, 12px) rotate(4deg) scale(1.03); }
+}
+@keyframes leafSwayTR {
+    0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+    100% { transform: translate(-10px, 8px) rotate(-3deg) scale(1.02); }
+}
+@keyframes leafSwayBL {
+    0% { transform: translate(0, 0) rotate(90deg) scale(1); }
+    100% { transform: translate(12px, -8px) rotate(93deg) scale(1.04); }
+}
+@keyframes leafSwayBR {
+    0% { transform: translate(0, 0) rotate(180deg) scale(1); }
+    100% { transform: translate(-8px, -12px) rotate(177deg) scale(1.02); }
+}
+
+.leaf-shadow-overlay.top-left {
+    top: -5%;
+    left: -5%;
+    animation: leafSwayTL 24s ease-in-out infinite alternate;
+}
+.leaf-shadow-overlay.top-right {
+    top: -5%;
+    right: -5%;
+    animation: leafSwayTR 28s ease-in-out infinite alternate-reverse;
+}
+.leaf-shadow-overlay.bottom-left {
+    bottom: -8%;
+    left: -5%;
+    animation: leafSwayBL 26s ease-in-out infinite alternate;
+}
+.leaf-shadow-overlay.bottom-right {
+    bottom: -8%;
+    right: -5%;
+    animation: leafSwayBR 30s ease-in-out infinite alternate-reverse;
+}
+
+/* 2. 丁達爾光束 (God Rays) overlay */
+.god-rays-overlay {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2; /* 在葉影之上，UI之下 */
+    mix-blend-mode: screen; /* 提亮背景，形成真實的發光線條 */
+    opacity: 0.17; /* 恰到好處的光強 */
+    background: repeating-linear-gradient(
+        -45deg,
+        rgba(255, 255, 255, 0) 0px,
+        rgba(255, 255, 255, 0) 60px,
+        rgba(255, 254, 242, 0.28) 120px,
+        rgba(255, 254, 242, 0.48) 180px,
+        rgba(255, 254, 242, 0.28) 240px,
+        rgba(255, 255, 255, 0) 300px,
+        rgba(255, 255, 255, 0) 450px
+    );
+    filter: blur(14px); /* 模糊光束邊緣，使其呈現柔焦空氣感 */
+    will-change: transform, opacity;
+    animation: godRayDrift 20s ease-in-out infinite alternate;
+}
+
+@keyframes godRayDrift {
+    0% {
+        transform: translate(-1.5%, -1.5%) scale(1.0);
+        opacity: 0.14;
+    }
+    100% {
+        transform: translate(1.5%, 1.5%) scale(1.06);
+        opacity: 0.24;
+    }
+}
+
