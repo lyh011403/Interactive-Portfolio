@@ -199,6 +199,12 @@ window.addEventListener('mousemove', (e) => {
 window.addEventListener('mouseover', (e) => {
     const clickable = e.target.closest('a, button, .nav-link, .btn-request, [role="button"]');
     if (clickable) {
+        // 排除作品集過濾按鈕、作品卡片內部、以及大圖彈窗內的所有按鈕/互動元素，避免游標亂翻轉
+        if (clickable.classList.contains('filter-btn') || 
+            clickable.closest('.work-card') || 
+            clickable.closest('.modal')) {
+            return;
+        }
         isHoveringInteractive = true;
     }
 });
@@ -206,6 +212,11 @@ window.addEventListener('mouseover', (e) => {
 window.addEventListener('mouseout', (e) => {
     const clickable = e.target.closest('a, button, .nav-link, .btn-request, [role="button"]');
     if (clickable) {
+        if (clickable.classList.contains('filter-btn') || 
+            clickable.closest('.work-card') || 
+            clickable.closest('.modal')) {
+            return;
+        }
         isHoveringInteractive = false;
     }
 });

@@ -64,45 +64,39 @@
         /* ── 分類過濾選單 (Sumi-e Filter Nav) ── */
         .filter-nav {
             display: flex;
-            gap: 8px;
+            gap: 12px;
             flex-wrap: wrap;
             margin-bottom: 45px;
             border-bottom: 1px solid var(--dim);
-            padding-bottom: 16px;
+            padding-bottom: 20px;
         }
 
         .filter-btn {
             font-family: var(--font-zh);
-            font-size: 0.9rem;
-            font-weight: 400;
-            background: none;
-            border: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            background: rgba(20, 18, 16, 0.02);
+            border: 1px solid var(--dim);
             color: var(--muted);
             cursor: pointer;
-            padding: 6px 12px;
-            position: relative;
-            transition: color 0.3s ease;
+            padding: 8px 18px;
+            border-radius: 30px; /* 質感膠囊形小按鈕 */
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .filter-btn:hover {
+            background: rgba(20, 18, 16, 0.07);
+            border-color: var(--ink);
             color: var(--ink);
+            transform: translateY(-2px); /* 懸停時微微浮起，回饋感拉滿 */
         }
 
         .filter-btn.active {
-            color: var(--accent);
-            font-weight: 700;
-        }
-
-        .filter-btn.active::after {
-            content: '';
-            position: absolute;
-            bottom: -18px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 6px;
-            height: 6px;
             background: var(--accent);
-            border-radius: 50%; /* 朱砂印章小圓點 */
+            border-color: var(--accent);
+            color: var(--bg);
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(168, 52, 28, 0.18);
         }
 
         /* ── 作品展示網格 ── */
