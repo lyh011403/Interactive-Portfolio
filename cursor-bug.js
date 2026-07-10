@@ -197,12 +197,11 @@ window.addEventListener('mousemove', (e) => {
 // 5.2 懸停偵測 (偵測可點擊元素以切換 -90 度趴在上面的狀態)
 // ═══════════════════════════════════════════════════════════
 window.addEventListener('mouseover', (e) => {
-    const clickable = e.target.closest('a, button, .nav-link, .btn-request, [role="button"]');
+    const clickable = e.target.closest('a, button, .nav-link, .btn-request, [role="button"], .work-card');
     if (clickable) {
-        // 排除作品卡片內部、以及大圖彈窗內的所有按鈕/互動元素，避免游標亂翻轉
-        // 允許過濾按鈕 (.filter-btn) 觸發懸停趴下效果
-        if (clickable.closest('.work-card') || 
-            clickable.closest('.modal')) {
+        // 排除大圖彈窗內的所有按鈕/互動元素，避免在彈窗中閱讀時干擾
+        // 允許作品卡片 (.work-card) 與過濾按鈕 (.filter-btn) 觸發懸停趴下效果
+        if (clickable.closest('.modal')) {
             isHoveringInteractive = false;
             return;
         }
