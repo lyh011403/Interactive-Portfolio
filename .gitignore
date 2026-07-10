@@ -1,0 +1,15 @@
+# Windows system files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Temp/logs
+*.log
+tmp/
+temp/
+
+# IDE settings
+.vscode/
+.idea/
+.agents/
+.gemini/

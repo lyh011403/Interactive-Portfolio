@@ -1,0 +1,521 @@
+/**
+ * cursor-bug.js  —  3D 昆蟲游標
+ *
+ * 載入 A01.fbx (身體) + A02.fbx + A03.fbx (翅膀)
+ * 用滑鼠位置驅動昆蟲跟隨，左右方向轉向，翅膀獨立振動。
+ *
+ * 規格遵守：
+ *  - 不修改影片 / UI / script.js 的任何邏輯
+ *  - canvas overlay: pointer-events:none → 滑鼠事件正常穿透
+ *  - 只改變昆蟲 yaw（Y軸），pitch 極度限制，roll 永遠為 0
+ *  - 翅膀繞翅根旋轉，左右鏡像，非整體震動
+ */
+
+import * as THREE       from 'three';
+import { FBXLoader }    from 'three/addons/loaders/FBXLoader.js';
+
+// ═══════════════════════════════════════════════════════════
+// 1. Canvas overlay
+// ═══════════════════════════════════════════════════════════
+const canvas = document.createElement('canvas');
+canvas.id    = 'bug-cursor-canvas';
+Object.assign(canvas.style, {
+    position:      'fixed',
+    top:           '0',
+    left:          '0',
+    width:         '100vw',
+    height:        '100vh',
+    pointerEvents: 'none',
+    zIndex:        '10000',    // 高於所有 UI 元素 (nav 是 50) 確保不被遮擋
+});
+document.body.appendChild(canvas);
+
+// ═══════════════════════════════════════════════════════════
+// 2. Renderer + Scene + Camera
+// ═══════════════════════════════════════════════════════════
+const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setClearColor(0x000000, 0);   // 完全透明背景
+
+const scene  = new THREE.Scene();
+const FOV    = 45;
+const camera = new THREE.PerspectiveCamera(FOV, window.innerWidth / window.innerHeight, 0.01, 500);
+camera.position.z = 10;
+
+// 預先計算：滑鼠座標 → 世界座標的映射係數
+function computeWorldHalf() {
+    const halfH = Math.tan((FOV * Math.PI / 180) / 2) * camera.position.z;
+    const halfW = halfH * camera.aspect;
+    return { halfH, halfW };
+}
+let { halfH: worldHalfH, halfW: worldHalfW } = computeWorldHalf();
+
+// ═══════════════════════════════════════════════════════════
+// 3. 打光
+// ═══════════════════════════════════════════════════════════
+scene.add(new THREE.AmbientLight(0xffffff, 1.4));
+
+const sun = new THREE.DirectionalLight(0xfff8e8, 1.0);
+sun.position.set(2, 5, 4);
+scene.add(sun);
+
+const fill = new THREE.DirectionalLight(0xd0e8ff, 0.5);
+fill.position.set(-3, -1, 2);
+scene.add(fill);
+
+// ═══════════════════════════════════════════════════════════
+// 4. 昆蟲主群組 + 狀態
+// ═══════════════════════════════════════════════════════════
+const bugGroup = new THREE.Group();
+bugGroup.rotation.order = 'YXZ'; // 設定旋轉順序為 YXZ，優先處理偏航 (Y) 再處理俯仰 (X)，以防側傾與 gimbal lock
+scene.add(bugGroup);
+
+// 游標跟隨狀態（世界座標）
+let mouseWorldX  = 0;
+let mouseWorldY  = 0;
+let curX = 0, curY = 0;          // 平滑後的位置
+
+// 偏航（Yaw / Y 軸旋轉）
+// 預設停止時為 0度
+let baseYaw    = 0;
+let angleOffset = 0;       // 按右鍵時會切換為 Math.PI (180度反過來)
+let targetYaw   = 0;
+let currentYaw  = 0;
+
+// 翻滾（Roll / Z 軸旋轉，懸停在按鈕時為 180度/Math.PI）
+let targetRoll  = 0;
+let currentRoll = 0;
+
+// 俯仰（Pitch / X 軸旋轉，極限值）
+const PITCH_MAX  = 0.18;          // ≈ 10°
+let targetPitch  = 0;
+let currentPitch = 0;
+
+// 上一幀的滑鼠螢幕座標，用於計算方向
+let prevScreenX = -1;
+let prevScreenY = -1;
+
+// 偵測停頓狀態
+let lastMoveTime = performance.now();
+
+// 偵測是否懸停在可點擊元素上 (nav-link, btn-request, a, button)
+let isHoveringInteractive = false;
+
+// 翅膀驅動資料
+// 翅膀驅動資料
+const wingAnimData = [];   // [{ pivot, isRight, phase, freq, ampZ, ampX }]
+
+// ═══════════════════════════════════════════════════════════
+// 4.5 雙翅尖飛機拉線軌跡 (Double Contrails / Vapor Trails)
+// ═══════════════════════════════════════════════════════════
+// 動態產生半透明的軟霧漸層紋理
+function createVaporTexture() {
+    const size = 64;
+    const canvas = document.createElement('canvas');
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext('2d');
+    const grad = ctx.createRadialGradient(size/2, size/2, 0, size/2, size/2, size/2);
+    grad.addColorStop(0, 'rgba(35, 33, 30, 0.72)');      // 深碳灰色中心 (水墨感)
+    grad.addColorStop(0.35, 'rgba(35, 33, 30, 0.35)');   // 漸薄
+    grad.addColorStop(1, 'rgba(240, 235, 224, 0)');      // 融入宣紙色
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, size, size);
+    return new THREE.CanvasTexture(canvas);
+}
+
+const maxParticles = 200; // 提高粒子池上限以支援密集的拉線
+const particlePool = [];
+const vaporTexture = createVaporTexture();
+const particleGeo = new THREE.PlaneGeometry(0.12, 0.12); // 放大拉線厚度，使其更為明顯
+
+for (let i = 0; i < maxParticles; i++) {
+    const mat = new THREE.MeshBasicMaterial({
+        map: vaporTexture,
+        transparent: true,
+        depthWrite: false,
+        blending: THREE.NormalBlending,
+        opacity: 0
+    });
+    const mesh = new THREE.Mesh(particleGeo, mat);
+    mesh.visible = false;
+    scene.add(mesh);
+    particlePool.push({
+        mesh,
+        mat,
+        age: 0,
+        maxAge: 0,
+        baseScale: 1
+    });
+}
+
+function spawnContrailParticle(x, y) {
+    // 尋找閒置中的粒子
+    const p = particlePool.find(item => !item.mesh.visible);
+    if (!p) return;
+
+    p.mesh.position.set(x, y, -0.015); // 略低於昆蟲，防止遮擋
+    p.mesh.visible = true;
+    p.mat.opacity = 0.7; // 提高初始不透明度
+    p.age = 0;
+    p.maxAge = 40 + Math.random() * 25; // 40 - 65 幀壽命，呈現中等長度的拖尾
+    p.baseScale = 0.5 + Math.random() * 0.4;
+    p.mesh.scale.setScalar(p.baseScale);
+}
+
+// ═══════════════════════════════════════════════════════════
+// 5. 滑鼠追蹤（不干擾既有的 mousemove listener）
+// ═══════════════════════════════════════════════════════════
+window.addEventListener('mousemove', (e) => {
+    // 螢幕 → 世界座標
+    mouseWorldX = ((e.clientX / window.innerWidth)  * 2 - 1) *  worldHalfW;
+    mouseWorldY = ((e.clientY / window.innerHeight) * 2 - 1) * -worldHalfH;
+
+    const dx = e.clientX - prevScreenX;
+    const dy = e.clientY - prevScreenY;
+
+    // 只要有移動就更新時間戳記
+    if (Math.abs(dx) > 0.5 || Math.abs(dy) > 0.5) {
+        lastMoveTime = performance.now();
+    }
+
+    // 僅在明確水平移動時更新偏航，避免垂直移動時誤觸
+    if (Math.abs(dx) > 2) {
+        // 修正反向：
+        // 左移 → 面朝左（yaw = 1.5 * Math.PI）
+        // 右移 → 面朝右（yaw = Math.PI / 2）
+        baseYaw = dx < 0 ? 1.5 * Math.PI : Math.PI / 2;
+        targetYaw = baseYaw + angleOffset;
+    }
+
+    prevScreenX = e.clientX;
+    prevScreenY = e.clientY;
+}, { passive: true });
+
+// ═══════════════════════════════════════════════════════════
+// 5.2 懸停偵測 (偵測可點擊元素以切換 -90 度趴在上面的狀態)
+// ═══════════════════════════════════════════════════════════
+window.addEventListener('mouseover', (e) => {
+    const clickable = e.target.closest('a, button, .nav-link, .btn-request, [role="button"]');
+    if (clickable) {
+        isHoveringInteractive = true;
+    }
+});
+
+window.addEventListener('mouseout', (e) => {
+    const clickable = e.target.closest('a, button, .nav-link, .btn-request, [role="button"]');
+    if (clickable) {
+        isHoveringInteractive = false;
+    }
+});
+
+// ═══════════════════════════════════════════════════════════
+// 5.5 右鍵點擊切換方向 (Math.PI 反過來)
+// ═══════════════════════════════════════════════════════════
+window.addEventListener('contextmenu', (e) => {
+    e.preventDefault(); // 阻止瀏覽器選單彈出
+    angleOffset = angleOffset === 0 ? Math.PI : 0;
+    targetYaw = baseYaw + angleOffset; // 立即觸發平滑翻轉
+});
+
+// ═══════════════════════════════════════════════════════════
+// 6. 載入 FBX
+// ═══════════════════════════════════════════════════════════
+const loader = new FBXLoader();
+const BASE_URL = '/3D%20BUG/';
+
+// 手動載入貼圖以防止路徑解析與編碼問題
+const texLoader = new THREE.TextureLoader();
+const basecolorMap = texLoader.load('/3D%20BUG/beetle_3d_model_basecolor.JPEG');
+const normalMap = texLoader.load('/3D%20BUG/beetle_3d_model_normal.JPEG');
+basecolorMap.colorSpace = THREE.SRGBColorSpace;
+
+let   loadedCnt  = 0;
+const fbxObjs    = { body: null, w1: null, w2: null };
+
+function onFbxLoaded(key, fbx) {
+    fbxObjs[key] = fbx;
+    loadedCnt++;
+    console.log(`[BugCursor] FBX loaded: ${key} (${loadedCnt}/3)`);
+
+    // 列出每個 mesh 的名稱
+    fbx.traverse(c => {
+        if (c.isMesh) {
+            console.log(`  mesh name: "${c.name || '(unnamed)'}"`);
+        }
+    });
+
+    if (loadedCnt === 3) buildInsect();
+}
+
+loader.load(BASE_URL + 'A01.fbx',
+    fbx => onFbxLoaded('body', fbx),
+    undefined,
+    err => console.error('[BugCursor] A01 load error:', err)
+);
+loader.load(BASE_URL + 'A02.fbx',
+    fbx => onFbxLoaded('w1', fbx),
+    undefined,
+    err => console.error('[BugCursor] A02 load error:', err)
+);
+loader.load(BASE_URL + 'A03.fbx',
+    fbx => onFbxLoaded('w2', fbx),
+    undefined,
+    err => console.error('[BugCursor] A03 load error:', err)
+);
+
+// ═══════════════════════════════════════════════════════════
+// 7. 組裝昆蟲：縮放、對齊、識別翅膀、建立翅根軸
+// ═══════════════════════════════════════════════════════════
+function buildInsect() {
+    const body = fbxObjs.body;
+    const w1   = fbxObjs.w1;
+    const w2   = fbxObjs.w2;
+
+    // ── 7.0 套用手動載入的貼圖與材質（設定為雙面渲染）──
+    const insectMaterial = new THREE.MeshStandardMaterial({
+        map: basecolorMap,
+        normalMap: normalMap,
+        roughness: 0.6,
+        metalness: 0.2,
+        side: THREE.DoubleSide
+    });
+
+    [body, w1, w2].forEach(obj => {
+        obj.traverse(child => {
+            if (child.isMesh) {
+                child.material = insectMaterial;
+            }
+        });
+    });
+
+    // ── 7.1 計算身體原始大小，推導縮放比例 ──────────────
+    // 先把 body 加入 scene 以便計算 world bbox
+    bugGroup.add(body);
+    bugGroup.updateMatrixWorld(true);
+
+    const bodyBBoxOrig = new THREE.Box3().setFromObject(body);
+    const bodySizeOrig = bodyBBoxOrig.getSize(new THREE.Vector3());
+    const bodyMaxDim   = Math.max(bodySizeOrig.x, bodySizeOrig.y, bodySizeOrig.z);
+
+    // 目標大小：約螢幕 5% 高度的世界單位（作為游標適當大小）
+    const TARGET_SIZE  = worldHalfH * 0.13;  // ~0.13x world half-height ≈ 40-60px
+    const scaleFactor  = TARGET_SIZE / bodyMaxDim;
+
+    const bodyCenterOrig = bodyBBoxOrig.getCenter(new THREE.Vector3());
+
+    console.log(`[BugCursor] bodyMaxDim=${bodyMaxDim.toFixed(3)}, scaleFactor=${scaleFactor.toFixed(5)}, TARGET_SIZE=${TARGET_SIZE.toFixed(3)}`);
+
+    // ── 7.2 套用統一縮放與置中 ────────────────────────────
+    // 身體、翅膀都從 Blender 同一場景匯出，共享座標系
+    // 套用相同縮放 + 偏移即可對齊
+    const offset = bodyCenterOrig.clone().multiplyScalar(-scaleFactor);  // 置中偏移
+
+    [body, w1, w2].forEach(obj => {
+        obj.scale.setScalar(scaleFactor);
+        obj.position.copy(offset);
+        bugGroup.add(obj);
+    });
+
+    bugGroup.updateMatrixWorld(true);
+
+    // ── 7.3 識別左右翅膀（A02.fbx 固定為左翅，A03.fbx 固定為右翅）──
+    // 消除非同步載入時 BBox worldCenterX 計算不穩定造成的翅膀運動錯亂問題
+    const leftWing   = w1; // A02.fbx
+    const rightWing  = w2; // A03.fbx
+    const leftLabel  = 'A02';
+    const rightLabel = 'A03';
+
+    console.log(`[BugCursor] 翅膀載入定位完成: 左翅: ${leftLabel}, 右翅: ${rightLabel}`);
+
+    // ── 7.4 計算翅根位置並建立 pivot group ───────────────
+    function makePivotGroup(wingObj, isRight) {
+        const bbox    = new THREE.Box3().setFromObject(wingObj);
+        const center  = bbox.getCenter(new THREE.Vector3());
+
+        // 翅根 = bbox 在 X 軸上最靠近身體中心（X=0）的一側
+        // 右翅：min.x 那側（最左邊）最近 body；左翅：max.x 那側
+        const rootX   = isRight ? bbox.min.x : bbox.max.x;
+        const rootPos = new THREE.Vector3(rootX, center.y, center.z);
+
+        console.log(`[BugCursor] ${isRight ? '右' : '左'}翅 rootPos =`,
+            rootPos.toArray().map(v => v.toFixed(3)));
+
+        // 建立 pivot group，放在翅根位置
+        const pivot = new THREE.Group();
+        pivot.position.copy(rootPos);
+        bugGroup.add(pivot);
+
+        // 把 wingObj 從 bugGroup 移到 pivot，更新 position 以相對 pivot
+        bugGroup.remove(wingObj);
+        wingObj.position.sub(rootPos);   // 在 bugGroup local space 重新計算相對位置
+        pivot.add(wingObj);
+
+        return pivot;
+    }
+
+    const rightPivot = makePivotGroup(rightWing, true);
+    const leftPivot  = makePivotGroup(leftWing,  false);
+
+    // ── 7.5 登記翅膀動畫資料（相位差讓效果更自然）─────
+    wingAnimData.push({
+        pivot:   rightPivot,
+        isRight: true,
+        freq:    20,           // 振翅頻率 Hz
+        ampZ:    0.55,         // 主振幅（Z 軸傾斜 = 俯視時上下）
+        ampX:    0.08,         // 次振幅（X 軸前後）
+        phase:   0             // 基準相位
+    });
+    wingAnimData.push({
+        pivot:   leftPivot,
+        isRight: false,
+        freq:    20,
+        ampZ:    0.55,
+        ampX:    0.08,
+        phase:   0.18          // 小相位差讓雙翅略有不同步感
+    });
+
+    console.log('[BugCursor] ✅ 昆蟲組裝完成，共', bugGroup.children.length, '個子節點');
+}
+
+// ═══════════════════════════════════════════════════════════
+// 8. 動畫迴圈
+// ═══════════════════════════════════════════════════════════
+const LERP_POS  = 0.10;   // 位置跟隨速度（越大越快）
+const LERP_ROT  = 0.07;   // 旋轉跟隨速度
+
+let t0 = performance.now();
+
+function animate() {
+    requestAnimationFrame(animate);
+    const t = (performance.now() - t0) / 1000;  // 秒
+
+    // 8.1 位置平滑跟隨
+    curX += (mouseWorldX - curX) * LERP_POS;
+    curY += (mouseWorldY - curY) * LERP_POS;
+
+    // 8.2 懸浮呼吸感（輕微 Y 波動）
+    const hover = Math.sin(t * 2.8) * 0.04;
+    const bugYWithHover = curY + hover;
+
+    bugGroup.position.set(curX, bugYWithHover, 0);
+
+    // 8.25 計算雙翅尖端的世界座標以進行飛機拉線
+    // 昆蟲翼展約 0.35 個世界單位，兩側翅尖偏置約為 0.16
+    const leftTipX  = curX + Math.cos(currentYaw + Math.PI / 2) * 0.16;
+    const leftTipY  = bugYWithHover + Math.sin(currentYaw + Math.PI / 2) * 0.16;
+    const rightTipX = curX + Math.cos(currentYaw - Math.PI / 2) * 0.16;
+    const rightTipY = bugYWithHover + Math.sin(currentYaw - Math.PI / 2) * 0.16;
+
+    if (window.lastLeftTipX !== undefined) {
+        const dist = Math.hypot(leftTipX - window.lastLeftTipX, leftTipY - window.lastLeftTipY);
+        // 若移動距離大於閾值，在前後幀路徑上線性插值插滿粒子，形成不斷裂的拉線效果
+        if (dist > 0.004) {
+            const steps = Math.min(8, Math.ceil(dist / 0.008));
+            for (let i = 1; i <= steps; i++) {
+                const ratio = i / steps;
+                const lx = window.lastLeftTipX + (leftTipX - window.lastLeftTipX) * ratio;
+                const ly = window.lastLeftTipY + (leftTipY - window.lastLeftTipY) * ratio;
+                const rx = window.lastRightTipX + (rightTipX - window.lastRightTipX) * ratio;
+                const ry = window.lastRightTipY + (rightTipY - window.lastRightTipY) * ratio;
+                spawnContrailParticle(lx, ly);
+                spawnContrailParticle(rx, ry);
+            }
+        }
+    }
+    window.lastLeftTipX  = leftTipX;
+    window.lastLeftTipY  = leftTipY;
+    window.lastRightTipX = rightTipX;
+    window.lastRightTipY = rightTipY;
+
+    // 偵測滑鼠停頓：若超過 200 毫秒沒移動，自動回正（Y軸為 0度）
+    if (performance.now() - lastMoveTime > 200) {
+        baseYaw = 0;
+    }
+    
+    // 如果懸停在按鈕上，Y軸固定為 0度
+    if (isHoveringInteractive) {
+        targetYaw = 0 + angleOffset;
+    } else {
+        targetYaw = baseYaw + angleOffset;
+    }
+
+    // 8.3 偏航（Yaw）— 只圍繞 Y 軸，取最短角路徑
+    let yawDiff = targetYaw - currentYaw;
+    if (yawDiff >  Math.PI) yawDiff -= 2 * Math.PI;
+    if (yawDiff < -Math.PI) yawDiff += 2 * Math.PI;
+    currentYaw += yawDiff * LERP_ROT;
+
+    // 8.4 俯仰（Pitch）與翻滾（Roll）— 動態設定
+    // 1) 懸停在可點擊元素上：X 軸角度為 -90 度 (-Math.PI / 2)，Z 軸為 180 度 (Math.PI)
+    // 2) 靜止時：X 軸角度為 0 度，Z 軸為 0 度
+    // 3) 一般運動時：X 軸角度為 20 度 (20 * Math.PI / 180)，Z 軸為 0 度
+    const isStopped = (performance.now() - lastMoveTime > 200);
+    
+    if (isHoveringInteractive) {
+        targetPitch = -Math.PI / 2;
+        targetRoll  = Math.PI;
+    } else {
+        targetRoll  = 0;
+        if (isStopped) {
+            targetPitch = 0;
+        } else {
+            targetPitch = 20 * Math.PI / 180;
+        }
+    }
+
+    // 使用較快的插值速度讓旋轉回饋更即時
+    currentPitch += (targetPitch - currentPitch) * 0.12;
+    currentRoll  += (targetRoll - currentRoll) * 0.12;
+
+    // 8.5 套用旋轉（X 軸 = currentPitch, Y 軸 = currentYaw, Z 軸 = currentRoll）
+    bugGroup.rotation.set(currentPitch, currentYaw, currentRoll);
+
+    // 8.6 翅膀振翅（每片翅膀獨立旋轉軸）
+    for (const wd of wingAnimData) {
+        const wave = Math.sin(t * Math.PI * 2 * wd.freq + wd.phase);
+        // 移除手動鏡像負號（FBX 已內建鏡像座標），使雙翅對稱上下振動
+        wd.pivot.rotation.z = wave * wd.ampZ;
+        // X 旋轉 = 翅膀輕微的前後扭動
+        wd.pivot.rotation.x = wave * wd.ampX;
+        // Y 旋轉 永遠為 0
+        wd.pivot.rotation.y = 0;
+    }
+
+    // 8.7 更新飛機拉線軌跡粒子
+    for (const p of particlePool) {
+        if (p.mesh.visible) {
+            p.age++;
+            const progress = p.age / p.maxAge;
+            
+            // 飛機凝結尾特性：隨時間線條收縮變窄 (1.0 -> 0.15)
+            const scale = p.baseScale * (1.0 - progress * 0.85);
+            p.mesh.scale.setScalar(scale);
+
+            // 漸漸淡出
+            p.mat.opacity = 0.7 * (1.0 - progress);
+
+            if (p.age >= p.maxAge) {
+                p.mesh.visible = false;
+            }
+        }
+    }
+
+    renderer.render(scene, camera);
+}
+animate();
+
+// ═══════════════════════════════════════════════════════════
+// 9. 視窗 resize 處理
+// ═══════════════════════════════════════════════════════════
+window.addEventListener('resize', () => {
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    renderer.setSize(w, h);
+    const wh = computeWorldHalf();
+    worldHalfH = wh.halfH;
+    worldHalfW = wh.halfW;
+});

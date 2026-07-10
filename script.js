@@ -1,0 +1,142 @@
+/**
+ * HAIN Portfolio — 壁虎頭部滑鼠互動控制
+ *
+ * 核心規格（嚴格遵守）：
+ *  - video: muted / playsinline / preload="auto" / 無 autoplay / 無 loop / 無 controls
+ *  - 不呼叫 video.play()
+ *  - delta = currentX - prevX
+ *  - timeOffset = (delta / innerWidth) * 0.8 * duration
+ *  - targetTime = targetTime - timeOffset  （反向：左移→看左，右移→看右）
+ *  - targetTime 限制在 [0, duration]
+ *  - 排隊 seek：未 seek 時立即執行，seek 中只更新 targetTime，seeked 後再追趕
+ *  - 初始停在第一影格（currentTime = 0）
+ */
+
+(function () {
+    'use strict';
+
+    /* ── 狀態 ─────────────────────────────────────── */
+    var video      = null;
+    var duration   = 0;
+    var targetTime = 0;
+    var prevX      = null;
+    var ready      = false;
+    var seeking    = false;
+    var seekTimeout = null; // 解鎖安全定時器，避免 Chrome 在無 Range 請求伺服器下 seek 永久鎖死
+
+    /* ── 初始化 ────────────────────────────────────── */
+    function tryInit() {
+        if (ready) return;
+        if (!video) return;
+
+        var d = video.duration;
+        if (!d || d !== d || !isFinite(d) || d <= 0) return; // NaN / Infinity / 0
+
+        duration   = d;
+        ready      = true;
+        targetTime = 0;
+
+        try { video.currentTime = 0; } catch (e) {}
+
+        console.log('[HAIN] 影片就緒，duration =', duration.toFixed(3), 's');
+    }
+
+    function doSeek() {
+        if (!ready || seeking) return;
+        var diff = Math.abs(video.currentTime - targetTime);
+        if (diff < 0.005) return; // 差距極小，跳過
+
+        seeking = true;
+
+        // 150ms 強制解鎖安全鎖，防堵 Range 請求缺失導致影片掛起
+        if (seekTimeout) clearTimeout(seekTimeout);
+        seekTimeout = setTimeout(function () {
+            if (seeking) {
+                seeking = false;
+                doSeek(); // 強制解除鎖定並追趕
+            }
+        }, 150);
+
+        try {
+            video.currentTime = targetTime;
+        } catch (e) {
+            seeking = false; // 異常時解鎖
+            if (seekTimeout) clearTimeout(seekTimeout);
+        }
+    }
+
+    /* ── 滑鼠位移計算 ──────────────────────────────── */
+    function processX(currentX) {
+        if (!ready) return;
+
+        if (prevX === null) {
+            prevX = currentX;
+            return;
+        }
+
+        var delta      = currentX - prevX;
+        prevX          = currentX;
+
+        var timeOffset = (delta / window.innerWidth) * 0.8 * duration;
+        targetTime     = targetTime - timeOffset;
+        targetTime     = Math.max(0, Math.min(duration, targetTime));
+
+        doSeek();
+    }
+
+    /* ── 掛載事件（在 DOM 就緒後執行） ─────────────── */
+    function mount() {
+        video = document.getElementById('bg-video');
+        if (!video) {
+            console.error('[HAIN] 找不到 #bg-video');
+            return;
+        }
+
+        /* seeked：解鎖並追趕 */
+        video.addEventListener('seeked', function () {
+            if (seekTimeout) clearTimeout(seekTimeout);
+            seeking = false;
+            doSeek();
+        });
+
+        /* 監聽所有可能帶出 duration 的影片事件 */
+        ['loadedmetadata', 'durationchange', 'canplay', 'canplaythrough'].forEach(function (evt) {
+            video.addEventListener(evt, tryInit);
+        });
+
+        /* 若已緩存（readyState >= 1 = HAVE_METADATA），直接嘗試 */
+        tryInit();
+
+        /* 終極保底：每 80ms 輪詢一次，直到 duration 有效 */
+        var poll = setInterval(function () {
+            tryInit();
+            if (ready) clearInterval(poll);
+        }, 80);
+
+        /* 滑鼠 mousemove */
+        window.addEventListener('mousemove', function (e) {
+            processX(e.clientX);
+        });
+
+        /* 觸控 touchmove（手機端） */
+        window.addEventListener('touchmove', function (e) {
+            if (e.touches && e.touches[0]) {
+                processX(e.touches[0].clientX);
+            }
+        }, { passive: true });
+
+        /* 滑鼠離開視窗時重置 prevX，防止重新進入時發生大幅跳躍 */
+        document.addEventListener('mouseleave', function () {
+            prevX = null;
+        });
+    }
+
+    /* ── 入口 ──────────────────────────────────────── */
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', mount);
+    } else {
+        // script 在 body 底部，DOM 已就緒，直接執行
+        mount();
+    }
+
+}());

@@ -1,0 +1,406 @@
+/* ============================================
+   CSS 設計系統 — 水墨作品集
+   Design Read: Portfolio · sumi-e ink wash · register=brand
+   SOUL=9 · SPECTACLE=4 · 拒絕：深色霓虹預設
+   
+   色彩命名規範（三部式）：
+   宣紙 (#F0EBE0) — 頁面底色，仿舊宣紙，非純白。
+   濃墨 (#141210) — 主文字，近黑但帶暖棕，非純黑。
+   淡墨 (#7A7168) — 次要文字與輔助元素。
+   細紋 (#B8B0A4) — 分隔線與描邊。
+   朱砂 (#A8341C) — 唯一強調色，印章紅，全頁鎖定。
+   ============================================ */
+
+:root {
+    --bg:       #F0EBE0;  /* 宣紙 — 頁面底色 */
+    --ink:      #141210;  /* 濃墨 — 主文字 */
+    --muted:    #7A7168;  /* 淡墨 — 次要文字 */
+    --dim:      #B8B0A4;  /* 細紋 — 分隔線 */
+    --accent:   #A8341C;  /* 朱砂 — 唯一強調色，全頁鎖定 */
+    --glass-bg: rgba(240, 235, 224, 0.45);
+    --glass-border: rgba(184, 176, 164, 0.5);
+    --font-serif: 'Cormorant Garamond', 'Noto Serif TC', Georgia, serif;
+    --font-zh:    'Noto Serif TC', 'Cormorant Garamond', serif;
+    --font-mono:  'JetBrains Mono', monospace;
+}
+
+/* ── Reset & Base ── */
+*, *::before, *::after {
+    margin: 0; padding: 0; box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background-color: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-zh);
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+}
+
+/* ── 全域紙質噪音紋理 (Premium Substrate — 消除數位感) ── */
+.grain-overlay {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    pointer-events: none;
+    opacity: 0.045;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ── 頂部玻璃膠囊導覽列 ── */
+.header-nav {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 1200px;
+    z-index: 50;
+}
+
+.nav-capsule {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 24px;
+    height: 58px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--glass-border);
+    border-radius: 29px;
+    box-shadow: 0 2px 20px rgba(20, 18, 16, 0.06);
+}
+
+.nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: var(--ink);
+}
+
+.brand-mark {
+    font-size: 0.7rem;
+    color: var(--accent);
+    line-height: 1;
+}
+
+.brand-name {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 400;
+    letter-spacing: 0.25em;
+    color: var(--ink);
+}
+
+.nav-links {
+    display: flex;
+    gap: 36px;
+    list-style: none;
+}
+
+.nav-link {
+    font-family: var(--font-zh);
+    font-size: 0.95rem;
+    font-weight: 300;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 0.08em;
+    transition: color 0.3s ease;
+    position: relative;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: var(--accent);
+    transition: width 0.35s cubic-bezier(.16,1,.3,1);
+}
+
+.nav-link:hover { color: var(--ink); }
+.nav-link:hover::after { width: 100%; }
+
+.btn-request {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 400;
+    letter-spacing: 0.15em;
+    color: var(--bg);
+    background: var(--ink);
+    border: none;
+    padding: 9px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-request:hover {
+    background: var(--accent);
+    transform: translateY(-1px);
+}
+
+/* ── Hero 主視覺佈局 ── */
+.hero-section {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    grid-template-rows: 1fr auto;
+    align-items: center;
+    justify-items: center;
+    padding: 0 5vw;
+    gap: 0;
+}
+
+/* ── 左側垂直書法標題 ── */
+.hero-left {
+    justify-self: start;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    padding-left: 2vw;
+    padding-top: 80px; /* 避開導覽列 */
+}
+
+.vertical-text-block {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.v-label {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    color: var(--dim);
+    text-transform: uppercase;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--dim);
+    width: fit-content;
+}
+
+.v-title {
+    font-family: var(--font-zh);
+    font-size: clamp(2.2rem, 4vw, 4rem);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+}
+
+.v-intro {
+    font-family: var(--font-zh);
+    font-size: 0.88rem;
+    font-weight: 300;
+    color: var(--muted);
+    line-height: 1.9;
+    letter-spacing: 0.04em;
+    max-width: 200px;
+    margin-top: 12px;
+    text-wrap: pretty;
+}
+
+.series-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.meta-item {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+}
+
+.meta-divider {
+    display: block;
+    width: 24px;
+    height: 1px;
+    background: var(--dim);
+    margin: 4px 0;
+}
+
+/* ── 壁虎影片（縮小為主視覺焦點，非滿版） ── */
+.video-wrapper {
+    grid-column: 2;
+    position: relative;
+    /* 控制壁虎大小：約螢幕高度 70%，維持影片原始 16:9 比例 */
+    height: 70vh;
+    width: calc(70vh * (16 / 9));
+    max-width: 80vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* 防止影片容器超出安全區 */
+    padding-top: 50px;
+}
+
+.video-wrapper video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* contain 保持比例，配合 mix-blend-mode 使用 */
+    object-position: center;
+    pointer-events: none;
+
+    /* 水墨去背核心技術：
+       multiply 混色使影片灰白背景融入宣紙，壁虎主體呈現如水墨生物標本 */
+    mix-blend-mode: multiply;
+    filter: contrast(1.2) brightness(1.0) saturate(0.8);
+
+    /* 直接在影片網格上套用極軟的羽化遮罩，徹底消除影片底色與宣紙底色的切線邊框 */
+    -webkit-mask-image: radial-gradient(ellipse at center, rgba(0, 0, 0, 1) 35%, rgba(0, 0, 0, 0) 85%);
+    mask-image: radial-gradient(ellipse at center, rgba(0, 0, 0, 1) 35%, rgba(0, 0, 0, 0) 85%);
+}
+
+/* ── 右側資訊欄 ── */
+.hero-right {
+    justify-self: end;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    padding-right: 2vw;
+    padding-top: 80px;
+    text-align: right;
+}
+
+.right-block {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.right-label {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    color: var(--dim);
+    text-transform: uppercase;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--dim);
+}
+
+.right-status {
+    font-family: var(--font-zh);
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+/* 綠色脈衝指示燈 */
+.dot-pulse {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #6B8F71; /* 暗綠，配合水墨色調而非霓虹綠 */
+    box-shadow: 0 0 0 0 rgba(107, 143, 113, 0.5);
+    animation: inkPulse 2.5s ease-in-out infinite;
+    flex-shrink: 0;
+}
+
+@keyframes inkPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(107, 143, 113, 0.5); }
+    60% { box-shadow: 0 0 0 6px rgba(107, 143, 113, 0); }
+}
+
+.right-desc {
+    font-family: var(--font-zh);
+    font-size: 0.85rem;
+    font-weight: 300;
+    color: var(--muted);
+    line-height: 1.8;
+    letter-spacing: 0.05em;
+}
+
+/* ── 底部 Ticker 與說明文字 ── */
+.hero-footer {
+    grid-column: 1 / -1;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding-bottom: 4vh;
+    align-items: center;
+}
+
+.ticker-line {
+    width: 100%;
+    overflow: hidden;
+    border-top: 1px solid var(--dim);
+    border-bottom: 1px solid var(--dim);
+    padding: 8px 0;
+}
+
+.ticker-content {
+    display: inline-block;
+    white-space: nowrap;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    color: var(--dim);
+    /* 跑馬燈動畫 */
+    animation: ticker 28s linear infinite;
+}
+
+@keyframes ticker {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+}
+
+.footer-caption {
+    font-family: var(--font-zh);
+    font-size: 0.8rem;
+    font-weight: 300;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+}
+
+/* ── 縮減動畫 (prefers-reduced-motion) ── */
+@media (prefers-reduced-motion: reduce) {
+    .ticker-content { animation: none; }
+    .dot-pulse { animation: none; }
+    .nav-link::after { transition: none; }
+}
+
+/* ── 響應式 ── */
+@media (max-width: 900px) {
+    .hero-section {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr auto auto;
+        padding: 100px 5vw 0;
+        overflow: hidden;
+    }
+
+    .hero-left { padding-top: 0; padding-left: 0; }
+    .hero-right { display: none; }
+    
+    .video-wrapper {
+        height: 55vw;
+        width: 100%;
+        max-width: 100%;
+        padding-top: 0;
+    }
+
+    .nav-links { display: none; }
+    .v-title { font-size: clamp(1.8rem, 7vw, 3rem); }
+}

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>作品集 | Portfolio</title>
+    <meta name="description" content="視覺藝術創作者作品集，融合數位互動與傳統美學。">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Noto Serif TC：具書法骨氣的中文字型 / Cormorant Garamond：極對比的西文展示字型 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;700&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300;1,600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+</head>
+<body style="cursor:none;">
+
+    <!-- Three.js importmap for ES module loading -->
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/",
+            "fflate": "https://cdn.jsdelivr.net/npm/fflate@0.8.2/esm/browser.js"
+        }
+    }
+    </script>
+
+    <!-- 全域紙質噪音背景層 -->
+    <div class="grain-overlay" aria-hidden="true"></div>
+
+    <!-- 頂部玻璃膠囊導覽列（保留參考圖風格） -->
+    <header class="header-nav">
+        <nav class="nav-capsule" aria-label="主導覽">
+            <div class="nav-brand">
+                <span class="brand-mark">&#x25C6;</span>
+                <span class="brand-name">HAIN</span>
+            </div>
+            <ul class="nav-links" role="list">
+                <li><a href="#" class="nav-link">作品</a></li>
+                <li><a href="#" class="nav-link">關於</a></li>
+            </ul>
+            <a href="#contact" class="btn-request">聯繫</a>
+        </nav>
+    </header>
+
+    <!-- 主視覺 Hero 區域 -->
+    <main id="hero" class="hero-section">
+
+        <!-- 左側個人介紹 -->
+        <aside class="hero-left" aria-label="HAIN 作品集介紹">
+            <div class="vertical-text-block">
+                <p class="v-label">創作者 / CREATIVE</p>
+                <h1 class="v-title">HAIN</h1>
+                <p class="v-intro">視覺藝術與互動媒體的創作者，探索數位與自然之間的邊界，以影像、動態與空間敘事構築沉浸式體驗。</p>
+            </div>
+            <div class="series-meta">
+                <span class="meta-item">視覺設計</span>
+                <span class="meta-divider"></span>
+                <span class="meta-item">互動媒體</span>
+                <span class="meta-divider"></span>
+                <span class="meta-item">動態影像</span>
+            </div>
+        </aside>
+
+        <!-- 壁虎影片（縮小為主視覺焦點，非滿版） -->
+        <div class="video-wrapper">
+            <video
+                id="bg-video"
+                src="守宮轉_opt.mp4"
+                muted
+                playsinline
+                preload="auto"
+                aria-label="互動影像：壁虎頭部跟隨滑鼠轉動"
+            >
+                您的瀏覽器不支援影片標籤。
+            </video>
+        </div>
+
+        <!-- 右側資訊欄 -->
+        <aside class="hero-right" aria-label="藝術家資訊">
+            <div class="right-block">
+                <p class="right-label">狀態 / STATUS</p>
+                <p class="right-status">
+                    <span class="dot-pulse"></span>
+                    動態感應中
+                </p>
+            </div>
+            <div class="right-block">
+                <p class="right-label">互動 / INTERACTION</p>
+                <p class="right-desc">左右移動滑鼠<br>控制生物視線</p>
+            </div>
+        </aside>
+
+        <!-- 底部水平 Ticker 分隔線 -->
+        <footer class="hero-footer">
+            <div class="ticker-line">
+                <span class="ticker-content" aria-hidden="true">
+                    觀者即參與者 &nbsp;·&nbsp; VIEWER IS PARTICIPANT &nbsp;·&nbsp;
+                    生物感應 &nbsp;·&nbsp; BIOMETRIC RESPONSE &nbsp;·&nbsp;
+                    視線交換 &nbsp;·&nbsp; GAZE EXCHANGE &nbsp;·&nbsp;
+                    觀者即參與者 &nbsp;·&nbsp; VIEWER IS PARTICIPANT &nbsp;·&nbsp;
+                </span>
+            </div>
+            <p class="footer-caption">移動滑鼠 &mdash; 與牠對視</p>
+        </footer>
+
+    </main>
+
+    <script src="script.js?v=3"></script>
+    <script type="module" src="cursor-bug.js?v=3"></script>
+</body>
+</html>
