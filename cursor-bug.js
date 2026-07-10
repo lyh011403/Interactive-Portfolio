@@ -508,6 +508,16 @@ function animate() {
             if (window.playGeckoEat) {
                 window.playGeckoEat();
             }
+
+            // ── 100% 避免首頁轉場卡死黑屏的保底跳轉定時器 ──
+            if (transitionTargetHref !== '#' && !transitionTargetHref.startsWith('javascript:')) {
+                setTimeout(() => {
+                    // 如果這時還在首頁（代表 ended 事件可能因為瀏覽器限制未成功觸發跳轉），則強行跳轉
+                    if (window.location.pathname.endsWith('index.html') || window.location.pathname === '/' || window.location.pathname.endsWith('網站2/')) {
+                        window.location.href = transitionTargetHref;
+                    }
+                }, 1800); // 1.8 秒保底，給足咬食影片播映時間
+            }
         }
     } else if (isRespawning) {
         respawnProgress += 0.05; // 20 幀 (約 330ms) 孵化變大

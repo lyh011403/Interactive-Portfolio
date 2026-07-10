@@ -169,11 +169,22 @@
             }
         };
 
-        /* 監聽咬食結束事件，切換回轉頭影片並觸發昆蟲重生 */
+        /* 監聽咬食結束事件，切換回轉頭影片並跳轉或觸發昆蟲重生 */
         if (eatVideo) {
             eatVideo.addEventListener('ended', function () {
+                var targetHref = window.getTransitionHref ? window.getTransitionHref() : '#';
+                if (targetHref && targetHref !== '#' && !targetHref.startsWith('javascript:')) {
+                    // 執行頁面跳轉
+                    window.location.href = targetHref;
+                    return;
+                }
+
+                // 如果是測試用的空連結，則重置狀態供使用者重複測試
                 eatVideo.style.display = 'none';
                 video.style.display = 'block';
+                document.body.classList.remove('transition-active');
+                var overlay = document.querySelector('.transition-overlay');
+                if (overlay) overlay.classList.remove('active');
 
                 // 將轉頭影片的目標時間軸平滑重設為中間（正對前方）
                 targetTime = duration / 2;
