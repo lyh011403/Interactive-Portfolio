@@ -26,7 +26,7 @@ Object.assign(canvas.style, {
     width:         '100vw',
     height:        '100vh',
     pointerEvents: 'none',
-    zIndex:        '10000',    // 高於所有 UI 元素 (nav 是 50) 確保不被遮擋
+    zIndex:        '1000000',   // 高於彈窗 (100000) 確保昆蟲游標在彈窗開啟時仍然顯示在最上層
 });
 document.body.appendChild(canvas);
 

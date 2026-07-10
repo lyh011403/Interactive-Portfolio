@@ -1,0 +1,28 @@
+黃易群俠傳m
+製作年份:2019~2021
+核心技術:3D MAX、Substance painter
+
+天子傳奇S
+製作年份:2021~2023
+核心技術:blender、Substance painter
+
+飄流幻境RE
+製作年份:2023~2025
+核心技術:blender、AI輔助
+
+AI 2D
+製作年份:2025~2026
+核心技術:GPT、GEMINI、GEMINI GEM、VEO
+
+AI 3D
+製作年份:2025~2026
+核心技術:GPT、GEMINI、TRIPO、Hunyuan3D、GEMINI GEM
+
+
+AI系統
+製作年份:2025~2026
+核心技術:Antigravity
+
+嵌入式AI影像應用班
+製作年份:2025~2026
+核心技術:Antigravity、pytorch、python、TRANSFORMER、YOLO

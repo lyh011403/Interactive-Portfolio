@@ -10,6 +10,14 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;700&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300;1,600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
     <style>
+        /* ── 隱藏預設滑鼠游標，確保 3D 昆蟲游標在所有元素（包括按鈕、彈窗、圖片）上都正常運作 ── */
+        .portfolio-body,
+        .portfolio-body *,
+        .modal,
+        .modal * {
+            cursor: none !important;
+        }
+
         /* ── 作品頁面主排版 ── */
         .portfolio-body {
             background-color: var(--bg);
@@ -26,7 +34,7 @@
         }
 
         .page-header {
-            margin-bottom: 50px;
+            margin-bottom: 30px;
             border-left: 3px solid var(--accent);
             padding-left: 24px;
             display: flex;
@@ -56,7 +64,7 @@
         /* ── 分類過濾選單 (Sumi-e Filter Nav) ── */
         .filter-nav {
             display: flex;
-            gap: 16px;
+            gap: 8px;
             flex-wrap: wrap;
             margin-bottom: 45px;
             border-bottom: 1px solid var(--dim);
@@ -65,13 +73,13 @@
 
         .filter-btn {
             font-family: var(--font-zh);
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-weight: 400;
             background: none;
             border: none;
             color: var(--muted);
             cursor: pointer;
-            padding: 6px 16px;
+            padding: 6px 12px;
             position: relative;
             transition: color 0.3s ease;
         }
@@ -91,8 +99,8 @@
             bottom: -18px;
             left: 50%;
             transform: translateX(-50%);
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
             background: var(--accent);
             border-radius: 50%; /* 朱砂印章小圓點 */
         }
@@ -135,7 +143,7 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            /* 預設微微水墨去色/低飽和度，懸停時轉為全彩，高級感十足 */
+            /* 預設微微去色/低飽和度，懸停時轉為全彩，高級感十足 */
             filter: saturate(0.2) contrast(1.1);
             transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), filter 0.6s ease;
         }
@@ -472,236 +480,340 @@
     <main class="portfolio-container">
         <header class="page-header">
             <div>
-                <h1 class="page-title">作品目錄</h1>
+                <h1 class="page-title">精選作品</h1>
                 <p class="page-subtitle">Selected Projects & Creative Experiments</p>
             </div>
         </header>
 
-        <!-- 類別過濾導覽列 -->
+        <!-- 類別過濾導覽列 (與實體資料夾及 P.txt 配置完全對齊) -->
         <nav class="filter-nav" aria-label="作品分類">
             <button class="filter-btn active" data-filter="all">全部</button>
-            <button class="filter-btn" data-filter="3d">三維渲染 / 3D</button>
-            <button class="filter-btn" data-filter="game">遊戲美術重製</button>
-            <button class="filter-btn" data-filter="ai-art">AI 藝術與工具</button>
-            <button class="filter-btn" data-filter="embedded">嵌入式 AI 應用</button>
+            <button class="filter-btn" data-filter="self-3d">自製3D</button>
+            <button class="filter-btn" data-filter="he-m">黃易群俠傳m</button>
+            <button class="filter-btn" data-filter="legend-s">天子傳奇S</button>
+            <button class="filter-btn" data-filter="wonderland-re">飄流幻境RE</button>
+            <button class="filter-btn" data-filter="ai-2d">AI 2D</button>
+            <button class="filter-btn" data-filter="ai-3d">AI 3D</button>
+            <button class="filter-btn" data-filter="ai-system">AI系統</button>
+            <button class="filter-btn" data-filter="embedded-ai">嵌入式AI影像應用班</button>
         </nav>
 
         <!-- 作品網格 -->
         <section class="works-grid" id="worksGrid">
 
-            <!-- 作品 1：自製 3D 場景 -->
-            <article class="work-card" data-category="3d" 
-                     data-title="自製 3D 虛擬場景實驗" 
-                     data-media-type="video"
-                     data-video-src="作品集/自製3D/MyProject - Unreal Editor 2025-09-29 16-39-41.mp4"
-                     data-images="作品集/自製3D/lyh_et-b1a-2048.jpg,作品集/自製3D/lyh_et-b2a-2048.jpg,作品集/自製3D/lyh_et-b3a-2048.jpg,作品集/自製3D/Screenshot_4.png"
-                     data-desc="基於 Unreal Engine 引擎開發的自主三維環境探索。專案重點在於大型室外地貌的即時光影渲染、水墨寫意氛圍在 3D 空間的重塑，以及次世代 PBR 材質的細節表現。展示影片為虛擬編輯器內的動態漫遊實錄。">
+            <!-- 1. 自製3D -->
+            <article class="work-card" data-category="self-3d" 
+                     data-title="Unreal Engine 3D 虛擬環境場景漫遊" 
+                     data-year="2025~2026"
+                     data-tech="UE5、PBR、Lighting"
+                     data-images="作品集/自製3D/MyProject - Unreal Editor 2025-09-29 16-39-41.mp4,作品集/自製3D/lyh_et-b1a-2048.jpg,作品集/自製3D/lyh_et-b2a-2048.jpg,作品集/自製3D/lyh_et-b3a-2048.jpg,作品集/自製3D/02.jpg,作品集/自製3D/03.jpg,作品集/自製3D/05.jpg,作品集/自製3D/b (1).png,作品集/自製3D/b (2).png,作品集/自製3D/b (3).png,作品集/自製3D/b (4).png,作品集/自製3D/Screenshot_2.png,作品集/自製3D/Screenshot_3.png,作品集/自製3D/Screenshot_4.png"
+                     data-desc="運用 Unreal Engine 進行三維寫意光影實驗，探索古典美學在次世代渲染引擎下的即時渲染表達。展示影片包含虛擬編輯器內的動態漫遊實錄、PBR材質解析及多角度高清場景渲染。">
                 <div class="work-img-wrapper">
-                    <span class="video-badge">VIDEO</span>
-                    <img class="work-img" src="作品集/自製3D/lyh_et-b1a-2048.jpg" alt="自製 3D 場景">
+                    <span class="video-badge">VIDEO / 3D</span>
+                    <img class="work-img" src="作品集/自製3D/lyh_et-b1a-2048.jpg" alt="自製3D">
                 </div>
                 <div class="work-info">
                     <div class="work-meta-row">
-                        <span class="work-category">3D Render / UE</span>
-                        <span class="work-year">2026</span>
+                        <span class="work-category">自製3D</span>
+                        <span class="work-year">2025~2026</span>
                     </div>
                     <h2 class="work-title">自製 3D 虛擬環境場景設計</h2>
-                    <p class="work-desc">運用 Unreal Engine 進行三維寫意光影實驗，探索古典美學在次世代渲染引擎下的即時渲染表達。</p>
+                    <p class="work-desc">探索 Unreal Engine 次世代場景的寫意渲染，展示了動態光影與古典國風氣息的融合。</p>
                     <div class="work-footer">
-                        <span>UE5 / PBR / Lighting</span>
-                        <span class="view-more">瀏覽專案 &rarr;</span>
+                        <span>UE5、PBR、Lighting</span>
+                        <span class="view-more">展開藝廊 &rarr;</span>
                     </div>
                 </div>
             </article>
 
-            <!-- 作品 2：飄流幻境 RE -->
-            <article class="work-card" data-category="game" 
-                     data-title="飄流幻境 RE 視覺重製計劃" 
-                     data-media-type="gallery"
-                     data-images="作品集/飄流幻境RE/01 (1).png,作品集/飄流幻境RE/02 (1).png,作品集/飄流幻境RE/03 (1).png,作品集/飄流幻境RE/04 (1).png,作品集/飄流幻境RE/06 (1).png,作品集/飄流幻境RE/08.png"
-                     data-desc="針對經典 2D 遊戲《飄流幻境》進行的全方位視覺重構。本專案重新繪製了遊戲場景、優化了 UI 介面佈局並提煉了像素美術風格，在保留原作情懷與架構的前提下，使其更加契合當代高解析度螢幕與現代審美標準。">
+            <!-- 2. 黃易群俠傳m -->
+            <article class="work-card" data-category="he-m" 
+                     data-title="黃易群俠傳M 場景美術優化" 
+                     data-year="2019~2021"
+                     data-tech="3D MAX、Substance painter"
+                     data-images="作品集/專案/黃易群俠傳m/01 (1).png,作品集/專案/黃易群俠傳m/01 (2).png,作品集/專案/黃易群俠傳m/01 (3).PNG,作品集/專案/黃易群俠傳m/02 (1).PNG,作品集/專案/黃易群俠傳m/02 (2).PNG,作品集/專案/黃易群俠傳m/02 (3).PNG,作品集/專案/黃易群俠傳m/03 (1).png,作品集/專案/黃易群俠傳m/03 (2).png,作品集/專案/黃易群俠傳m/04 (1).png,作品集/專案/黃易群俠傳m/04 (2).png,作品集/專案/黃易群俠傳m/05 (1).png,作品集/專案/黃易群俠傳m/05 (2).png"
+                     data-desc="經典武俠手遊《黃易群俠傳 M》場景渲染與光影調整。在有限的移動硬體性能限制下，通過 Substance Painter 優化材質貼圖映射，重新繪製了江湖環境的大氣透視，增強武俠意境的沉浸感。">
                 <div class="work-img-wrapper">
-                    <img class="work-img" src="作品集/飄流幻境RE/01 (1).png" alt="飄流幻境 RE">
+                    <img class="work-img" src="作品集/專案/黃易群俠傳m/01 (1).png" alt="黃易群俠傳m">
                 </div>
                 <div class="work-info">
                     <div class="work-meta-row">
-                        <span class="work-category">Game Interface</span>
-                        <span class="work-year">2025</span>
+                        <span class="work-category">黃易群俠傳m</span>
+                        <span class="work-year">2019~2021</span>
                     </div>
-                    <h2 class="work-title">飄流幻境 RE 視覺界面重構</h2>
-                    <p class="work-desc">對經典像素 IP 進行高解析度介面翻新與場景重構，探尋 2D 像素美術在現代介面中的黃金平衡。</p>
+                    <h2 class="work-title">黃易群俠傳 M 畫面優化與資產重組</h2>
+                    <p class="work-desc">運用 3D Max 與 Substance Painter 對移動平台下的場景光影進行重構與低模材質優化。</p>
                     <div class="work-footer">
-                        <span>UI / Pixel Art / Remake</span>
-                        <span class="view-more">瀏覽專案 &rarr;</span>
+                        <span>3D MAX、Substance painter</span>
+                        <span class="view-more">展開藝廊 &rarr;</span>
                     </div>
                 </div>
             </article>
 
-            <!-- 作品 3：天子傳奇 S -->
-            <article class="work-card" data-category="game" 
-                     data-title="天子傳奇 S 國風視覺重塑" 
-                     data-media-type="gallery"
-                     data-images="作品集/天子傳奇S/01 (1).png,作品集/天子傳奇S/02.png,作品集/天子傳奇S/03 (1).png,作品集/天子傳奇S/04 (1).png"
-                     data-desc="國風經典武俠 IP《天子傳奇 S》的視覺界定重塑。設計團隊從古典水墨與刺繡織物中汲取靈感，提煉出具有墨骨特徵的 UI 框架與視覺組件，將傳統玄幻美學以細緻優雅的數位形式呈現。">
+            <!-- 3. 天子傳奇S -->
+            <article class="work-card" data-category="legend-s" 
+                     data-title="天子傳奇S 國風視覺界面重構" 
+                     data-year="2021~2023"
+                     data-tech="blender、Substance painter"
+                     data-images="作品集/專案/天子傳奇S/01 (1).png,作品集/專案/天子傳奇S/01 (2).png,作品集/專案/天子傳奇S/01 (3).png,作品集/專案/天子傳奇S/01 (4).png,作品集/專案/天子傳奇S/01 (5).png,作品集/專案/天子傳奇S/01 (6).png,作品集/專案/天子傳奇S/01 (7).png,作品集/專案/天子傳奇S/01 (8).png,作品集/專案/天子傳奇S/02 (1).png,作品集/專案/天子傳奇S/02 (2).png,作品集/專案/天子傳奇S/02 (3).png,作品集/專案/天子傳奇S/02 (4).png,作品集/專案/天子傳奇S/02.png,作品集/專案/天子傳奇S/03 (1).png,作品集/專案/天子傳奇S/03 (6).png,作品集/專案/天子傳奇S/03 (7).png,作品集/專案/天子傳奇S/03 (8).png,作品集/專案/天子傳奇S/03 (9).png,作品集/專案/天子傳奇S/03 (10).png,作品集/專案/天子傳奇S/03 (11).png,作品集/專案/天子傳奇S/04 (1).png,作品集/專案/天子傳奇S/04 (2).png,作品集/專案/天子傳奇S/04 (3).png,作品集/專案/天子傳奇S/04 (4).png,作品集/專案/天子傳奇S/04 (5).png,作品集/專案/天子傳奇S/04 (6).png,作品集/專案/天子傳奇S/04 (7).png,作品集/專案/天子傳奇S/05 (1).png,作品集/專案/天子傳奇S/05 (2).png"
+                     data-desc="國風奇幻 IP《天子傳奇 S》的視覺架構重塑。採用 Blender 完成場景精模製作，結合 Substance Painter 對國風圖騰及金屬裝飾進行細節刻畫，並設計了兼具古典墨骨風韻與現代扁平化體驗的 UI 佈局。">
                 <div class="work-img-wrapper">
-                    <img class="work-img" src="作品集/天子傳奇S/01 (1).png" alt="天子傳奇 S">
+                    <img class="work-img" src="作品集/專案/天子傳奇S/01 (1).png" alt="天子傳奇S">
                 </div>
                 <div class="work-info">
                     <div class="work-meta-row">
-                        <span class="work-category">Wuxia UI Design</span>
-                        <span class="work-year">2025</span>
+                        <span class="work-category">天子傳奇S</span>
+                        <span class="work-year">2021~2023</span>
                     </div>
                     <h2 class="work-title">天子傳奇 S 國風介面與視覺重製</h2>
-                    <p class="work-desc">融入水墨寫意與墨骨線條，將古典奇幻色彩與現代數位介面設計進行高工藝度融合。</p>
+                    <p class="work-desc">運用 Blender 重塑介面佈局並提煉精模細節，展現東方美學在現代數位框架下的高質感映射。</p>
                     <div class="work-footer">
-                        <span>Graphic / UI / Chinese Style</span>
-                        <span class="view-more">瀏覽專案 &rarr;</span>
+                        <span>blender、Substance painter</span>
+                        <span class="view-more">展開藝廊 &rarr;</span>
                     </div>
                 </div>
             </article>
 
-            <!-- 作品 4：黃易群俠傳 m -->
-            <article class="work-card" data-category="game" 
-                     data-title="黃易群俠傳 M 場景美術優化" 
-                     data-media-type="gallery"
-                     data-images="作品集/黃易群俠傳m/01 (1).png,作品集/黃易群俠傳m/02 (1).PNG,作品集/黃易群俠傳m/03 (1).png,作品集/黃易群俠傳m/04 (1).png"
-                     data-desc="針對經典武俠手遊《黃易群俠傳 M》進行的場景光影渲染優化。在有限的移動硬體性能下，通過客製化著色器（Shader）與優化貼圖映射，重新渲染了江湖環境的大氣透視與光影氛圍，加強國風武俠的意境感。">
+            <!-- 4. 飄流幻境RE -->
+            <article class="work-card" data-category="wonderland-re" 
+                     data-title="飄流幻境RE 視覺介面優化" 
+                     data-year="2023~2025"
+                     data-tech="blender、AI輔助"
+                     data-images="作品集/專案/飄流幻境RE/01 (1).png,作品集/專案/飄流幻境RE/01 (2).png,作品集/專案/飄流幻境RE/02 (1).png,作品集/專案/飄流幻境RE/02 (2).png,作品集/專案/飄流幻境RE/03 (1).png,作品集/專案/飄流幻境RE/03 (2).png,作品集/專案/飄流幻境RE/04 (1).png,作品集/專案/飄流幻境RE/04 (2).png,作品集/專案/飄流幻境RE/05 (1).png,作品集/專案/飄流幻境RE/05 (2).png,作品集/專案/飄流幻境RE/06 (1).png,作品集/專案/飄流幻境RE/06 (2).png,作品集/專案/飄流幻境RE/06 (3).png,作品集/專案/飄流幻境RE/06 (4).png,作品集/專案/飄流幻境RE/07 (1).png,作品集/專案/飄流幻境RE/07 (2).png,作品集/專案/飄流幻境RE/08.png,作品集/專案/飄流幻境RE/09 (1).png,作品集/專案/飄流幻境RE/09 (2).png,作品集/專案/飄流幻境RE/09 (3).png,作品集/專案/飄流幻境RE/09 (4).png"
+                     data-desc="針對經典 2D 像素遊戲《飄流幻境》進行的全方位視覺重構。本專案透過 Blender 三維輔助透視渲染與 AI 降噪風格化演算法，重新繪製了遊戲背景、優化了功能區介面配置，在保持像素童話美感的前提下融入現代主流高解析介面。">
                 <div class="work-img-wrapper">
-                    <img class="work-img" src="作品集/黃易群俠傳m/01 (1).png" alt="黃易群俠傳 m">
+                    <img class="work-img" src="作品集/專案/飄流幻境RE/01 (1).png" alt="飄流幻境RE">
                 </div>
                 <div class="work-info">
                     <div class="work-meta-row">
-                        <span class="work-category">3D Optimization</span>
-                        <span class="work-year">2025</span>
+                        <span class="work-category">飄流幻境RE</span>
+                        <span class="work-year">2023~2025</span>
                     </div>
-                    <h2 class="work-title">黃易群俠傳 M 大氣光影與環境優化</h2>
-                    <p class="work-desc">優化低多邊形環境下的光影渲染，以大氣透視法與對比度調校重塑黃易的浩瀚武俠時空。</p>
+                    <h2 class="work-title">飄流幻境 RE 像素美術介面重構</h2>
+                    <p class="work-desc">運用 Blender 三維輔助校準，配合 AI 風格轉換模型，實現高畫質像素介面的全方位進化。</p>
                     <div class="work-footer">
-                        <span>Unity / Shader / Mobile</span>
-                        <span class="view-more">瀏覽專案 &rarr;</span>
+                        <span>blender、AI輔助</span>
+                        <span class="view-more">展開藝廊 &rarr;</span>
                     </div>
                 </div>
             </article>
 
-            <!-- 作品 5：嵌入式 AI 專案 -->
-            <article class="work-card" data-category="embedded" 
-                     data-title="嵌入式 AI 物體識別與知識蒸餾系統" 
-                     data-media-type="video"
-                     data-video-src="作品集/嵌入式AI影像應用班_專案/SSC_YOLOv8.mp4"
-                     data-images="作品集/嵌入式AI影像應用班_專案/a.png,作品集/嵌入式AI影像應用班_專案/第一版和第二版的雷達圖.png,作品集/嵌入式AI影像應用班_專案/知識蒸餾/Gemini_Generated_Image_b6456sb6456sb645.png"
-                     data-desc="本專案聚焦於邊緣端點（Edge Device）的即時影像偵測。使用 YOLOv8 架構進行目標訓練，並導入知識蒸餾技術（Knowledge Distillation）將大型網絡壓縮，在確保識別準確率的前提下，使推論時間減半，順利移植至低功耗嵌入式晶片中。">
+            <!-- 5. AI 2D - 楓之谷造型 -->
+            <article class="work-card" data-category="ai-2d" 
+                     data-title="AI 2D 楓之谷風格角色設計" 
+                     data-year="2025~2026"
+                     data-tech="GPT、GEMINI、GEMINI GEM、VEO"
+                     data-images="作品集/AI 2D/楓之谷造型/msw_czUdrpOPmu.mp4,作品集/AI 2D/楓之谷造型/msw_dET2sBT8b0.mp4"
+                     data-desc="探索 Stable Diffusion 結合 ControlNet 與 VEO 視訊生成工具在經典二維橫版像素風格角色與時裝造型設計上的實踐。著重於保持幀間色彩與角色結構的一致性。">
                 <div class="work-img-wrapper">
-                    <span class="video-badge">VIDEO</span>
-                    <img class="work-img" src="作品集/嵌入式AI影像應用班_專案/a.png" alt="嵌入式 AI 專案">
+                    <span class="video-badge">VIDEO / 2D</span>
+                    <video class="work-img" style="object-fit:cover;" src="作品集/AI 2D/楓之谷造型/msw_czUdrpOPmu.mp4" muted loop autoplay></video>
                 </div>
                 <div class="work-info">
                     <div class="work-meta-row">
-                        <span class="work-category">Computer Vision</span>
-                        <span class="work-year">2025</span>
+                        <span class="work-category">AI 2D</span>
+                        <span class="work-year">2025~2026</span>
                     </div>
-                    <h2 class="work-title">嵌入式 AI 邊緣運算與影像識別</h2>
-                    <p class="work-desc">運用 YOLOv8 進行邊緣運算即時物體偵測，並導入知識蒸餾實現小模型高性能優化。</p>
+                    <h2 class="work-title">AI 2D 楓之谷角色風格動態實驗</h2>
+                    <p class="work-desc">使用多模態提示詞技術，研究二維動漫角色的特徵一致性與動態渲染生成。</p>
                     <div class="work-footer">
-                        <span>YOLOv8 / Distill / Jetson</span>
-                        <span class="view-more">瀏覽專案 &rarr;</span>
+                        <span>GPT、GEMINI、VEO</span>
+                        <span class="view-more">展開藝廊 &rarr;</span>
                     </div>
                 </div>
             </article>
 
-            <!-- 作品 6：AI 自動標註 -->
-            <article class="work-card" data-category="ai-art" 
-                     data-title="AI 數據集自動化標註系統" 
-                     data-media-type="video"
-                     data-video-src="作品集/AI系統範例/AI自動標註/Labeler_V1.mp4"
-                     data-images="作品集/AI系統範例/AI自動標註/Labeler00.png,作品集/AI系統範例/AI自動標註/Labeler01.png,作品集/AI系統範例/AI自動標註/Labeler02.png"
-                     data-desc="研發自動化數據標記工作流，解決傳統人工標註成本高昂的問題。透過預訓練視覺語言模型（VLM）對批量圖片進行多模態標籤預生成，並提供人工半自動微調界面，效率提升超過 80%。展示影片為系統操作過程。">
-                <div class="work-img-wrapper">
-                    <span class="video-badge">VIDEO</span>
-                    <img class="work-img" src="作品集/AI系統範例/AI自動標註/Labeler00.png" alt="AI 自動標註">
-                </div>
-                <div class="work-info">
-                    <div class="work-meta-row">
-                        <span class="work-category">AI System / Tooling</span>
-                        <span class="work-year">2025</span>
-                    </div>
-                    <h2 class="work-title">AI 多模態數據集自動標註工具</h2>
-                    <p class="work-desc">研發自動化標籤生成系統，通過大模型預推理與互動修正介面，極大加速深度學習訓練數據準備。</p>
-                    <div class="work-footer">
-                        <span>Python / PyTorch / VLM</span>
-                        <span class="view-more">瀏覽專案 &rarr;</span>
-                    </div>
-                </div>
-            </article>
-
-            <!-- 作品 7：AI PIXEL 轉換 -->
-            <article class="work-card" data-category="ai-art" 
-                     data-title="AI 像素藝術風格轉換實驗" 
-                     data-media-type="video"
-                     data-video-src="作品集/AI系統範例/PIXEL轉換/PIXEL02.mp4"
-                     data-images="作品集/AI系統範例/PIXEL轉換/PIXEL01.png"
-                     data-desc="基於卷積神經網絡的像素風格化算法實驗。系統能輸入任意照片或影片，自動提取物體邊緣與色塊特徵，並進行精確的像素網格下採樣與調色盤映射，生成自然、具備傳統手工質感的像素動畫。">
-                <div class="work-img-wrapper">
-                    <span class="video-badge">VIDEO</span>
-                    <img class="work-img" src="作品集/AI系統範例/PIXEL轉換/PIXEL01.png" alt="PIXEL 轉換">
-                </div>
-                <div class="work-info">
-                    <div class="work-meta-row">
-                        <span class="work-category">Generative Art</span>
-                        <span class="work-year">2025</span>
-                    </div>
-                    <h2 class="work-title">基於 Neural Style 的像素化風格轉換</h2>
-                    <p class="work-desc">實驗將一般動態影像轉換為手繪級像素質感的演算法，推動生成式藝術的工具鏈邊界。</p>
-                    <div class="work-footer">
-                        <span>CNN / Style Transfer / OpenCV</span>
-                        <span class="view-more">瀏覽專案 &rarr;</span>
-                    </div>
-                </div>
-            </article>
-
-            <!-- 作品 8：AI 2D 概念 -->
-            <article class="work-card" data-category="ai-art" 
+            <!-- 6. AI 2D - 自製系列 -->
+            <article class="work-card" data-category="ai-2d" 
                      data-title="AI 2D 概念視覺與動態生成" 
-                     data-media-type="video"
-                     data-video-src="作品集/AI 2D/msw_czUdrpOPmu.mp4"
-                     data-images="作品集/AI 2D/windmill-1.png,作品集/AI 2D/Grass.png,作品集/AI 2D/house01.png"
-                     data-desc="探索 Stable Diffusion 與 ControlNet 在二維概念插畫與動態格生成的應用。本實驗著重於控制隨機噪訊，使生成的動畫具備幀間一致性，並在光影氛圍上實現水墨般的渲染質感。">
+                     data-year="2025~2026"
+                     data-tech="GPT、GEMINI、GEMINI GEM、VEO"
+                     data-images="作品集/AI 2D/自製系列/windmill-1.png,作品集/AI 2D/自製系列/Grass.png,作品集/AI 2D/自製系列/house01.png,作品集/AI 2D/自製系列/懺悔的鐘徒.mp4,作品集/AI 2D/自製系列/聚合主母·「厄兆結」.mp4"
+                     data-desc="研究生成式草地、風車與水墨環境的筆觸流動性。本專案包含二維水墨動畫動態渲染、幀一致性降噪控制及多種筆刷紋理生成實驗。">
                 <div class="work-img-wrapper">
-                    <span class="video-badge">VIDEO</span>
-                    <img class="work-img" src="作品集/AI 2D/windmill-1.png" alt="AI 2D">
+                    <img class="work-img" src="作品集/AI 2D/自製系列/windmill-1.png" alt="AI 2D">
                 </div>
                 <div class="work-info">
                     <div class="work-meta-row">
-                        <span class="work-category">AI Motion Design</span>
-                        <span class="work-year">2026</span>
+                        <span class="work-category">AI 2D</span>
+                        <span class="work-year">2025~2026</span>
                     </div>
-                    <h2 class="work-title">二維 AI 生成動畫與風格化實驗</h2>
-                    <p class="work-desc">運用擴散模型結合時間軸特徵控制，生成具備獨特幀間筆觸脈動的寫意概念動畫。</p>
+                    <h2 class="work-title">二維 AI 風格寫意動畫與概念插畫</h2>
+                    <p class="work-desc">運用混合大語言模型生成意境插圖，並通過動態格特徵維持，產出流暢的動態畫卷。</p>
                     <div class="work-footer">
-                        <span>Diffusion / AnimateDiff / Art</span>
-                        <span class="view-more">瀏覽專案 &rarr;</span>
+                        <span>GPT、GEMINI、GEMINI GEM...</span>
+                        <span class="view-more">展開藝廊 &rarr;</span>
                     </div>
                 </div>
             </article>
 
-            <!-- 作品 9：AI 3D 視覺 -->
-            <article class="work-card" data-category="ai-art" 
-                     data-title="AI 3D 概念與光影渲染研究" 
-                     data-media-type="gallery"
-                     data-images="作品集/AI 3D/ai3d_1.png,作品集/AI 3D/ai3d_10.png,作品集/AI 3D/ai3d_11.png,作品集/AI 3D/ai3d_9.png"
-                     data-desc="運用神經渲染技術進行三維概念光影的可行性研究。著重於複雜有機形體（如怪石、枯木）的水墨留白質感模擬，並將結果導入 3D 軟體中進行二次重構。">
+            <!-- 7. AI 3D - 巨魔 -->
+            <article class="work-card" data-category="ai-3d" 
+                     data-title="AI 3D 巨魔角色建模與神經雕刻" 
+                     data-year="2025~2026"
+                     data-tech="GPT、GEMINI、TRIPO、Hunyuan3D、GEMINI GEM"
+                     data-images="作品集/AI 3D/巨魔/ai3d_1.png,作品集/AI 3D/巨魔/ai3d_2.png,作品集/AI 3D/巨魔/ai3d_3.png"
+                     data-desc="基於混合 3D 模型生成網絡對「巨魔」有機角色形體進行的快速生成與雕刻。探討大模型生成粗模（Draft）後導入三維軟體拓撲與 PBR 材質映射的工作流優化。">
                 <div class="work-img-wrapper">
-                    <img class="work-img" src="作品集/AI 3D/ai3d_1.png" alt="AI 3D">
+                    <img class="work-img" src="作品集/AI 3D/巨魔/ai3d_1.png" alt="AI 3D 巨魔">
                 </div>
                 <div class="work-info">
                     <div class="work-meta-row">
-                        <span class="work-category">Neural Rendering</span>
-                        <span class="work-year">2026</span>
+                        <span class="work-category">AI 3D</span>
+                        <span class="work-year">2025~2026</span>
                     </div>
-                    <h2 class="work-title">神經渲染與 3D 水墨意境建模</h2>
-                    <p class="work-desc">結合神經網路生成的概念視覺，在三維軟體中二次重建，探尋數位雕刻的全新流程。</p>
+                    <h2 class="work-title">AI 3D 巨魔有機形體生成研究</h2>
+                    <p class="work-desc">結合 Hunyuan3D 與 TRIPO 技術對奇幻怪獸角色進行一鍵立體化與材質預烘焙實驗。</p>
                     <div class="work-footer">
-                        <span>NeRF / Blender / Conceptual</span>
-                        <span class="view-more">瀏覽專案 &rarr;</span>
+                        <span>GPT、GEMINI、TRIPO...</span>
+                        <span class="view-more">展開藝廊 &rarr;</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 8. AI 3D - 石頭人 -->
+            <article class="work-card" data-category="ai-3d" 
+                     data-title="AI 3D 石頭人雕像快速建模" 
+                     data-year="2025~2026"
+                     data-tech="GPT、GEMINI、TRIPO、Hunyuan3D、GEMINI GEM"
+                     data-images="作品集/AI 3D/石頭人/ai3d_4.png,作品集/AI 3D/石頭人/ai3d_5.png,作品集/AI 3D/石頭人/ai3d_6.png,作品集/AI 3D/石頭人/ai3d_7.png"
+                     data-desc="運用 3D 生成網絡建立極具石雕風化質感的無機岩石怪形體。重點在於解析大模型產出法線貼圖對粗糙質感的提升。">
+                <div class="work-img-wrapper">
+                    <img class="work-img" src="作品集/AI 3D/石頭人/ai3d_4.png" alt="AI 3D 石頭人">
+                </div>
+                <div class="work-info">
+                    <div class="work-meta-row">
+                        <span class="work-category">AI 3D</span>
+                        <span class="work-year">2025~2026</span>
+                    </div>
+                    <h2 class="work-title">AI 3D 石頭人風化雕刻建模</h2>
+                    <p class="work-desc">研究基於噪點控制在非規則無機岩石表面的三維生成表現，提煉模型高光與凹凸映射。</p>
+                    <div class="work-footer">
+                        <span>GPT、GEMINI、TRIPO...</span>
+                        <span class="view-more">展開藝廊 &rarr;</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 9. AI 3D - 兔子餐車 -->
+            <article class="work-card" data-category="ai-3d" 
+                     data-title="AI 3D 兔子餐車概念渲染" 
+                     data-year="2025~2026"
+                     data-tech="GPT、GEMINI、TRIPO、Hunyuan3D、GEMINI GEM"
+                     data-images="作品集/AI 3D/兔子餐車/ai3d_9.png,作品集/AI 3D/兔子餐車/ai3d_8.png"
+                     data-desc="卡通幾何形體與複合型載具在 AI 3D 中的生成嘗試。實驗了小比例載具與裝飾物細節結構的保留度，並探討貼圖對齊修復。">
+                <div class="work-img-wrapper">
+                    <img class="work-img" src="作品集/AI 3D/兔子餐車/ai3d_9.png" alt="AI 3D 兔子餐車">
+                </div>
+                <div class="work-info">
+                    <div class="work-meta-row">
+                        <span class="work-category">AI 3D</span>
+                        <span class="work-year">2025~2026</span>
+                    </div>
+                    <h2 class="work-title">AI 3D 兔子餐車幾何載具設計</h2>
+                    <p class="work-desc">卡通複合硬表面幾何體一鍵生成立體物件的空間透視精確度調校與實驗。</p>
+                    <div class="work-footer">
+                        <span>GPT、GEMINI、TRIPO...</span>
+                        <span class="view-more">展開藝廊 &rarr;</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 10. AI 3D - 埃及宮殿 -->
+            <article class="work-card" data-category="ai-3d" 
+                     data-title="AI 3D 埃及宮殿 (飄流幻境專案)" 
+                     data-year="2025~2026"
+                     data-tech="GPT、GEMINI、TRIPO、Hunyuan3D、GEMINI GEM"
+                     data-images="作品集/AI 3D/埃及宮殿_飄流幻境專案/ai3d_10.png,作品集/AI 3D/埃及宮殿_飄流幻境專案/ai3d_11.png"
+                     data-desc="研究大型古建築宮殿遺蹟在 AI 3D 下的生成。專案重點在於多立柱與埃及壁畫紋理的對稱與排列優化。">
+                <div class="work-img-wrapper">
+                    <img class="work-img" src="作品集/AI 3D/埃及宮殿_飄流幻境專案/ai3d_10.png" alt="AI 3D 埃及宮殿">
+                </div>
+                <div class="work-info">
+                    <div class="work-meta-row">
+                        <span class="work-category">AI 3D</span>
+                        <span class="work-year">2025~2026</span>
+                    </div>
+                    <h2 class="work-title">AI 3D 埃及宮殿複雜建築建模</h2>
+                    <p class="work-desc">大型浮雕結構與對稱廊柱在三維模型預推理中的深度渲染與紋理保持度試驗。</p>
+                    <div class="work-footer">
+                        <span>GPT、GEMINI、TRIPO...</span>
+                        <span class="view-more">展開藝廊 &rarr;</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 11. AI系統 - 自動標註 -->
+            <article class="work-card" data-category="ai-system" 
+                     data-title="AI 數據集自動標註系統" 
+                     data-year="2025~2026"
+                     data-tech="Antigravity"
+                     data-images="作品集/AI系統/AI自動標註/Labeler_V1.mp4,作品集/AI系統/AI自動標註/Labeler00.png,作品集/AI系統/AI自動標註/Labeler01.png,作品集/AI系統/AI自動標註/Labeler02.png,作品集/AI系統/AI自動標註/Labeler03.png,作品集/AI系統/AI自動標註/Labeler04.png,作品集/AI系統/AI自動標註/Labeler_V2.mp4,作品集/AI系統/AI自動標註/Labeler_V3.mp4"
+                     data-desc="開發自動化智慧圖像標籤與包圍框標記系統。結合預訓練多模態模型生成預標註結果，並以簡約流暢的前端修正面板提升深度學習數據準備之工效。">
+                <div class="work-img-wrapper">
+                    <span class="video-badge">VIDEO / SYSTEM</span>
+                    <img class="work-img" src="作品集/AI系統/AI自動標註/Labeler00.png" alt="AI 自動標註">
+                </div>
+                <div class="work-info">
+                    <div class="work-meta-row">
+                        <span class="work-category">AI系統</span>
+                        <span class="work-year">2025~2026</span>
+                    </div>
+                    <h2 class="work-title">AI 多模態數據自動標註工具</h2>
+                    <p class="work-desc">利用多模態視覺語言模型進行批次推理標記，顯著加速深度學習訓練集之前置作業。</p>
+                    <div class="work-footer">
+                        <span>Antigravity</span>
+                        <span class="view-more">展開藝廊 &rarr;</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 12. AI系統 - PIXEL轉換 -->
+            <article class="work-card" data-category="ai-system" 
+                     data-title="AI PIXEL 像素化风格轉換" 
+                     data-year="2025~2026"
+                     data-tech="Antigravity"
+                     data-images="作品集/AI系統/PIXEL轉換/PIXEL02.mp4,作品集/AI系統/PIXEL轉換/PIXEL01.png"
+                     data-desc="利用卷積神經網路提取物體輪廓，配合雙邊濾波下採樣演算法，一鍵將普通高清影片重繪為精細像素風格動畫，呈現自然的手繪質感。">
+                <div class="work-img-wrapper">
+                    <span class="video-badge">VIDEO / ART</span>
+                    <img class="work-img" src="作品集/AI系統/PIXEL轉換/PIXEL01.png" alt="PIXEL轉換">
+                </div>
+                <div class="work-info">
+                    <div class="work-meta-row">
+                        <span class="work-category">AI系統</span>
+                        <span class="work-year">2025~2026</span>
+                    </div>
+                    <h2 class="work-title">基於風格遷移的像素生成工具</h2>
+                    <p class="work-desc">實驗將高清影片實時重繪為格柵化像素網格與調色盤特徵映射，打造具有靈魂的動態風格化成果。</p>
+                    <div class="work-footer">
+                        <span>Antigravity</span>
+                        <span class="view-more">展開藝廊 &rarr;</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 13. 嵌入式AI影像應用班 -->
+            <article class="work-card" data-category="embedded-ai" 
+                     data-title="嵌入式邊緣運算即時目標偵測與壓縮" 
+                     data-year="2025~2026"
+                     data-tech="Antigravity、pytorch、python、TRANSFORMER、YOLO"
+                     data-images="作品集/嵌入式AI影像應用班/SSC_YOLOv8.mp4,作品集/嵌入式AI影像應用班/a.png,作品集/嵌入式AI影像應用班/01.jpg,作品集/嵌入式AI影像應用班/新增專案.png,作品集/嵌入式AI影像應用班/第一版和第二版的雷達圖.png,作品集/嵌入式AI影像應用班/第一版 (2).png,作品集/嵌入式AI影像應用班/第二版 (2).png,作品集/嵌入式AI影像應用班/訓練第一版/第一版 (1).png,作品集/嵌入式AI影像應用班/訓練第一版/第一版 (3).png,作品集/嵌入式AI影像應用班/訓練第二版/第二版 (1).png,作品集/嵌入式AI影像應用班/訓練第二版/第二版 (3).png,作品集/嵌入式AI影像應用班/知識蒸餾/Gemini_Generated_Image_b6456sb6456sb645.png,作品集/嵌入式AI影像應用班/知識蒸餾/知識蒸餾 (1).png,作品集/嵌入式AI影像應用班/知識蒸餾/知識蒸餾 (2).png,作品集/嵌入式AI影像應用班/知識蒸餾/知識蒸餾 (3).png"
+                     data-desc="在嵌入式晶片端點進行物體偵測與神經網路蒸餾。利用 PyTorch 對 YOLOv8 進行知識蒸餾（Knowledge Distillation），將複雜網絡精簡壓縮，確保高精度目標檢測的同時使邊緣端推理速度大幅上升。">
+                <div class="work-img-wrapper">
+                    <span class="video-badge">VIDEO / EDGE AI</span>
+                    <img class="work-img" src="作品集/嵌入式AI影像應用班/a.png" alt="嵌入式AI">
+                </div>
+                <div class="work-info">
+                    <div class="work-meta-row">
+                        <span class="work-category">嵌入式AI</span>
+                        <span class="work-year">2025~2026</span>
+                    </div>
+                    <h2 class="work-title">邊緣端點即時識別與知識蒸餾系統</h2>
+                    <p class="work-desc">應用 YOLOv8 架構，引入多層 Transformer 注意力機制，並透過知識蒸餾實現神經網路壓縮部署。</p>
+                    <div class="work-footer">
+                        <span>Antigravity、pytorch...</span>
+                        <span class="view-more">展開藝廊 &rarr;</span>
                     </div>
                 </div>
             </article>
@@ -784,8 +896,7 @@
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-
-            // 2. 作品過濾 (Filter) 邏輯
+            // 1. 作品過濾 (Filter) 邏輯
             const filterButtons = document.querySelectorAll('.filter-btn');
             const workCards = document.querySelectorAll('.work-card');
             const grid = document.getElementById('worksGrid');
@@ -812,7 +923,7 @@
                 });
             });
 
-            // 3. 彈窗 Lightbox 邏輯
+            // 2. 彈窗 Lightbox 邏輯
             const modal = document.getElementById('workModal');
             const closeBtn = document.getElementById('modalClose');
             const backdrop = document.getElementById('modalBackdrop');
@@ -832,42 +943,37 @@
 
             let mediaList = []; // 儲存該專案所有的媒體項目
             let currentMediaIndex = 0;
-            let currentMediaType = 'gallery'; // 'video' 或 'gallery'
 
             workCards.forEach(card => {
                 card.addEventListener('click', () => {
                     // 獲取屬性
                     const title = card.getAttribute('data-title');
                     const category = card.getAttribute('data-category');
-                    const type = card.getAttribute('data-media-type');
                     const desc = card.getAttribute('data-desc');
                     const year = card.getAttribute('data-year');
-                    const tech = card.querySelector('.work-footer span:first-child').textContent;
+                    const tech = card.getAttribute('data-tech');
                     
                     mTitle.textContent = title;
-                    mCategory.textContent = category.toUpperCase();
+                    mCategory.textContent = card.querySelector('.work-category').textContent.toUpperCase();
                     mDesc.textContent = desc;
                     
-                    metaCategory.textContent = category.toUpperCase();
-                    metaYear.textContent = year;
-                    metaTech.textContent = tech;
+                    metaCategory.textContent = card.querySelector('.work-category').textContent.toUpperCase();
+                    metaYear.textContent = year || 'N/A';
+                    metaTech.textContent = tech || 'N/A';
 
                     mediaList = [];
                     currentMediaIndex = 0;
-                    currentMediaType = type;
 
-                    if (type === 'video') {
-                        // 優先放入主影片
-                        const videoSrc = card.getAttribute('data-video-src');
-                        mediaList.push({ type: 'video', src: videoSrc });
-                    }
-
-                    // 放入相簿圖片
+                    // 讀取 data-images 中的所有資源路徑 (包含影片與圖片)
                     const imgString = card.getAttribute('data-images');
                     if (imgString) {
-                        const imgs = imgString.split(',');
-                        imgs.forEach(src => {
-                            mediaList.push({ type: 'image', src: src.trim() });
+                        const items = imgString.split(',');
+                        items.forEach(src => {
+                            const path = src.trim();
+                            if (path) {
+                                const isVideo = path.toLowerCase().endsWith('.mp4');
+                                mediaList.push({ type: isVideo ? 'video' : 'image', src: path });
+                            }
                         });
                     }
 
@@ -901,11 +1007,11 @@
                 } else {
                     const img = document.createElement('img');
                     img.src = item.src;
-                    img.alt = '作品大圖';
+                    img.alt = '作品圖片';
                     container.appendChild(img);
                 }
 
-                // 顯示隱藏箭頭
+                // 顯示隱藏控制箭頭與計數器
                 if (mediaList.length <= 1) {
                     prevBtn.style.display = 'none';
                     nextBtn.style.display = 'none';
@@ -936,7 +1042,7 @@
                 modal.classList.remove('open');
                 setTimeout(() => {
                     modal.style.display = 'none';
-                    container.innerHTML = ''; // 清空以停止影片播放
+                    container.innerHTML = ''; // 清空以停止任何正在播放的影片
                 }, 400);
             }
 
