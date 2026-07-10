@@ -3,80 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>作品集展示 | HAIN Portfolio</title>
-    <meta name="description" content="HAIN 的視覺藝術與互動媒體作品展示。">
+    <title>精選作品集 | HAIN Portfolio</title>
+    <meta name="description" content="HAIN 的視覺藝術、遊戲美術與 AI 系統設計精選作品。">
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;700&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300;1,600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
     <style>
-        /* 作品頁面專用樣式，延續水墨風格 */
+        /* ── 作品頁面主排版 ── */
         .portfolio-body {
             background-color: var(--bg);
             color: var(--ink);
-            overflow-y: auto; /* 允許垂直捲動 */
+            overflow-y: scroll;
             height: auto;
             min-height: 100vh;
         }
 
         .portfolio-container {
-            max-width: 1200px;
-            margin: 120px auto 80px;
-            padding: 0 24px;
+            max-width: 1280px;
+            margin: 130px auto 80px;
+            padding: 0 32px;
         }
 
         .page-header {
-            margin-bottom: 60px;
+            margin-bottom: 50px;
             border-left: 3px solid var(--accent);
-            padding-left: 20px;
+            padding-left: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            gap: 20px;
         }
 
         .page-title {
             font-family: var(--font-zh);
-            font-size: clamp(2rem, 3.5vw, 3rem);
+            font-size: clamp(2rem, 4vw, 3.2rem);
             font-weight: 700;
             color: var(--ink);
-            margin-bottom: 8px;
+            line-height: 1.1;
         }
 
         .page-subtitle {
             font-family: var(--font-mono);
             font-size: 0.8rem;
-            letter-spacing: 0.15em;
+            letter-spacing: 0.2em;
             color: var(--muted);
             text-transform: uppercase;
+            margin-top: 6px;
         }
 
-        /* 作品網格 */
+        /* ── 分類過濾選單 (Sumi-e Filter Nav) ── */
+        .filter-nav {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 45px;
+            border-bottom: 1px solid var(--dim);
+            padding-bottom: 16px;
+        }
+
+        .filter-btn {
+            font-family: var(--font-zh);
+            font-size: 0.95rem;
+            font-weight: 400;
+            background: none;
+            border: none;
+            color: var(--muted);
+            cursor: pointer;
+            padding: 6px 16px;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        .filter-btn:hover {
+            color: var(--ink);
+        }
+
+        .filter-btn.active {
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .filter-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -18px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%; /* 朱砂印章小圓點 */
+        }
+
+        /* ── 作品展示網格 ── */
         .works-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
             gap: 40px;
+            transition: opacity 0.3s ease;
         }
 
+        /* ── 卡片設計 (Brand Visual Soul Card) ── */
         .work-card {
-            background: rgba(240, 235, 224, 0.3);
+            background: rgba(240, 235, 224, 0.2);
             border: 1px solid var(--dim);
             border-radius: 4px;
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            text-decoration: none;
-            color: inherit;
-            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+            cursor: pointer;
+            transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease, box-shadow 0.4s ease;
         }
 
         .work-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 30px rgba(20, 18, 16, 0.08);
+            transform: translateY(-10px);
             border-color: var(--ink);
+            box-shadow: 0 16px 40px rgba(20, 18, 16, 0.08);
         }
 
         .work-img-wrapper {
             width: 100%;
-            height: 220px;
+            height: 230px;
             overflow: hidden;
-            background: #e5dfd3;
+            background: #e4decb;
             position: relative;
         }
 
@@ -84,35 +135,77 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            /* 預設微微水墨去色/低飽和度，懸停時轉為全彩，高級感十足 */
+            filter: saturate(0.2) contrast(1.1);
+            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), filter 0.6s ease;
         }
 
         .work-card:hover .work-img {
-            transform: scale(1.05);
+            transform: scale(1.06);
+            filter: saturate(1.0) contrast(1.0);
+        }
+
+        /* 影片指示標誌 */
+        .video-badge {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: rgba(20, 18, 16, 0.8);
+            color: var(--bg);
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.1em;
+            padding: 4px 10px;
+            border-radius: 2px;
+            border: 1px solid var(--dim);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .video-badge::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
         }
 
         .work-info {
-            padding: 24px;
+            padding: 26px;
             display: flex;
             flex-direction: column;
             flex-grow: 1;
         }
 
+        .work-meta-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
         .work-category {
             font-family: var(--font-mono);
-            font-size: 0.7rem;
+            font-size: 0.72rem;
             color: var(--accent);
             letter-spacing: 0.1em;
             text-transform: uppercase;
-            margin-bottom: 8px;
+        }
+
+        .work-year {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--muted);
         }
 
         .work-title {
             font-family: var(--font-zh);
-            font-size: 1.25rem;
+            font-size: 1.3rem;
             font-weight: 700;
             color: var(--ink);
             margin-bottom: 12px;
+            line-height: 1.3;
         }
 
         .work-desc {
@@ -120,8 +213,9 @@
             font-size: 0.88rem;
             color: var(--muted);
             line-height: 1.6;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
             flex-grow: 1;
+            text-align: justify;
         }
 
         .work-footer {
@@ -132,7 +226,7 @@
             font-size: 0.75rem;
             color: var(--ink);
             border-top: 1px dashed var(--dim);
-            padding-top: 16px;
+            padding-top: 18px;
         }
 
         .view-more {
@@ -140,17 +234,215 @@
             align-items: center;
             gap: 6px;
             color: var(--accent);
+            font-weight: 700;
+        }
+
+        /* ── 客製化彈窗 Lightbox Modal (Premium Details) ── */
+        .modal {
+            position: fixed;
+            inset: 0;
+            z-index: 100000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .modal-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(20, 18, 16, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            transition: opacity 0.5s ease;
+        }
+
+        .modal-content {
+            position: relative;
+            background: var(--bg);
+            border: 1px solid var(--ink);
+            border-radius: 4px;
+            width: 100%;
+            max-width: 1100px;
+            max-height: 85vh;
+            display: grid;
+            grid-template-columns: 1.6fr 1fr;
+            overflow: hidden;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
+            z-index: 2;
+            transform: scale(0.95);
+            opacity: 0;
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+        }
+
+        .modal.open .modal-content {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        /* 媒體展示區 (左側) */
+        .modal-media-pane {
+            background: #0d0c0b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            min-height: 450px;
+        }
+
+        .modal-media-pane video,
+        .modal-media-pane img {
+            max-width: 100%;
+            max-height: 75vh;
+            object-fit: contain;
+        }
+
+        /* 投影片導覽 */
+        .slider-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(20, 18, 16, 0.6);
+            color: #fff;
+            border: none;
+            width: 48px;
+            height: 48px;
+            font-size: 1.25rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background 0.3s;
+            z-index: 10;
+        }
+
+        .slider-arrow:hover {
+            background: var(--accent);
+        }
+
+        .arrow-left { left: 20px; }
+        .arrow-right { right: 20px; }
+
+        .slider-counter {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(20, 18, 16, 0.7);
+            color: #fff;
+            padding: 4px 12px;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            border-radius: 12px;
+        }
+
+        /* 詳情說明區 (右側) */
+        .modal-detail-pane {
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            border-left: 1px solid var(--dim);
+            max-height: 85vh;
+        }
+
+        .modal-category {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 12px;
+        }
+
+        .modal-title {
+            font-family: var(--font-zh);
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--ink);
+            line-height: 1.2;
+            margin-bottom: 24px;
+        }
+
+        .modal-desc {
+            font-family: var(--font-zh);
+            font-size: 0.95rem;
+            color: var(--muted);
+            line-height: 1.8;
+            margin-bottom: 30px;
+            text-align: justify;
+        }
+
+        .modal-meta-list {
+            margin-top: auto;
+            border-top: 1px solid var(--dim);
+            padding-top: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .modal-meta-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+        }
+
+        .modal-meta-label {
+            font-family: var(--font-zh);
+            color: var(--muted);
+        }
+
+        .modal-meta-val {
+            font-family: var(--font-mono);
+            color: var(--ink);
             font-weight: 600;
         }
 
-        /* 頁面載入時淡入特效 */
-        .fade-in-active {
-            animation: fadeInPage 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        /* 關閉按鈕 */
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(240, 235, 224, 0.9);
+            color: var(--ink);
+            border: 1px solid var(--ink);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.25rem;
+            z-index: 10;
+            transition: all 0.3s;
         }
 
-        @keyframes fadeInPage {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        .close-btn:hover {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+            transform: rotate(90deg);
+        }
+
+        /* ── 響應式配置 ── */
+        @media (max-width: 900px) {
+            .modal-content {
+                grid-template-columns: 1fr;
+                max-height: 90vh;
+            }
+            .modal-detail-pane {
+                max-height: 40vh;
+                padding: 30px;
+            }
+            .modal-media-pane {
+                min-height: 300px;
+            }
+            .modal {
+                padding: 15px;
+            }
         }
     </style>
 </head>
@@ -177,64 +469,289 @@
         </nav>
     </header>
 
-    <main class="portfolio-container fade-in-active">
+    <main class="portfolio-container">
         <header class="page-header">
-            <h1 class="page-title">精選作品</h1>
-            <p class="page-subtitle">Selected Visual & Interactive Works</p>
+            <div>
+                <h1 class="page-title">作品目錄</h1>
+                <p class="page-subtitle">Selected Projects & Creative Experiments</p>
+            </div>
         </header>
 
-        <section class="works-grid">
-            <!-- 卡片 1 -->
-            <a href="#" class="work-card">
+        <!-- 類別過濾導覽列 -->
+        <nav class="filter-nav" aria-label="作品分類">
+            <button class="filter-btn active" data-filter="all">全部</button>
+            <button class="filter-btn" data-filter="3d">三維渲染 / 3D</button>
+            <button class="filter-btn" data-filter="game">遊戲美術重製</button>
+            <button class="filter-btn" data-filter="ai-art">AI 藝術與工具</button>
+            <button class="filter-btn" data-filter="embedded">嵌入式 AI 應用</button>
+        </nav>
+
+        <!-- 作品網格 -->
+        <section class="works-grid" id="worksGrid">
+
+            <!-- 作品 1：自製 3D 場景 -->
+            <article class="work-card" data-category="3d" 
+                     data-title="自製 3D 虛擬場景實驗" 
+                     data-media-type="video"
+                     data-video-src="作品集/自製3D/MyProject - Unreal Editor 2025-09-29 16-39-41.mp4"
+                     data-images="作品集/自製3D/lyh_et-b1a-2048.jpg,作品集/自製3D/lyh_et-b2a-2048.jpg,作品集/自製3D/lyh_et-b3a-2048.jpg,作品集/自製3D/Screenshot_4.png"
+                     data-desc="基於 Unreal Engine 引擎開發的自主三維環境探索。專案重點在於大型室外地貌的即時光影渲染、水墨寫意氛圍在 3D 空間的重塑，以及次世代 PBR 材質的細節表現。展示影片為虛擬編輯器內的動態漫遊實錄。">
                 <div class="work-img-wrapper">
-                    <img class="work-img" src="作品集/自製3D/lyh_et-b1a-2048.jpg" alt="自製 3D 作品">
+                    <span class="video-badge">VIDEO</span>
+                    <img class="work-img" src="作品集/自製3D/lyh_et-b1a-2048.jpg" alt="自製 3D 場景">
                 </div>
                 <div class="work-info">
-                    <span class="work-category">3D Render / Unreal Engine</span>
-                    <h2 class="work-title">自製 3D 場景實驗</h2>
-                    <p class="work-desc">運用 Unreal Engine 進行三維場景光影渲染與環境構築，結合東方古典美學與數位虛擬世界。</p>
+                    <div class="work-meta-row">
+                        <span class="work-category">3D Render / UE</span>
+                        <span class="work-year">2026</span>
+                    </div>
+                    <h2 class="work-title">自製 3D 虛擬環境場景設計</h2>
+                    <p class="work-desc">運用 Unreal Engine 進行三維寫意光影實驗，探索古典美學在次世代渲染引擎下的即時渲染表達。</p>
                     <div class="work-footer">
-                        <span>YEAR: 2026</span>
-                        <span class="view-more">VIEW PROJECT &rarr;</span>
+                        <span>UE5 / PBR / Lighting</span>
+                        <span class="view-more">瀏覽專案 &rarr;</span>
                     </div>
                 </div>
-            </a>
+            </article>
 
-            <!-- 卡片 2 -->
-            <a href="#" class="work-card">
+            <!-- 作品 2：飄流幻境 RE -->
+            <article class="work-card" data-category="game" 
+                     data-title="飄流幻境 RE 視覺重製計劃" 
+                     data-media-type="gallery"
+                     data-images="作品集/飄流幻境RE/01 (1).png,作品集/飄流幻境RE/02 (1).png,作品集/飄流幻境RE/03 (1).png,作品集/飄流幻境RE/04 (1).png,作品集/飄流幻境RE/06 (1).png,作品集/飄流幻境RE/08.png"
+                     data-desc="針對經典 2D 遊戲《飄流幻境》進行的全方位視覺重構。本專案重新繪製了遊戲場景、優化了 UI 介面佈局並提煉了像素美術風格，在保留原作情懷與架構的前提下，使其更加契合當代高解析度螢幕與現代審美標準。">
                 <div class="work-img-wrapper">
                     <img class="work-img" src="作品集/飄流幻境RE/01 (1).png" alt="飄流幻境 RE">
                 </div>
                 <div class="work-info">
-                    <span class="work-category">Game Art / Interface</span>
-                    <h2 class="work-title">飄流幻境 RE 重製計劃</h2>
-                    <p class="work-desc">對經典遊戲《飄流幻境》進行美術素材重構與高畫質視覺介面優化，賦予復古 IP 全新生命力。</p>
+                    <div class="work-meta-row">
+                        <span class="work-category">Game Interface</span>
+                        <span class="work-year">2025</span>
+                    </div>
+                    <h2 class="work-title">飄流幻境 RE 視覺界面重構</h2>
+                    <p class="work-desc">對經典像素 IP 進行高解析度介面翻新與場景重構，探尋 2D 像素美術在現代介面中的黃金平衡。</p>
                     <div class="work-footer">
-                        <span>YEAR: 2025</span>
-                        <span class="view-more">VIEW PROJECT &rarr;</span>
+                        <span>UI / Pixel Art / Remake</span>
+                        <span class="view-more">瀏覽專案 &rarr;</span>
                     </div>
                 </div>
-            </a>
+            </article>
 
-            <!-- 卡片 3 -->
-            <a href="#" class="work-card">
+            <!-- 作品 3：天子傳奇 S -->
+            <article class="work-card" data-category="game" 
+                     data-title="天子傳奇 S 國風視覺重塑" 
+                     data-media-type="gallery"
+                     data-images="作品集/天子傳奇S/01 (1).png,作品集/天子傳奇S/02.png,作品集/天子傳奇S/03 (1).png,作品集/天子傳奇S/04 (1).png"
+                     data-desc="國風經典武俠 IP《天子傳奇 S》的視覺界定重塑。設計團隊從古典水墨與刺繡織物中汲取靈感，提煉出具有墨骨特徵的 UI 框架與視覺組件，將傳統玄幻美學以細緻優雅的數位形式呈現。">
                 <div class="work-img-wrapper">
-                    <img class="work-img" src="作品集/黃易群俠傳m/01 (1).png" alt="黃易群俠傳 M">
+                    <img class="work-img" src="作品集/天子傳奇S/01 (1).png" alt="天子傳奇 S">
                 </div>
                 <div class="work-info">
-                    <span class="work-category">3D Art / Environment</span>
-                    <h2 class="work-title">黃易群俠傳 M 美術精緻化</h2>
-                    <p class="work-desc">針對經典武俠 IP《黃易群俠傳 M》進行三維環境貼圖精緻化與水墨意境的光影重構。</p>
+                    <div class="work-meta-row">
+                        <span class="work-category">Wuxia UI Design</span>
+                        <span class="work-year">2025</span>
+                    </div>
+                    <h2 class="work-title">天子傳奇 S 國風介面與視覺重製</h2>
+                    <p class="work-desc">融入水墨寫意與墨骨線條，將古典奇幻色彩與現代數位介面設計進行高工藝度融合。</p>
                     <div class="work-footer">
-                        <span>YEAR: 2025</span>
-                        <span class="view-more">VIEW PROJECT &rarr;</span>
+                        <span>Graphic / UI / Chinese Style</span>
+                        <span class="view-more">瀏覽專案 &rarr;</span>
                     </div>
                 </div>
-            </a>
+            </article>
+
+            <!-- 作品 4：黃易群俠傳 m -->
+            <article class="work-card" data-category="game" 
+                     data-title="黃易群俠傳 M 場景美術優化" 
+                     data-media-type="gallery"
+                     data-images="作品集/黃易群俠傳m/01 (1).png,作品集/黃易群俠傳m/02 (1).PNG,作品集/黃易群俠傳m/03 (1).png,作品集/黃易群俠傳m/04 (1).png"
+                     data-desc="針對經典武俠手遊《黃易群俠傳 M》進行的場景光影渲染優化。在有限的移動硬體性能下，通過客製化著色器（Shader）與優化貼圖映射，重新渲染了江湖環境的大氣透視與光影氛圍，加強國風武俠的意境感。">
+                <div class="work-img-wrapper">
+                    <img class="work-img" src="作品集/黃易群俠傳m/01 (1).png" alt="黃易群俠傳 m">
+                </div>
+                <div class="work-info">
+                    <div class="work-meta-row">
+                        <span class="work-category">3D Optimization</span>
+                        <span class="work-year">2025</span>
+                    </div>
+                    <h2 class="work-title">黃易群俠傳 M 大氣光影與環境優化</h2>
+                    <p class="work-desc">優化低多邊形環境下的光影渲染，以大氣透視法與對比度調校重塑黃易的浩瀚武俠時空。</p>
+                    <div class="work-footer">
+                        <span>Unity / Shader / Mobile</span>
+                        <span class="view-more">瀏覽專案 &rarr;</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 作品 5：嵌入式 AI 專案 -->
+            <article class="work-card" data-category="embedded" 
+                     data-title="嵌入式 AI 物體識別與知識蒸餾系統" 
+                     data-media-type="video"
+                     data-video-src="作品集/嵌入式AI影像應用班_專案/SSC_YOLOv8.mp4"
+                     data-images="作品集/嵌入式AI影像應用班_專案/a.png,作品集/嵌入式AI影像應用班_專案/第一版和第二版的雷達圖.png,作品集/嵌入式AI影像應用班_專案/知識蒸餾/Gemini_Generated_Image_b6456sb6456sb645.png"
+                     data-desc="本專案聚焦於邊緣端點（Edge Device）的即時影像偵測。使用 YOLOv8 架構進行目標訓練，並導入知識蒸餾技術（Knowledge Distillation）將大型網絡壓縮，在確保識別準確率的前提下，使推論時間減半，順利移植至低功耗嵌入式晶片中。">
+                <div class="work-img-wrapper">
+                    <span class="video-badge">VIDEO</span>
+                    <img class="work-img" src="作品集/嵌入式AI影像應用班_專案/a.png" alt="嵌入式 AI 專案">
+                </div>
+                <div class="work-info">
+                    <div class="work-meta-row">
+                        <span class="work-category">Computer Vision</span>
+                        <span class="work-year">2025</span>
+                    </div>
+                    <h2 class="work-title">嵌入式 AI 邊緣運算與影像識別</h2>
+                    <p class="work-desc">運用 YOLOv8 進行邊緣運算即時物體偵測，並導入知識蒸餾實現小模型高性能優化。</p>
+                    <div class="work-footer">
+                        <span>YOLOv8 / Distill / Jetson</span>
+                        <span class="view-more">瀏覽專案 &rarr;</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 作品 6：AI 自動標註 -->
+            <article class="work-card" data-category="ai-art" 
+                     data-title="AI 數據集自動化標註系統" 
+                     data-media-type="video"
+                     data-video-src="作品集/AI系統範例/AI自動標註/Labeler_V1.mp4"
+                     data-images="作品集/AI系統範例/AI自動標註/Labeler00.png,作品集/AI系統範例/AI自動標註/Labeler01.png,作品集/AI系統範例/AI自動標註/Labeler02.png"
+                     data-desc="研發自動化數據標記工作流，解決傳統人工標註成本高昂的問題。透過預訓練視覺語言模型（VLM）對批量圖片進行多模態標籤預生成，並提供人工半自動微調界面，效率提升超過 80%。展示影片為系統操作過程。">
+                <div class="work-img-wrapper">
+                    <span class="video-badge">VIDEO</span>
+                    <img class="work-img" src="作品集/AI系統範例/AI自動標註/Labeler00.png" alt="AI 自動標註">
+                </div>
+                <div class="work-info">
+                    <div class="work-meta-row">
+                        <span class="work-category">AI System / Tooling</span>
+                        <span class="work-year">2025</span>
+                    </div>
+                    <h2 class="work-title">AI 多模態數據集自動標註工具</h2>
+                    <p class="work-desc">研發自動化標籤生成系統，通過大模型預推理與互動修正介面，極大加速深度學習訓練數據準備。</p>
+                    <div class="work-footer">
+                        <span>Python / PyTorch / VLM</span>
+                        <span class="view-more">瀏覽專案 &rarr;</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 作品 7：AI PIXEL 轉換 -->
+            <article class="work-card" data-category="ai-art" 
+                     data-title="AI 像素藝術風格轉換實驗" 
+                     data-media-type="video"
+                     data-video-src="作品集/AI系統範例/PIXEL轉換/PIXEL02.mp4"
+                     data-images="作品集/AI系統範例/PIXEL轉換/PIXEL01.png"
+                     data-desc="基於卷積神經網絡的像素風格化算法實驗。系統能輸入任意照片或影片，自動提取物體邊緣與色塊特徵，並進行精確的像素網格下採樣與調色盤映射，生成自然、具備傳統手工質感的像素動畫。">
+                <div class="work-img-wrapper">
+                    <span class="video-badge">VIDEO</span>
+                    <img class="work-img" src="作品集/AI系統範例/PIXEL轉換/PIXEL01.png" alt="PIXEL 轉換">
+                </div>
+                <div class="work-info">
+                    <div class="work-meta-row">
+                        <span class="work-category">Generative Art</span>
+                        <span class="work-year">2025</span>
+                    </div>
+                    <h2 class="work-title">基於 Neural Style 的像素化風格轉換</h2>
+                    <p class="work-desc">實驗將一般動態影像轉換為手繪級像素質感的演算法，推動生成式藝術的工具鏈邊界。</p>
+                    <div class="work-footer">
+                        <span>CNN / Style Transfer / OpenCV</span>
+                        <span class="view-more">瀏覽專案 &rarr;</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 作品 8：AI 2D 概念 -->
+            <article class="work-card" data-category="ai-art" 
+                     data-title="AI 2D 概念視覺與動態生成" 
+                     data-media-type="video"
+                     data-video-src="作品集/AI 2D/msw_czUdrpOPmu.mp4"
+                     data-images="作品集/AI 2D/windmill-1.png,作品集/AI 2D/Grass.png,作品集/AI 2D/house01.png"
+                     data-desc="探索 Stable Diffusion 與 ControlNet 在二維概念插畫與動態格生成的應用。本實驗著重於控制隨機噪訊，使生成的動畫具備幀間一致性，並在光影氛圍上實現水墨般的渲染質感。">
+                <div class="work-img-wrapper">
+                    <span class="video-badge">VIDEO</span>
+                    <img class="work-img" src="作品集/AI 2D/windmill-1.png" alt="AI 2D">
+                </div>
+                <div class="work-info">
+                    <div class="work-meta-row">
+                        <span class="work-category">AI Motion Design</span>
+                        <span class="work-year">2026</span>
+                    </div>
+                    <h2 class="work-title">二維 AI 生成動畫與風格化實驗</h2>
+                    <p class="work-desc">運用擴散模型結合時間軸特徵控制，生成具備獨特幀間筆觸脈動的寫意概念動畫。</p>
+                    <div class="work-footer">
+                        <span>Diffusion / AnimateDiff / Art</span>
+                        <span class="view-more">瀏覽專案 &rarr;</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 作品 9：AI 3D 視覺 -->
+            <article class="work-card" data-category="ai-art" 
+                     data-title="AI 3D 概念與光影渲染研究" 
+                     data-media-type="gallery"
+                     data-images="作品集/AI 3D/ai3d_1.png,作品集/AI 3D/ai3d_10.png,作品集/AI 3D/ai3d_11.png,作品集/AI 3D/ai3d_9.png"
+                     data-desc="運用神經渲染技術進行三維概念光影的可行性研究。著重於複雜有機形體（如怪石、枯木）的水墨留白質感模擬，並將結果導入 3D 軟體中進行二次重構。">
+                <div class="work-img-wrapper">
+                    <img class="work-img" src="作品集/AI 3D/ai3d_1.png" alt="AI 3D">
+                </div>
+                <div class="work-info">
+                    <div class="work-meta-row">
+                        <span class="work-category">Neural Rendering</span>
+                        <span class="work-year">2026</span>
+                    </div>
+                    <h2 class="work-title">神經渲染與 3D 水墨意境建模</h2>
+                    <p class="work-desc">結合神經網路生成的概念視覺，在三維軟體中二次重建，探尋數位雕刻的全新流程。</p>
+                    <div class="work-footer">
+                        <span>NeRF / Blender / Conceptual</span>
+                        <span class="view-more">瀏覽專案 &rarr;</span>
+                    </div>
+                </div>
+            </article>
+
         </section>
     </main>
 
-    <!-- 載入 3D 昆蟲游標，使游標特效在作品頁也生效 -->
+    <!-- ── 彈窗 Lightbox DOM ── -->
+    <div class="modal" id="workModal" role="dialog" aria-modal="true">
+        <div class="modal-backdrop" id="modalBackdrop"></div>
+        <div class="modal-content">
+            <button class="close-btn" id="modalClose" aria-label="關閉彈窗">&times;</button>
+            
+            <!-- 左側媒體區 -->
+            <div class="modal-media-pane">
+                <button class="slider-arrow arrow-left" id="slidePrev" aria-label="上一張">&larr;</button>
+                <div id="modalMediaContainer" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
+                    <!-- 動態寫入 video 或 img -->
+                </div>
+                <button class="slider-arrow arrow-right" id="slideNext" aria-label="下一張">&rarr;</button>
+                <div class="slider-counter" id="slideCounter">1 / 5</div>
+            </div>
+
+            <!-- 右側詳情區 -->
+            <div class="modal-detail-pane">
+                <span class="modal-category" id="modalCategory">3D RENDER</span>
+                <h2 class="modal-title" id="modalTitle">專案名稱</h2>
+                <div class="modal-desc" id="modalDesc">
+                    專案詳細敘述載入中...
+                </div>
+
+                <div class="modal-meta-list">
+                    <div class="modal-meta-item">
+                        <span class="modal-meta-label">專案類別 / CATEGORY</span>
+                        <span class="modal-meta-val" id="metaCategory">3D / UE</span>
+                    </div>
+                    <div class="modal-meta-item">
+                        <span class="modal-meta-label">製作年份 / YEAR</span>
+                        <span class="modal-meta-val" id="metaYear">2026</span>
+                    </div>
+                    <div class="modal-meta-item">
+                        <span class="modal-meta-label">核心技術 / TECH STACK</span>
+                        <span class="modal-meta-val" id="metaTech">UE5, Lighting</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 載入 3D 昆蟲游標 -->
     <script type="importmap">
     {
         "imports": {
@@ -245,16 +762,179 @@
     }
     </script>
     <script type="module" src="cursor-bug.js?v=4"></script>
+    
+    <!-- ── 頁面邏輯 (Filter, Transition, Lightbox) ── -->
     <script>
-        // 頁面加載時，如果轉場黑幕處於 active 狀態，將其淡出
-        window.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. 轉場黑幕淡出
             const overlay = document.querySelector('.transition-overlay');
             if (overlay) {
-                overlay.classList.add('active'); // 先強制全黑
+                overlay.classList.add('active');
                 setTimeout(() => {
-                    overlay.classList.remove('active'); // 淡出黑幕，顯示本頁
+                    overlay.classList.remove('active');
                 }, 100);
             }
+
+            // 2. 作品過濾 (Filter) 邏輯
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const workCards = document.querySelectorAll('.work-card');
+            const grid = document.getElementById('worksGrid');
+
+            filterButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+
+                    const filterValue = btn.getAttribute('data-filter');
+
+                    grid.style.opacity = '0';
+                    setTimeout(() => {
+                        workCards.forEach(card => {
+                            const cat = card.getAttribute('data-category');
+                            if (filterValue === 'all' || cat === filterValue) {
+                                card.style.display = 'flex';
+                            } else {
+                                card.style.display = 'none';
+                            }
+                        });
+                        grid.style.opacity = '1';
+                    }, 250);
+                });
+            });
+
+            // 3. 彈窗 Lightbox 邏輯
+            const modal = document.getElementById('workModal');
+            const closeBtn = document.getElementById('modalClose');
+            const backdrop = document.getElementById('modalBackdrop');
+            const container = document.getElementById('modalMediaContainer');
+            
+            const mCategory = document.getElementById('modalCategory');
+            const mTitle = document.getElementById('modalTitle');
+            const mDesc = document.getElementById('modalDesc');
+            
+            const metaCategory = document.getElementById('metaCategory');
+            const metaYear = document.getElementById('metaYear');
+            const metaTech = document.getElementById('metaTech');
+            
+            const prevBtn = document.getElementById('slidePrev');
+            const nextBtn = document.getElementById('slideNext');
+            const counter = document.getElementById('slideCounter');
+
+            let mediaList = []; // 儲存該專案所有的媒體項目
+            let currentMediaIndex = 0;
+            let currentMediaType = 'gallery'; // 'video' 或 'gallery'
+
+            workCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    // 獲取屬性
+                    const title = card.getAttribute('data-title');
+                    const category = card.getAttribute('data-category');
+                    const type = card.getAttribute('data-media-type');
+                    const desc = card.getAttribute('data-desc');
+                    const year = card.getAttribute('data-year');
+                    const tech = card.querySelector('.work-footer span:first-child').textContent;
+                    
+                    mTitle.textContent = title;
+                    mCategory.textContent = category.toUpperCase();
+                    mDesc.textContent = desc;
+                    
+                    metaCategory.textContent = category.toUpperCase();
+                    metaYear.textContent = year;
+                    metaTech.textContent = tech;
+
+                    mediaList = [];
+                    currentMediaIndex = 0;
+                    currentMediaType = type;
+
+                    if (type === 'video') {
+                        // 優先放入主影片
+                        const videoSrc = card.getAttribute('data-video-src');
+                        mediaList.push({ type: 'video', src: videoSrc });
+                    }
+
+                    // 放入相簿圖片
+                    const imgString = card.getAttribute('data-images');
+                    if (imgString) {
+                        const imgs = imgString.split(',');
+                        imgs.forEach(src => {
+                            mediaList.push({ type: 'image', src: src.trim() });
+                        });
+                    }
+
+                    showMedia(0);
+                    
+                    // 開啟 Modal
+                    modal.style.display = 'flex';
+                    // 強迫 Reflow
+                    modal.offsetHeight;
+                    modal.classList.add('open');
+                });
+            });
+
+            function showMedia(index) {
+                if (mediaList.length === 0) return;
+                currentMediaIndex = index;
+                container.innerHTML = ''; // 清空
+
+                const item = mediaList[index];
+
+                if (item.type === 'video') {
+                    const video = document.createElement('video');
+                    video.src = item.src;
+                    video.controls = true;
+                    video.autoplay = true;
+                    video.muted = true;
+                    video.style.width = '100%';
+                    video.style.height = '100%';
+                    video.style.maxHeight = '72vh';
+                    container.appendChild(video);
+                } else {
+                    const img = document.createElement('img');
+                    img.src = item.src;
+                    img.alt = '作品大圖';
+                    container.appendChild(img);
+                }
+
+                // 顯示隱藏箭頭
+                if (mediaList.length <= 1) {
+                    prevBtn.style.display = 'none';
+                    nextBtn.style.display = 'none';
+                    counter.style.display = 'none';
+                } else {
+                    prevBtn.style.display = 'flex';
+                    nextBtn.style.display = 'flex';
+                    counter.style.display = 'block';
+                    counter.textContent = `${currentMediaIndex + 1} / ${mediaList.length}`;
+                }
+            }
+
+            prevBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                let nextIdx = currentMediaIndex - 1;
+                if (nextIdx < 0) nextIdx = mediaList.length - 1;
+                showMedia(nextIdx);
+            });
+
+            nextBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                let nextIdx = currentMediaIndex + 1;
+                if (nextIdx >= mediaList.length) nextIdx = 0;
+                showMedia(nextIdx);
+            });
+
+            function closeModal() {
+                modal.classList.remove('open');
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                    container.innerHTML = ''; // 清空以停止影片播放
+                }, 400);
+            }
+
+            closeBtn.addEventListener('click', closeModal);
+            backdrop.addEventListener('click', closeModal);
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') closeModal();
+            });
         });
     </script>
 </body>
