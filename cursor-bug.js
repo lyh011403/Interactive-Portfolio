@@ -243,6 +243,28 @@ window.addEventListener('click', (e) => {
 
     transitionTargetHref = navLink.getAttribute('href') || '#';
 
+    // 檢查目前頁面是否含有守宮影片背景，若無（例如在 portfolio.html），則不執行咬食與縮放，改行純黑幕漸變跳轉
+    const hasLizard = document.getElementById('bg-video') !== null;
+    if (!hasLizard) {
+        window.isBugEaten = true;
+        const overlay = document.querySelector('.transition-overlay');
+        if (overlay) {
+            overlay.classList.add('active');
+        }
+        setTimeout(() => {
+            // 如果是真實連結，則跳轉；若是測試 #，則重新整理頁面或重置
+            if (transitionTargetHref !== '#' && !transitionTargetHref.startsWith('javascript:')) {
+                window.location.href = transitionTargetHref;
+            } else {
+                // 還原遮罩，供測試
+                if (overlay) overlay.classList.remove('active');
+                window.isBugEaten = false;
+                if (window.respawnBug) window.respawnBug();
+            }
+        }, 500);
+        return;
+    }
+
     // 啟動轉場與咬食模式
     window.isBugEaten = true;
     isEatingMode = true;
