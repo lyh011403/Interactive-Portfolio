@@ -8,7 +8,7 @@
 
 飄流幻境RE
 製作年份:2023~2025
-核心技術:blender、AI輔助
+核心技術:blender、GPT、GEMINI、TRIPO、Hunyuan3D
 
 AI 2D
 製作年份:2025~2026
@@ -16,7 +16,7 @@ AI 2D
 
 AI 3D
 製作年份:2025~2026
-核心技術:GPT、GEMINI、TRIPO、Hunyuan3D、GEMINI GEM
+核心技術:blender、GPT、GEMINI、TRIPO、Hunyuan3D、GEMINI GEM
 
 
 AI系統
@@ -25,4 +25,4 @@ AI系統
 
 嵌入式AI影像應用班
 製作年份:2025~2026
-核心技術:Antigravity、pytorch、python、TRANSFORMER、YOLO
+核心技術:Antigravity、python、YOLO、LabelImg
