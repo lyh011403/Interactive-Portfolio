@@ -765,15 +765,25 @@
     
     <!-- ── 頁面邏輯 (Filter, Transition, Lightbox) ── -->
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // 1. 轉場黑幕淡出
+        // 確保任何時候載入頁面（包含回退快取）都會清除轉場鎖
+        function resetTransitionState() {
+            document.body.classList.remove('transition-active');
             const overlay = document.querySelector('.transition-overlay');
             if (overlay) {
-                overlay.classList.add('active');
+                overlay.classList.add('active'); // 強制先全黑
                 setTimeout(() => {
-                    overlay.classList.remove('active');
+                    overlay.classList.remove('active'); // 隨後淡出顯示
                 }, 100);
             }
+            if (window.respawnBug) {
+                window.respawnBug();
+            }
+        }
+        window.addEventListener('pageshow', resetTransitionState);
+        window.addEventListener('DOMContentLoaded', resetTransitionState);
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
 
             // 2. 作品過濾 (Filter) 邏輯
             const filterButtons = document.querySelectorAll('.filter-btn');

@@ -119,6 +119,22 @@
 
     </main>
 
+    <script>
+        // 確保任何時候載入首頁（包含點擊瀏覽器上一頁/回退快取）都會立刻清除轉場樣式，恢復首頁與蜥蜴顯示
+        function resetTransitionState() {
+            document.body.classList.remove('transition-active');
+            const overlay = document.querySelector('.transition-overlay');
+            if (overlay) {
+                overlay.classList.remove('active');
+            }
+            if (window.respawnBug) {
+                window.respawnBug();
+            }
+        }
+        window.addEventListener('pageshow', resetTransitionState);
+        window.addEventListener('DOMContentLoaded', resetTransitionState);
+    </script>
+
     <script src="script.js?v=3"></script>
     <script type="module" src="cursor-bug.js?v=3"></script>
 </body>
