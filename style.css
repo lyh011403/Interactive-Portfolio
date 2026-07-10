@@ -433,11 +433,12 @@ body.transition-active .header-nav {
 /* 影片與 3D 畫布同步向嘴巴縮放 */
 .video-wrapper,
 #bug-cursor-canvas {
-    transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1);
-    transform-origin: 50% 65%;
+    transition: transform 1.2s cubic-bezier(0.25, 1, 0.3, 1), filter 1.0s ease-in-out;
+    transform-origin: 50% 46%; /* 精準對齊守宮嘴巴位置 (Y = 46%) */
 }
 
 body.transition-active .video-wrapper,
 body.transition-active #bug-cursor-canvas {
-    transform: scale(9); /* 放大 9 倍，視覺上產生進入嘴裡的沉浸感 */
+    transform: scale(11) rotate(8deg); /* 放大 11 倍並帶有 8 度旋轉，營造吸入漩渦深淵的效果 */
+    filter: blur(8px) brightness(0.55) contrast(1.4); /* 增加動態模糊與高對比暗化特效 */
 }

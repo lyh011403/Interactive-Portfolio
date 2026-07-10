@@ -228,7 +228,7 @@ let eatProgress = 0;
 let respawnProgress = 0;
 let eatStartX = 0, eatStartY = 0;
 // 守宮嘴巴張開的世界座標（中心點），使用者可視實際微調
-const mouthWorldPos = new THREE.Vector3(0, -0.18, 0);
+const mouthWorldPos = new THREE.Vector3(0, 0.28, 0);
 let transitionTargetHref = '';
 
 window.addEventListener('click', (e) => {
