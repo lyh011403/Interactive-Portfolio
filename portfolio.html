@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>作品集展示 | HAIN Portfolio</title>
+    <meta name="description" content="HAIN 的視覺藝術與互動媒體作品展示。">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;700&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300;1,600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+    <style>
+        /* 作品頁面專用樣式，延續水墨風格 */
+        .portfolio-body {
+            background-color: var(--bg);
+            color: var(--ink);
+            overflow-y: auto; /* 允許垂直捲動 */
+            height: auto;
+            min-height: 100vh;
+        }
+
+        .portfolio-container {
+            max-width: 1200px;
+            margin: 120px auto 80px;
+            padding: 0 24px;
+        }
+
+        .page-header {
+            margin-bottom: 60px;
+            border-left: 3px solid var(--accent);
+            padding-left: 20px;
+        }
+
+        .page-title {
+            font-family: var(--font-zh);
+            font-size: clamp(2rem, 3.5vw, 3rem);
+            font-weight: 700;
+            color: var(--ink);
+            margin-bottom: 8px;
+        }
+
+        .page-subtitle {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            letter-spacing: 0.15em;
+            color: var(--muted);
+            text-transform: uppercase;
+        }
+
+        /* 作品網格 */
+        .works-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 40px;
+        }
+
+        .work-card {
+            background: rgba(240, 235, 224, 0.3);
+            border: 1px solid var(--dim);
+            border-radius: 4px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+        }
+
+        .work-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(20, 18, 16, 0.08);
+            border-color: var(--ink);
+        }
+
+        .work-img-wrapper {
+            width: 100%;
+            height: 220px;
+            overflow: hidden;
+            background: #e5dfd3;
+            position: relative;
+        }
+
+        .work-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .work-card:hover .work-img {
+            transform: scale(1.05);
+        }
+
+        .work-info {
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .work-category {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--accent);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .work-title {
+            font-family: var(--font-zh);
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--ink);
+            margin-bottom: 12px;
+        }
+
+        .work-desc {
+            font-family: var(--font-zh);
+            font-size: 0.88rem;
+            color: var(--muted);
+            line-height: 1.6;
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+
+        .work-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--ink);
+            border-top: 1px dashed var(--dim);
+            padding-top: 16px;
+        }
+
+        .view-more {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* 頁面載入時淡入特效 */
+        .fade-in-active {
+            animation: fadeInPage 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes fadeInPage {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="portfolio-body" style="cursor:none;">
+
+    <!-- 全域紙質噪音背景層 -->
+    <div class="grain-overlay" aria-hidden="true"></div>
+
+    <!-- 全螢幕黑幕轉場遮罩 -->
+    <div class="transition-overlay" aria-hidden="true"></div>
+
+    <!-- 頂部玻璃膠囊導覽列 -->
+    <header class="header-nav">
+        <nav class="nav-capsule" aria-label="主導覽">
+            <a href="index.html" class="nav-brand nav-link">
+                <span class="brand-mark">&#x25C6;</span>
+                <span class="brand-name">HAIN</span>
+            </a>
+            <ul class="nav-links" role="list">
+                <li><a href="portfolio.html" class="nav-link" style="color: var(--ink); font-weight: 700;">作品</a></li>
+                <li><a href="index.html" class="nav-link">首頁</a></li>
+            </ul>
+            <a href="index.html#contact" class="btn-request nav-link">聯繫</a>
+        </nav>
+    </header>
+
+    <main class="portfolio-container fade-in-active">
+        <header class="page-header">
+            <h1 class="page-title">精選作品</h1>
+            <p class="page-subtitle">Selected Visual & Interactive Works</p>
+        </header>
+
+        <section class="works-grid">
+            <!-- 卡片 1 -->
+            <a href="#" class="work-card">
+                <div class="work-img-wrapper">
+                    <img class="work-img" src="作品集/自製3D/lyh_et-b1a-2048.jpg" alt="自製 3D 作品">
+                </div>
+                <div class="work-info">
+                    <span class="work-category">3D Render / Unreal Engine</span>
+                    <h2 class="work-title">自製 3D 場景實驗</h2>
+                    <p class="work-desc">運用 Unreal Engine 進行三維場景光影渲染與環境構築，結合東方古典美學與數位虛擬世界。</p>
+                    <div class="work-footer">
+                        <span>YEAR: 2026</span>
+                        <span class="view-more">VIEW PROJECT &rarr;</span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- 卡片 2 -->
+            <a href="#" class="work-card">
+                <div class="work-img-wrapper">
+                    <img class="work-img" src="作品集/飄流幻境RE/01 (1).png" alt="飄流幻境 RE">
+                </div>
+                <div class="work-info">
+                    <span class="work-category">Game Art / Interface</span>
+                    <h2 class="work-title">飄流幻境 RE 重製計劃</h2>
+                    <p class="work-desc">對經典遊戲《飄流幻境》進行美術素材重構與高畫質視覺介面優化，賦予復古 IP 全新生命力。</p>
+                    <div class="work-footer">
+                        <span>YEAR: 2025</span>
+                        <span class="view-more">VIEW PROJECT &rarr;</span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- 卡片 3 -->
+            <a href="#" class="work-card">
+                <div class="work-img-wrapper">
+                    <img class="work-img" src="作品集/黃易群俠傳m/01 (1).png" alt="黃易群俠傳 M">
+                </div>
+                <div class="work-info">
+                    <span class="work-category">3D Art / Environment</span>
+                    <h2 class="work-title">黃易群俠傳 M 美術精緻化</h2>
+                    <p class="work-desc">針對經典武俠 IP《黃易群俠傳 M》進行三維環境貼圖精緻化與水墨意境的光影重構。</p>
+                    <div class="work-footer">
+                        <span>YEAR: 2025</span>
+                        <span class="view-more">VIEW PROJECT &rarr;</span>
+                    </div>
+                </div>
+            </a>
+        </section>
+    </main>
+
+    <!-- 載入 3D 昆蟲游標，使游標特效在作品頁也生效 -->
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/",
+            "fflate": "https://cdn.jsdelivr.net/npm/fflate@0.8.2/esm/browser.js"
+        }
+    }
+    </script>
+    <script type="module" src="cursor-bug.js?v=4"></script>
+    <script>
+        // 頁面加載時，如果轉場黑幕處於 active 狀態，將其淡出
+        window.addEventListener('DOMContentLoaded', () => {
+            const overlay = document.querySelector('.transition-overlay');
+            if (overlay) {
+                overlay.classList.add('active'); // 先強制全黑
+                setTimeout(() => {
+                    overlay.classList.remove('active'); // 淡出黑幕，顯示本頁
+                }, 100);
+            }
+        });
+    </script>
+</body>
+</html>
