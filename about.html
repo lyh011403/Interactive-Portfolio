@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於我 | HAIN 李儼翰 - 3D & Technical Artist</title>
+    
+    <meta name="description" content="李儼翰 (HAIN) 的個人簡歷與技術實績。具備 7 年 3D 遊戲美術開發與副組長管理經驗，並跨界專研 Python 程式開發、AI 電腦視覺與工作流自動化插件研發。">
+    
+    <!-- 引入全站全域樣式 -->
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- 載入 Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&family=Outfit:wght@300;400;500;700&family=Space+Mono&display=swap" rel="stylesheet">
+    
+    <style>
+        /* 覆寫 style.css 中的 body 固定寬高，以允許長網頁滾動與隱藏滑鼠游標 */
+        .about-body {
+            overflow-y: scroll !important;
+            height: auto !important;
+            min-height: 100vh !important;
+            background-color: var(--bg);
+            color: var(--ink);
+            font-family: 'Outfit', var(--font-zh);
+            line-height: 1.65;
+            cursor: none !important;
+        }
+
+        .about-body * {
+            cursor: none !important;
+        }
+
+        /* -------------------------------------------------- */
+        /* 關於頁面版面佈局                                   */
+        /* -------------------------------------------------- */
+        .about-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 160px 24px 100px;
+        }
+
+        /* Hero 區塊 */
+        .hero-section {
+            display: grid;
+            grid-template-columns: 1.3fr 1fr;
+            gap: 48px;
+            align-items: center;
+            margin-bottom: 80px;
+        }
+
+        .hero-info {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .role-badge {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--accent);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .name-title {
+            font-family: var(--font-zh);
+            font-size: 3.2rem;
+            font-weight: 700;
+            line-height: 1.15;
+            color: var(--ink);
+        }
+
+        .name-en {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 300;
+            color: var(--muted);
+            margin-top: -8px;
+            letter-spacing: 0.05em;
+        }
+
+        .autobiography {
+            font-size: 0.95rem;
+            color: var(--ink);
+            line-height: 1.75;
+            text-align: justify;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 10px;
+        }
+
+        /* 右側創意寫意畫布卡片 */
+        .hero-visual {
+            position: relative;
+            width: 100%;
+            height: 380px;
+            border: 1px solid var(--dim);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: 0 15px 45px rgba(26, 23, 21, 0.03);
+        }
+
+        /* 硃砂紅印章圖章 */
+        .seal-stamp {
+            width: 120px;
+            height: 120px;
+            border: 3px double var(--accent);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            color: var(--accent);
+            font-family: var(--font-zh);
+            font-weight: 700;
+            font-size: 1.8rem;
+            line-height: 1.1;
+            letter-spacing: 0.1em;
+            padding: 8px;
+            opacity: 0.85;
+            transform: rotate(-8deg);
+            box-shadow: inset 0 0 10px rgba(178, 44, 34, 0.1);
+            user-select: none;
+            background: rgba(240, 235, 224, 0.5);
+            backdrop-filter: blur(2px);
+        }
+
+        .seal-stamp::after {
+            content: "印";
+            font-size: 0.8rem;
+            margin-top: 4px;
+            opacity: 0.6;
+            border-top: 1px solid var(--accent);
+            padding-top: 2px;
+            width: 100%;
+            text-align: center;
+        }
+
+        /* -------------------------------------------------- */
+        /* 核心技能 (Skills Grid)                             */
+        /* -------------------------------------------------- */
+        .section-title {
+            font-family: var(--font-zh);
+            font-size: 1.75rem;
+            font-weight: 700;
+            border-left: 3px solid var(--accent);
+            padding-left: 16px;
+            margin-bottom: 32px;
+            color: var(--ink);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .section-title span.title-en {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--muted);
+            font-weight: 400;
+            letter-spacing: 0.1em;
+            margin-bottom: 2px;
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-bottom: 80px;
+        }
+
+        .skill-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--dim);
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(26, 23, 21, 0.02);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .skill-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 35px rgba(26, 23, 21, 0.05);
+        }
+
+        .skill-header {
+            font-family: var(--font-zh);
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--accent);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .skill-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .skill-item {
+            font-size: 0.85rem;
+            color: var(--ink);
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .skill-item::before {
+            content: "•";
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        /* -------------------------------------------------- */
+        /* 工作經歷 (Timeline)                                */
+        /* -------------------------------------------------- */
+        .timeline-section {
+            margin-bottom: 80px;
+        }
+
+        .timeline-container {
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .timeline-container::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 6px;
+            bottom: 6px;
+            width: 1px;
+            background: var(--dim);
+        }
+
+        .timeline-item {
+            position: relative;
+        }
+
+        .timeline-item::before {
+            content: "";
+            position: absolute;
+            left: -24px;
+            top: 6px;
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: var(--bg);
+            border: 2px solid var(--accent);
+            z-index: 2;
+        }
+
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .company-row {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+        }
+
+        .company-name {
+            font-family: var(--font-zh);
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--ink);
+        }
+
+        .job-title {
+            font-size: 0.9rem;
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        .time-period {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--muted);
+        }
+
+        .timeline-body {
+            font-size: 0.9rem;
+            color: var(--ink);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .timeline-projects {
+            margin-top: 8px;
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 6px;
+            padding: 12px 16px;
+            border: 1px dashed var(--dim);
+        }
+
+        .project-bullet {
+            margin-bottom: 6px;
+            font-size: 0.85rem;
+        }
+
+        .project-bullet:last-child {
+            margin-bottom: 0;
+        }
+
+        .project-name {
+            font-weight: 700;
+            color: var(--ink);
+        }
+
+        /* -------------------------------------------------- */
+        /* 下載與聯絡方式 (Contact Section)                   */
+        /* -------------------------------------------------- */
+        .contact-section {
+            background: var(--glass-bg);
+            border: 1px solid var(--dim);
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(26, 23, 21, 0.03);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .contact-left h3 {
+            font-family: var(--font-zh);
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--ink);
+            margin-bottom: 12px;
+        }
+
+        .contact-left p {
+            font-size: 0.9rem;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .contact-right {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .contact-item-row {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(26, 23, 21, 0.08);
+            padding-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .contact-label {
+            color: var(--muted);
+        }
+
+        .contact-val {
+            font-weight: 500;
+            color: var(--ink);
+        }
+
+        .download-btn-wrapper {
+            margin-top: 20px;
+            display: flex;
+        }
+
+        .download-btn {
+            background: var(--accent);
+            color: #fff;
+            padding: 12px 28px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 15px rgba(178, 44, 34, 0.2);
+            cursor: none;
+        }
+
+        .download-btn:hover {
+            background: var(--accent);
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(178, 44, 34, 0.3);
+        }
+
+        /* -------------------------------------------------- */
+        /* 響應式佈局支援                                     */
+        /* -------------------------------------------------- */
+        @media (max-width: 860px) {
+            .hero-section {
+                grid-template-columns: 1fr;
+                gap: 32px;
+            }
+
+            .hero-visual {
+                height: 250px;
+                order: -1;
+            }
+
+            .skills-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .contact-section {
+                grid-template-columns: 1fr;
+                gap: 32px;
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+<body class="about-body">
+
+    <!-- 全域紙質噪音背景層 -->
+    <div class="grain-overlay" aria-hidden="true"></div>
+
+    <!-- 全螢幕黑幕轉場遮罩 -->
+    <div class="transition-overlay" aria-hidden="true"></div>
+
+    <!-- 頂部玻璃膠囊導覽列 -->
+    <header class="header-nav">
+        <nav class="nav-capsule" aria-label="主導覽">
+            <a href="index.html" class="nav-brand nav-link">
+                <span class="brand-mark">&#x25C6;</span>
+                <span class="brand-name">HAIN</span>
+            </a>
+            <ul class="nav-links" role="list">
+                <li><a href="portfolio.html" class="nav-link">作品</a></li>
+                <li><a href="about.html" class="nav-link" style="color: var(--ink); font-weight: 700;">關於</a></li>
+            </ul>
+            <a href="about.html#contact" class="btn-request nav-link">聯繫</a>
+        </nav>
+    </header>
+
+    <!-- 關於頁面主要容器 -->
+    <main class="about-container">
+
+        <!-- Hero 職責與介紹 -->
+        <section class="hero-section">
+            <div class="hero-info">
+                <span class="role-badge">3D & Technical Artist</span>
+                <h1 class="name-title">李儼翰</h1>
+                <div class="name-en">Yan-Han Li</div>
+                <div class="autobiography">
+                    <p>具備近 7 年遊戲產業開發經驗，曾於「中華網龍」擔任 3D 美術副組長。精通 PBR 寫實與手繪美術風格，主導多款大型 MMORPG（如《黃易群俠傳M》、《天子傳奇》、《飄流幻境》）的 3D 道具、角色與場景資產開發與性能優化。</p>
+                    <p>面對 AI 浪潮，我不選擇保守觀望，而是將其視為工作流的「加速器」。主動將 AI 與嵌入式技術導入既有製程，成功將繁瑣的製圖與標註流程自動化。我自主研發了模組化架構的插件管線（Antigravity），實現跨專案資產整合與快速迭代。</p>
+                    <p>我致力於將 Python 軟體工程、AI 電腦視覺技術與深厚的專案管理經驗相融合，為團隊與企業打造高效、自動化的生產管線，以技術研發為核心，實質為團隊帶來產能突破與流程優化。</p>
+                </div>
+            </div>
+            
+            <!-- 右側古典水墨意象印章 -->
+            <div class="hero-visual">
+                <div class="seal-stamp">
+                    李儼翰
+                </div>
+            </div>
+        </section>
+
+        <!-- 核心技能區塊 -->
+        <section>
+            <h2 class="section-title">
+                <span>核心技能</span>
+                <span class="title-en">CORE SKILLS</span>
+            </h2>
+            <div class="skills-grid">
+                <!-- 美術資產 -->
+                <div class="skill-card">
+                    <div class="skill-header">
+                        <span>3D 美術資產</span>
+                    </div>
+                    <ul class="skill-list">
+                        <li class="skill-item">熟悉 PBR 工作流 (建模、UV、貼圖、材質設定)</li>
+                        <li class="skill-item">手繪卡通/國風寫意美術風格轉譯與對齊</li>
+                        <li class="skill-item">跨平台 (PC / 手遊) 3D 資產優化與效能管控</li>
+                    </ul>
+                </div>
+                <!-- 程式與 AI -->
+                <div class="skill-card">
+                    <div class="skill-header">
+                        <span>程式與 AI 視覺</span>
+                    </div>
+                    <ul class="skill-list">
+                        <li class="skill-item">Python 軟體工程與自動化管線插件研發</li>
+                        <li class="skill-item">YOLO 視覺模型訓練與自動化數據標註</li>
+                        <li class="skill-item">自動化影像處理與 AI 轉像素風格 (Pixel Art) 工具</li>
+                    </ul>
+                </div>
+                <!-- 技術美術與未來 -->
+                <div class="skill-card">
+                    <div class="skill-header">
+                        <span>技術美術與展望</span>
+                    </div>
+                    <ul class="skill-list">
+                        <li class="skill-item">NVIDIA Omniverse (USD 協作管線與即時渲染)</li>
+                        <li class="skill-item">TouchDesigner 互動視覺開發與裝置資料對接</li>
+                        <li class="skill-item">自研 Antigravity 插件實現美術邏輯模組化複用</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 工作經歷時間軸 -->
+        <section class="timeline-section">
+            <h2 class="section-title">
+                <span>職涯經歷</span>
+                <span class="title-en">CAREER PATH</span>
+            </h2>
+            <div class="timeline-container">
+                <!-- 經歷 1 -->
+                <div class="timeline-item">
+                    <div class="timeline-header">
+                        <div class="company-row">
+                            <span class="company-name">中華網龍股份有限公司</span>
+                            <span class="job-title">3D 美術 / 副組長</span>
+                        </div>
+                        <span class="time-period">2018/11 ~ 2025/08 (6年10個月)</span>
+                    </div>
+                    <div class="timeline-body">
+                        <p>參與多款大型 MMORPG 手遊開發，專責 3D 道具與場景資產開發與性能優化。在職期間擔任副組長，協助進行專案管理、流程標準化、品質控管與培訓指導美術新人。</p>
+                        <div class="timeline-projects">
+                            <div class="project-bullet">
+                                <span class="project-name">《黃易群俠傳M》</span>：負責 3D 道具與場景資產製作，確保視覺質感與運作效能平衡。
+                            </div>
+                            <div class="project-bullet">
+                                <span class="project-name">《天子傳奇S》</span>：專責 3D 道具與場景製作與優化，提升遊戲畫面整體流暢度。
+                            </div>
+                            <div class="project-bullet">
+                                <span class="project-name">《飄流幻境RE》</span>：負責 3D 角色與場景資產重製，重現經典美術風格，並協助導入 AI 流程。
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 經歷 2 -->
+                <div class="timeline-item">
+                    <div class="timeline-header">
+                        <div class="company-row">
+                            <span class="company-name">產業新尖兵計畫 - 嵌入式 AI 影像技術</span>
+                            <span class="job-title">系統性進修</span>
+                        </div>
+                        <span class="time-period">2025/12 ~ 2026/03</span>
+                    </div>
+                    <div class="timeline-body">
+                        <p>專研機器視覺、YOLO 模型訓練與資料集標註。在此期間獨立開發 <strong>Smart Safety Care (SSC) 智慧照護監控系統</strong>，獨立實踐從資料收集、標註、模型微調、知識蒸餾輕量化，到網頁監控 UI 設計與 GitHub Pages 雲端部署的全流程。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 聯絡與履歷下載 -->
+        <section id="contact" class="contact-section">
+            <div class="contact-left">
+                <h3>與我聯絡</h3>
+                <p>不論是 3D 美術開發、技術美術 (TA) 工作流自動化，還是嵌入式 AI 視覺系統整合，都非常歡迎隨時與我交流合作！</p>
+                <div class="download-btn-wrapper">
+                    <a href="作品集/李儼翰.pdf" download="李儼翰_履歷表.pdf" class="download-btn nav-link">
+                        下載完整履歷 PDF
+                    </a>
+                </div>
+            </div>
+            
+            <div class="contact-right">
+                <div class="contact-item-row">
+                    <span class="contact-label">聯絡手機 / MOBILE</span>
+                    <span class="contact-val">0972-717-368</span>
+                </div>
+                <div class="contact-item-row">
+                    <span class="contact-label">電子信箱 / EMAIL</span>
+                    <span class="contact-val">lyh0972717368@gmail.com</span>
+                </div>
+                <div class="contact-item-row">
+                    <span class="contact-label">希望職種 / OBJECTIVE</span>
+                    <span class="contact-val">3D美術設計、軟體/AI工程師</span>
+                </div>
+                <div class="contact-item-row">
+                    <span class="contact-label">通訊地址 / ADDRESS</span>
+                    <span class="contact-val">新北市板橋區</span>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // 確保加載頁面時轉場遮罩順暢淡出
+        function resetTransitionState() {
+            document.body.classList.remove('transition-active');
+            const overlay = document.querySelector('.transition-overlay');
+            if (overlay) {
+                overlay.classList.remove('active');
+            }
+            if (window.respawnBug) {
+                window.respawnBug();
+            }
+        }
+        window.addEventListener('pageshow', resetTransitionState);
+        window.addEventListener('DOMContentLoaded', resetTransitionState);
+    </script>
+
+    <!-- 載入 3D 昆蟲游標 -->
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/",
+            "fflate": "https://cdn.jsdelivr.net/npm/fflate@0.8.2/esm/browser.js"
+        }
+    }
+    </script>
+    <script type="module" src="cursor-bug.js?v=4"></script>
+</body>
+</html>
