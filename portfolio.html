@@ -1116,7 +1116,7 @@
                      data-title="Smart Safety Care 智慧照護應用實踐" 
                      data-year="2025~2026"
                      data-tech="Antigravity、python、YOLO、LabelImg"
-                     data-images="作品集/嵌入式AI影像應用班/Smart Safety Care.mp4">
+                     data-images="作品集/嵌入式AI影像應用班/SSC.html,作品集/嵌入式AI影像應用班/Smart Safety Care.mp4">
                 <div class="work-img-wrapper">
                     <span class="video-badge">VIDEO / SAFETY</span>
                     <video class="work-img" style="object-fit:cover;" src="作品集/嵌入式AI影像應用班/Smart Safety Care.mp4" muted loop autoplay playsinline preload="metadata"></video>
@@ -1273,15 +1273,21 @@
                     mediaList = [];
                     currentMediaIndex = 0;
 
-                    // 讀取 data-images 中的所有資源路徑 (包含影片與圖片)
+                    // 讀取 data-images 中的所有資源路徑 (包含影片、網頁與圖片)
                     const imgString = card.getAttribute('data-images');
                     if (imgString) {
                         const items = imgString.split(',');
                         items.forEach(src => {
                             const path = src.trim();
                             if (path) {
-                                const isVideo = path.toLowerCase().endsWith('.mp4');
-                                mediaList.push({ type: isVideo ? 'video' : 'image', src: path });
+                                const lowerPath = path.toLowerCase();
+                                let type = 'image';
+                                if (lowerPath.endsWith('.mp4')) {
+                                    type = 'video';
+                                } else if (lowerPath.endsWith('.html') || lowerPath.endsWith('.htm')) {
+                                    type = 'iframe';
+                                }
+                                mediaList.push({ type: type, src: path });
                             }
                         });
                     }
@@ -1313,6 +1319,15 @@
                     video.style.height = '100%';
                     video.style.maxHeight = '72vh';
                     container.appendChild(video);
+                } else if (item.type === 'iframe') {
+                    const iframe = document.createElement('iframe');
+                    iframe.src = item.src;
+                    iframe.style.width = '100%';
+                    iframe.style.height = '72vh';
+                    iframe.style.border = 'none';
+                    iframe.style.borderRadius = '8px';
+                    iframe.style.background = '#fff';
+                    container.appendChild(iframe);
                 } else {
                     const img = document.createElement('img');
                     img.src = item.src;
