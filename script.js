@@ -35,9 +35,9 @@
 
         duration   = d;
         ready      = true;
-        targetTime = 0;
+        targetTime = d / 2; // 預設視線停在正中間（看著正前方）
 
-        try { video.currentTime = 0; } catch (e) {}
+        try { video.currentTime = d / 2; } catch (e) {}
 
         console.log('[HAIN] 影片就緒，duration =', duration.toFixed(3), 's');
     }
@@ -75,6 +75,10 @@
 
         if (prevX === null) {
             prevX = currentX;
+            // 第一次偵測到滑鼠（或滑鼠離屏重入）時，絕對對齊滑鼠坐標，徹底解決初始偏差與雙螢幕偏移問題
+            targetTime = (1.0 - (currentX / window.innerWidth)) * duration;
+            targetTime = Math.max(0, Math.min(duration, targetTime));
+            doSeek();
             return;
         }
 
@@ -188,6 +192,7 @@
 
                 // 將轉頭影片的目標時間軸平滑重設為中間（正對前方）
                 targetTime = duration / 2;
+                prevX = null; // 重置滑鼠坐標，使下一次移動時重新絕對對齊
                 try {
                     video.currentTime = targetTime;
                 } catch (e) {}
