@@ -93,27 +93,44 @@
             margin-top: 10px;
         }
 
-        /* 右側創意寫意畫布卡片 */
+        /* 右側創意寫意頭像框 */
         .hero-visual {
-            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             width: 100%;
-            height: 380px;
-            border: 1px solid var(--dim);
-            border-radius: 12px;
+        }
+
+        .profile-avatar-frame {
+            width: 240px;
+            height: 240px;
+            border-radius: 50%;
+            border: 2px solid var(--accent);
+            padding: 6px;
             background: rgba(255, 255, 255, 0.3);
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
-            box-shadow: 0 15px 45px rgba(26, 23, 21, 0.03);
+            box-shadow: 0 10px 30px rgba(26, 23, 21, 0.05);
+            transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
         }
 
-        /* 硃砂紅印章圖章 */
-        .seal-stamp {
-            width: 120px;
-            height: 120px;
-            border: 3px double var(--accent);
-            border-radius: 8px;
+        .profile-avatar-frame:hover {
+            transform: scale(1.03);
+        }
+
+        .profile-avatar-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .avatar-fallback-seal {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -121,26 +138,20 @@
             color: var(--accent);
             font-family: var(--font-zh);
             font-weight: 700;
-            font-size: 1.8rem;
-            line-height: 1.1;
-            letter-spacing: 0.1em;
-            padding: 8px;
-            opacity: 0.85;
-            transform: rotate(-8deg);
-            box-shadow: inset 0 0 10px rgba(178, 44, 34, 0.1);
-            user-select: none;
-            background: rgba(240, 235, 224, 0.5);
-            backdrop-filter: blur(2px);
+            font-size: 1.6rem;
+            letter-spacing: 0.05em;
+            background: rgba(240, 235, 224, 0.6);
+            border: 1px dashed rgba(178, 44, 34, 0.3);
         }
 
-        .seal-stamp::after {
+        .avatar-fallback-seal::after {
             content: "印";
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             margin-top: 4px;
             opacity: 0.6;
             border-top: 1px solid var(--accent);
             padding-top: 2px;
-            width: 100%;
+            width: 50%;
             text-align: center;
         }
 
@@ -442,7 +453,7 @@
     <div class="grain-overlay" aria-hidden="true"></div>
 
     <!-- 全螢幕黑幕轉場遮罩 -->
-    <div class="transition-overlay" aria-hidden="true"></div>
+    <div class="transition-overlay active" aria-hidden="true"></div>
 
     <!-- 頂部玻璃膠囊導覽列 -->
     <header class="header-nav">
@@ -475,10 +486,14 @@
                 </div>
             </div>
             
-            <!-- 右側古典水墨意象印章 -->
+            <!-- 右側創意寫意頭像框 -->
             <div class="hero-visual">
-                <div class="seal-stamp">
-                    李儼翰
+                <div class="profile-avatar-frame">
+                    <!-- 若使用者於作品集資料夾內放置個人相片 "作品集/李儼翰.jpg"，即可自動載入頭像 -->
+                    <img src="作品集/李儼翰.jpg" alt="李儼翰 HAIN" onerror="this.style.display='none'; document.getElementById('avatar-fallback').style.display='flex';">
+                    <div id="avatar-fallback" class="avatar-fallback-seal" style="display: none;">
+                        <span>李儼翰</span>
+                    </div>
                 </div>
             </div>
         </section>
@@ -580,8 +595,8 @@
                 <h3>與我聯絡</h3>
                 <p>不論是 3D 美術開發、技術美術 (TA) 工作流自動化，還是嵌入式 AI 視覺系統整合，都非常歡迎隨時與我交流合作！</p>
                 <div class="download-btn-wrapper">
-                    <a href="作品集/李儼翰.pdf" download="李儼翰_履歷表.pdf" class="download-btn nav-link">
-                        下載完整履歷 PDF
+                    <a href="作品集/李儼翰.pdf" target="_blank" class="download-btn nav-link">
+                        檢視完整履歷 PDF
                     </a>
                 </div>
             </div>
@@ -634,6 +649,6 @@
         }
     }
     </script>
-    <script type="module" src="cursor-bug.js?v=4"></script>
+    <script type="module" src="cursor-bug.js?v=5"></script>
 </body>
 </html>
