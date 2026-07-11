@@ -26,3 +26,11 @@ AI系統
 嵌入式AI影像應用班
 製作年份:2025~2026
 核心技術:Antigravity、python、YOLO、LabelImg
+
+自製 3D_螞蟻
+製作年份:
+核心技術:blender、Substance painter、Unreal
+
+自製 3D_設計
+製作年份:
+核心技術:blender
