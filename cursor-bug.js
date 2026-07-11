@@ -30,6 +30,34 @@ Object.assign(canvas.style, {
 });
 document.body.appendChild(canvas);
 
+// 注入煙霧效果所需的 CSS 樣式
+const smokeStyle = document.createElement('style');
+smokeStyle.textContent = `
+@keyframes inkSmokeSplat {
+    0% {
+        transform: translate(0, 0) scale(0.1) rotate(0deg);
+        opacity: 0.85;
+    }
+    10% {
+        opacity: 0.7;
+    }
+    100% {
+        transform: translate(var(--dx), var(--dy)) scale(var(--scale)) rotate(var(--rot));
+        opacity: 0;
+    }
+}
+.smoke-particle {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(50, 46, 42, 0.75) 0%, rgba(30, 28, 25, 0) 70%);
+    filter: blur(8px);
+    pointer-events: none;
+    transform-origin: center center;
+    will-change: transform, opacity;
+}
+`;
+document.head.appendChild(smokeStyle);
+
 // ═══════════════════════════════════════════════════════════
 // 2. Renderer + Scene + Camera
 // ═══════════════════════════════════════════════════════════
@@ -165,9 +193,15 @@ function spawnContrailParticle(x, y) {
 }
 
 // ═══════════════════════════════════════════════════════════
-// 5. 滑鼠追蹤（不干擾既有的 mousemove listener）
+// 5. 滑鼠與觸控追蹤 (支援多螢幕絕對定位及煙霧特效點座標)
 // ═══════════════════════════════════════════════════════════
+let lastClientX = window.innerWidth / 2;
+let lastClientY = window.innerHeight / 2;
+
 window.addEventListener('mousemove', (e) => {
+    lastClientX = e.clientX;
+    lastClientY = e.clientY;
+
     // 螢幕 → 世界座標
     mouseWorldX = ((e.clientX / window.innerWidth)  * 2 - 1) *  worldHalfW;
     mouseWorldY = ((e.clientY / window.innerHeight) * 2 - 1) * -worldHalfH;
@@ -191,6 +225,16 @@ window.addEventListener('mousemove', (e) => {
 
     prevScreenX = e.clientX;
     prevScreenY = e.clientY;
+}, { passive: true });
+
+// 支援觸控（行動裝置定位）
+window.addEventListener('touchmove', (e) => {
+    if (e.touches && e.touches[0]) {
+        lastClientX = e.touches[0].clientX;
+        lastClientY = e.touches[0].clientY;
+        mouseWorldX = ((lastClientX / window.innerWidth)  * 2 - 1) *  worldHalfW;
+        mouseWorldY = ((lastClientY / window.innerHeight) * 2 - 1) * -worldHalfH;
+    }
 }, { passive: true });
 
 // ═══════════════════════════════════════════════════════════
@@ -282,8 +326,60 @@ window.getTransitionHref = function () {
     return transitionTargetHref;
 };
 
+// 創建煙霧粒子特效
+function createSmokePuff(x, y) {
+    const container = document.createElement('div');
+    container.style.position = 'fixed';
+    container.style.left = x + 'px';
+    container.style.top = y + 'px';
+    container.style.width = '0px';
+    container.style.height = '0px';
+    container.style.pointerEvents = 'none';
+    container.style.zIndex = '9999999'; // 確保煙霧高於所有元素
+    document.body.appendChild(container);
+
+    const particleCount = 8;
+    for (let i = 0; i < particleCount; i++) {
+        const p = document.createElement('div');
+        p.className = 'smoke-particle';
+        
+        // 隨機尺寸 (30px 到 70px)
+        const size = 30 + Math.random() * 40;
+        p.style.width = size + 'px';
+        p.style.height = size + 'px';
+        p.style.left = -(size/2) + 'px';
+        p.style.top = -(size/2) + 'px';
+        
+        // 隨機擴散運動
+        const angle = Math.random() * Math.PI * 2;
+        const distance = 25 + Math.random() * 45;
+        const dx = Math.cos(angle) * distance;
+        const dy = Math.sin(angle) * distance;
+        const scale = 2.0 + Math.random() * 1.8;
+        const rot = (Math.random() - 0.5) * 240;
+        const duration = 700 + Math.random() * 400; // 700ms 到 1100ms
+        
+        p.style.setProperty('--dx', dx + 'px');
+        p.style.setProperty('--dy', dy + 'px');
+        p.style.setProperty('--scale', scale);
+        p.style.setProperty('--rot', rot + 'deg');
+        
+        p.style.animation = `inkSmokeSplat ${duration}ms cubic-bezier(0.1, 0.8, 0.3, 1) forwards`;
+        
+        container.appendChild(p);
+    }
+    
+    // 自動清理
+    setTimeout(() => {
+        container.remove();
+    }, 1200);
+}
+
 // 註冊全域復活昆蟲函式
 window.respawnBug = function () {
+    // 觸發寫意水墨煙霧特效
+    createSmokePuff(lastClientX, lastClientY);
+
     isRespawning = true;
     respawnProgress = 0;
     bugGroup.visible = true;
@@ -521,15 +617,16 @@ function animate() {
             }
         }
     } else if (isRespawning) {
-        respawnProgress += 0.05; // 20 幀 (約 330ms) 孵化變大
+        respawnProgress += 0.025; // 40 幀 (約 660ms) 更加平滑緩緩浮現
         if (respawnProgress > 1.0) respawnProgress = 1.0;
 
         // 正常跟隨
         curX += (mouseWorldX - curX) * LERP_POS;
         curY += (mouseWorldY - curY) * LERP_POS;
 
-        // 漸漸放大
-        bugGroup.scale.setScalar(respawnProgress);
+        // 漸漸放大 (使用 smoothstep 提供極致平滑的 S 曲線進入動畫)
+        const scaleVal = THREE.MathUtils.smoothstep(respawnProgress, 0, 1);
+        bugGroup.scale.setScalar(scaleVal);
 
         if (respawnProgress >= 1.0) {
             isRespawning = false;
