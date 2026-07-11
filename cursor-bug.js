@@ -269,6 +269,7 @@ window.addEventListener('contextmenu', (e) => {
 // ═══════════════════════════════════════════════════════════
 let isEatingMode = false;
 let isRespawning = false;
+let isModelLoaded = false; // 標記 3D 模型是否已載入完成
 let eatProgress = 0;
 let respawnProgress = 0;
 let eatStartX = 0, eatStartY = 0;
@@ -563,6 +564,7 @@ function buildInsect() {
     bugGroup.scale.copy(savedScale);
     bugGroup.updateMatrixWorld(true);
 
+    isModelLoaded = true; // 模型載入完成
     console.log('[BugCursor] ✅ 昆蟲組裝完成，共', bugGroup.children.length, '個子節點');
 }
 
@@ -652,8 +654,8 @@ function animate() {
     const rightTipX = curX + Math.cos(currentYaw - Math.PI / 2) * 0.16;
     const rightTipY = bugYWithHover + Math.sin(currentYaw - Math.PI / 2) * 0.16;
 
-    // 僅在昆蟲可見且正在運動時才生成拉線軌跡，避免隱藏時在中央產生幽靈軌跡
-    if (bugGroup.visible && window.lastLeftTipX !== undefined) {
+    // 僅在 3D 模型載入就緒、昆蟲可見且正在運動時才生成拉線軌跡，避免隱藏或加載中產生幽靈軌跡
+    if (isModelLoaded && bugGroup.visible && window.lastLeftTipX !== undefined) {
         const dist = Math.hypot(leftTipX - window.lastLeftTipX, leftTipY - window.lastLeftTipY);
         // 若移動距離大於閾值，在前後幀路徑上線性插值插滿粒子，形成不斷裂的拉線效果
         if (dist > 0.004) {
