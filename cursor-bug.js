@@ -498,10 +498,16 @@ loader.load(BASE_URL + 'A04.fbx',
 // ═══════════════════════════════════════════════════════════
 function buildInsect() {
     try {
-        const body = fbxObjs.body;
-        const w1   = fbxObjs.w1;
-        const w2   = fbxObjs.w2;
-        const fold = fbxObjs.fold;
+        const rawBody = fbxObjs.body;
+        const rawW1   = fbxObjs.w1;
+        const rawW2   = fbxObjs.w2;
+        const rawFold = fbxObjs.fold;
+
+        // 從 FBX Group 中精確提取單個 Mesh 子節點，避免 A03.fbx 同時包含 Body 和雙翅導致疊影
+        const body = rawBody.getObjectByName('a1') || rawBody;
+        const w1   = rawW1.getObjectByName('a2')   || rawW1;
+        const w2   = rawW2.getObjectByName('a3')   || rawW2;
+        const fold = rawFold.getObjectByName('a1') || rawFold;
 
         // ── 7.0 暫時重置 bugGroup 的旋轉、位置與縮放，防止 BBox 在載入時受滑鼠動畫影響而偏移 ──
         const savedPos   = bugGroup.position.clone();
