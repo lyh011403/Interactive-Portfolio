@@ -99,6 +99,8 @@ const bugGroup = new THREE.Group();
 bugGroup.rotation.order = 'YXZ'; // 設定旋轉順序為 YXZ，優先處理偏航 (Y) 再處理俯仰 (X)，以防側傾與 gimbal lock
 scene.add(bugGroup);
 
+let flyGroup, foldGroup; // 飛行與收翅的獨立子群組
+
 // 游標跟隨狀態（世界座標）
 let mouseWorldX  = 0;
 let mouseWorldY  = 0;
@@ -405,12 +407,12 @@ const normalMap = texLoader.load('/守宮/3D%20BUG/beetle_3d_model_normal.JPEG')
 basecolorMap.colorSpace = THREE.SRGBColorSpace;
 
 let   loadedCnt  = 0;
-const fbxObjs    = { body: null, w1: null, w2: null };
+const fbxObjs    = { body: null, w1: null, w2: null, fold: null };
 
 function onFbxLoaded(key, fbx) {
     fbxObjs[key] = fbx;
     loadedCnt++;
-    console.log(`[BugCursor] FBX loaded: ${key} (${loadedCnt}/3)`);
+    console.log(`[BugCursor] FBX loaded: ${key} (${loadedCnt}/4)`);
 
     // 列出每個 mesh 的名稱
     fbx.traverse(c => {
@@ -419,7 +421,7 @@ function onFbxLoaded(key, fbx) {
         }
     });
 
-    if (loadedCnt === 3) buildInsect();
+    if (loadedCnt === 4) buildInsect();
 }
 
 loader.load(BASE_URL + 'A01.fbx',
@@ -437,6 +439,11 @@ loader.load(BASE_URL + 'A03.fbx',
     undefined,
     err => console.error('[BugCursor] A03 load error:', err)
 );
+loader.load(BASE_URL + 'A04.fbx',
+    fbx => onFbxLoaded('fold', fbx),
+    undefined,
+    err => console.error('[BugCursor] A04 load error:', err)
+);
 
 // ═══════════════════════════════════════════════════════════
 // 7. 組裝昆蟲：縮放、對齊、識別翅膀、建立翅根軸
@@ -445,6 +452,7 @@ function buildInsect() {
     const body = fbxObjs.body;
     const w1   = fbxObjs.w1;
     const w2   = fbxObjs.w2;
+    const fold = fbxObjs.fold;
 
     // ── 7.0 暫時重置 bugGroup 的旋轉、位置與縮放，防止 BBox 在載入時受滑鼠動畫影響而偏移 ──
     const savedPos   = bugGroup.position.clone();
@@ -464,7 +472,7 @@ function buildInsect() {
         side: THREE.DoubleSide
     });
 
-    [body, w1, w2].forEach(obj => {
+    [body, w1, w2, fold].forEach(obj => {
         obj.traverse(child => {
             if (child.isMesh) {
                 child.material = insectMaterial;
@@ -473,7 +481,7 @@ function buildInsect() {
     });
 
     // ── 7.1 計算身體原始大小，推導縮放比例 ──────────────
-    // 先把 body 加入 scene 以便計算 world bbox
+    // 先把 body 暫時加入 bugGroup 以便計算 world bbox
     bugGroup.add(body);
     bugGroup.updateMatrixWorld(true);
 
@@ -489,21 +497,39 @@ function buildInsect() {
 
     console.log(`[BugCursor] bodyMaxDim=${bodyMaxDim.toFixed(3)}, scaleFactor=${scaleFactor.toFixed(5)}, TARGET_SIZE=${TARGET_SIZE.toFixed(3)}`);
 
+    // 移除暫時加入的 body
+    bugGroup.remove(body);
+
     // ── 7.2 套用統一縮放與置中 ────────────────────────────
-    // 身體、翅膀都從 Blender 同一場景匯出，共享座標系
+    // 身體、翅膀、收翅模型都從 Blender 同一場景匯出，共享座標系
     // 套用相同縮放 + 偏移即可對齊
     const offset = bodyCenterOrig.clone().multiplyScalar(-scaleFactor);  // 置中偏移
 
-    [body, w1, w2].forEach(obj => {
+    [body, w1, w2, fold].forEach(obj => {
         obj.scale.setScalar(scaleFactor);
         obj.position.copy(offset);
-        bugGroup.add(obj);
     });
 
-    bugGroup.updateMatrixWorld(true);
+    // 建立飛行與收翅的子群組
+    flyGroup = new THREE.Group();
+    foldGroup = new THREE.Group();
+    bugGroup.add(flyGroup);
+    bugGroup.add(foldGroup);
+
+    // 將各自模型分配至對應組別
+    flyGroup.add(body);
+    flyGroup.add(w1);
+    flyGroup.add(w2);
+    foldGroup.add(fold);
+
+    // 預設飛行顯示，收翅隱藏
+    flyGroup.visible = true;
+    foldGroup.visible = false;
+
+    flyGroup.updateMatrixWorld(true);
+    foldGroup.updateMatrixWorld(true);
 
     // ── 7.3 識別左右翅膀（A02.fbx 固定為左翅，A03.fbx 固定為右翅）──
-    // 消除非同步載入時 BBox worldCenterX 計算不穩定造成的翅膀運動錯亂問題
     const leftWing   = w1; // A02.fbx
     const rightWing  = w2; // A03.fbx
     const leftLabel  = 'A02';
@@ -516,7 +542,6 @@ function buildInsect() {
         const bbox    = new THREE.Box3().setFromObject(wingObj);
         const center  = bbox.getCenter(new THREE.Vector3());
 
-        // 翅根 = bbox 在 X 軸上最靠近身體中心（X=0）的一側
         // 右翅：min.x 那側（最左邊）最近 body；左翅：max.x 那側
         const rootX   = isRight ? bbox.min.x : bbox.max.x;
         const rootPos = new THREE.Vector3(rootX, center.y, center.z);
@@ -527,11 +552,11 @@ function buildInsect() {
         // 建立 pivot group，放在翅根位置
         const pivot = new THREE.Group();
         pivot.position.copy(rootPos);
-        bugGroup.add(pivot);
+        flyGroup.add(pivot);
 
-        // 把 wingObj 從 bugGroup 移到 pivot，更新 position 以相對 pivot
-        bugGroup.remove(wingObj);
-        wingObj.position.sub(rootPos);   // 在 bugGroup local space 重新計算相對位置
+        // 把 wingObj 從 flyGroup 移到 pivot，更新 position 以相對 pivot
+        flyGroup.remove(wingObj);
+        wingObj.position.sub(rootPos);   // 在 flyGroup local space 重新計算相對位置
         pivot.add(wingObj);
 
         return pivot;
@@ -579,6 +604,17 @@ let t0 = performance.now();
 function animate() {
     requestAnimationFrame(animate);
     const t = (performance.now() - t0) / 1000;  // 秒
+
+    // 依據懸停狀態，動態切換飛行 (A01+A02+A03) 與收翅 (A04) 模型
+    if (isModelLoaded) {
+        if (isHoveringInteractive && !isEatingMode) {
+            flyGroup.visible = false;
+            foldGroup.visible = true;
+        } else {
+            flyGroup.visible = true;
+            foldGroup.visible = false;
+        }
+    }
 
     // 8.1 位置平滑跟隨 與 咬食 / 復活動畫
     if (isEatingMode) {
@@ -654,8 +690,8 @@ function animate() {
     const rightTipX = curX + Math.cos(currentYaw - Math.PI / 2) * 0.16;
     const rightTipY = bugYWithHover + Math.sin(currentYaw - Math.PI / 2) * 0.16;
 
-    // 僅在 3D 模型載入就緒、昆蟲可見且正在運動時才生成拉線軌跡，避免隱藏或加載中產生幽靈軌跡
-    if (isModelLoaded && bugGroup.visible && window.lastLeftTipX !== undefined) {
+    // 僅在 3D 模型載入就緒、飛行中、昆蟲可見且正在運動時才生成拉線軌跡，避免隱藏、加載中或收翅懸停時產生幽靈軌跡
+    if (isModelLoaded && bugGroup.visible && !isHoveringInteractive && window.lastLeftTipX !== undefined) {
         const dist = Math.hypot(leftTipX - window.lastLeftTipX, leftTipY - window.lastLeftTipY);
         // 若移動距離大於閾值，在前後幀路徑上線性插值插滿粒子，形成不斷裂的拉線效果
         if (dist > 0.004) {

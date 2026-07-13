@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +9,9 @@
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;700&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300;1,600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;700&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300;1,600&family=JetBrains+Mono:wght@400&display=swap"
+        rel="stylesheet">
     <style>
         /* ── 隱藏預設滑鼠游標，確保 3D 昆蟲游標在所有元素（包括按鈕、彈窗、圖片）上都正常運作 ── */
         .portfolio-body,
@@ -80,7 +83,8 @@
             color: var(--muted);
             cursor: pointer;
             padding: 8px 18px;
-            border-radius: 30px; /* 質感膠囊形小按鈕 */
+            border-radius: 30px;
+            /* 質感膠囊形小按鈕 */
             transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
@@ -88,7 +92,8 @@
             background: rgba(20, 18, 16, 0.07);
             border-color: var(--ink);
             color: var(--ink);
-            transform: translateY(-2px); /* 懸停時微微浮起，回饋感拉滿 */
+            transform: translateY(-2px);
+            /* 懸停時微微浮起，回饋感拉滿 */
         }
 
         .filter-btn.active {
@@ -315,7 +320,8 @@
             align-items: center;
             justify-content: center;
             border-radius: 50%;
-            opacity: 0.35; /* 預設虛化淡出，不遮擋作品視野 */
+            opacity: 0.35;
+            /* 預設虛化淡出，不遮擋作品視野 */
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
             z-index: 10;
         }
@@ -324,11 +330,17 @@
             background: var(--accent);
             border-color: var(--accent);
             opacity: 0.9;
-            transform: translateY(-50%) scale(1.05); /* 懸停時清晰並略微變大 */
+            transform: translateY(-50%) scale(1.05);
+            /* 懸停時清晰並略微變大 */
         }
 
-        .arrow-left { left: 20px; }
-        .arrow-right { right: 20px; }
+        .arrow-left {
+            left: 20px;
+        }
+
+        .arrow-right {
+            right: 20px;
+        }
 
         .slider-counter {
             position: absolute;
@@ -439,19 +451,23 @@
                 grid-template-columns: 1fr;
                 max-height: 90vh;
             }
+
             .modal-detail-pane {
                 max-height: 40vh;
                 padding: 30px;
             }
+
             .modal-media-pane {
                 min-height: 300px;
             }
+
             .modal {
                 padding: 15px;
             }
         }
     </style>
 </head>
+
 <body class="portfolio-body" style="cursor:none;">
 
     <!-- 全域紙質噪音背景層 -->
@@ -500,15 +516,13 @@
         <section class="works-grid" id="worksGrid">
 
             <!-- ── 黃易群俠傳m 系列 (展開為 5 張卡片) ── -->
-<article class="work-card" data-category="he-m" 
-                     data-title="黃易群俠傳m" 
-                     data-year="2019~2021"
-                     data-tech="3D MAX、Substance painter"
-                     data-images="作品集/專案/黃易群俠傳m/01 (1).png,作品集/專案/黃易群俠傳m/01 (2).png,作品集/專案/黃易群俠傳m/01 (3).PNG">
+            <article class="work-card" data-category="he-m" data-title="黃易群俠傳m" data-year="2019~2021"
+                data-tech="3D MAX、Substance painter"
+                data-images="作品集/專案/黃易群俠傳m/01 (1).png,作品集/專案/黃易群俠傳m/01 (2).png,作品集/專案/黃易群俠傳m/01 (3).PNG">
                 <div class="work-img-wrapper">
                     <img class="work-img" src="作品集/專案/黃易群俠傳m/01 (1).png" alt="黃易角色">
                 </div>
-                
+
                 <div class="work-info">
                     <div class="work-meta-row">
                         <span class="work-category">黃易群俠傳m</span>
@@ -520,15 +534,13 @@
                 </div>
             </article>
 
-<article class="work-card" data-category="he-m" 
-                     data-title="黃易群俠傳m" 
-                     data-year="2019~2021"
-                     data-tech="3D MAX、Substance painter"
-                     data-images="作品集/專案/黃易群俠傳m/02 (1).PNG,作品集/專案/黃易群俠傳m/02 (2).PNG,作品集/專案/黃易群俠傳m/02 (3).PNG">
+            <article class="work-card" data-category="he-m" data-title="黃易群俠傳m" data-year="2019~2021"
+                data-tech="3D MAX、Substance painter"
+                data-images="作品集/專案/黃易群俠傳m/02 (1).PNG,作品集/專案/黃易群俠傳m/02 (2).PNG,作品集/專案/黃易群俠傳m/02 (3).PNG">
                 <div class="work-img-wrapper">
                     <img class="work-img" src="作品集/專案/黃易群俠傳m/02 (1).PNG" alt="黃易場景">
                 </div>
-                
+
                 <div class="work-info">
                     <div class="work-meta-row">
                         <span class="work-category">黃易群俠傳m</span>
@@ -540,15 +552,12 @@
                 </div>
             </article>
 
-<article class="work-card" data-category="he-m" 
-                     data-title="黃易群俠傳m" 
-                     data-year="2019~2021"
-                     data-tech="3D MAX、Substance painter"
-                     data-images="作品集/專案/黃易群俠傳m/03 (1).png,作品集/專案/黃易群俠傳m/03 (2).png">
+            <article class="work-card" data-category="he-m" data-title="黃易群俠傳m" data-year="2019~2021"
+                data-tech="3D MAX、Substance painter" data-images="作品集/專案/黃易群俠傳m/03 (1).png,作品集/專案/黃易群俠傳m/03 (2).png">
                 <div class="work-img-wrapper">
                     <img class="work-img" src="作品集/專案/黃易群俠傳m/03 (1).png" alt="黃易武器">
                 </div>
-                
+
                 <div class="work-info">
                     <div class="work-meta-row">
                         <span class="work-category">黃易群俠傳m</span>
@@ -560,15 +569,12 @@
                 </div>
             </article>
 
-<article class="work-card" data-category="he-m" 
-                     data-title="黃易群俠傳m" 
-                     data-year="2019~2021"
-                     data-tech="3D MAX、Substance painter"
-                     data-images="作品集/專案/黃易群俠傳m/04 (1).png,作品集/專案/黃易群俠傳m/04 (2).png">
+            <article class="work-card" data-category="he-m" data-title="黃易群俠傳m" data-year="2019~2021"
+                data-tech="3D MAX、Substance painter" data-images="作品集/專案/黃易群俠傳m/04 (1).png,作品集/專案/黃易群俠傳m/04 (2).png">
                 <div class="work-img-wrapper">
                     <img class="work-img" src="作品集/專案/黃易群俠傳m/04 (1).png" alt="黃易UI">
                 </div>
-                
+
                 <div class="work-info">
                     <div class="work-meta-row">
                         <span class="work-category">黃易群俠傳m</span>
@@ -580,15 +586,12 @@
                 </div>
             </article>
 
-<article class="work-card" data-category="he-m" 
-                     data-title="黃易群俠傳m" 
-                     data-year="2019~2021"
-                     data-tech="3D MAX、Substance painter"
-                     data-images="作品集/專案/黃易群俠傳m/05 (1).png,作品集/專案/黃易群俠傳m/05 (2).png">
+            <article class="work-card" data-category="he-m" data-title="黃易群俠傳m" data-year="2019~2021"
+                data-tech="3D MAX、Substance painter" data-images="作品集/專案/黃易群俠傳m/05 (1).png,作品集/專案/黃易群俠傳m/05 (2).png">
                 <div class="work-img-wrapper">
                     <img class="work-img" src="作品集/專案/黃易群俠傳m/05 (1).png" alt="黃易原畫">
                 </div>
-                
+
                 <div class="work-info">
                     <div class="work-meta-row">
                         <span class="work-category">黃易群俠傳m</span>
@@ -601,15 +604,13 @@
             </article>
 
             <!-- ── 天子傳奇S 系列 (展開為 5 張卡片) ── -->
-<article class="work-card" data-category="legend-s" 
-                     data-title="天子傳奇S" 
-                     data-year="2021~2023"
-                     data-tech="blender、Substance painter"
-                     data-images="作品集/專案/天子傳奇S/01 (1).png,作品集/專案/天子傳奇S/01 (2).png,作品集/專案/天子傳奇S/01 (3).png,作品集/專案/天子傳奇S/01 (4).png,作品集/專案/天子傳奇S/01 (5).png,作品集/專案/天子傳奇S/01 (6).png,作品集/專案/天子傳奇S/01 (7).png,作品集/專案/天子傳奇S/01 (8).png">
+            <article class="work-card" data-category="legend-s" data-title="天子傳奇S" data-year="2021~2023"
+                data-tech="blender、Substance painter"
+                data-images="作品集/專案/天子傳奇S/01 (1).png,作品集/專案/天子傳奇S/01 (2).png,作品集/專案/天子傳奇S/01 (3).png,作品集/專案/天子傳奇S/01 (4).png,作品集/專案/天子傳奇S/01 (5).png,作品集/專案/天子傳奇S/01 (6).png,作品集/專案/天子傳奇S/01 (7).png,作品集/專案/天子傳奇S/01 (8).png">
                 <div class="work-img-wrapper">
                     <img class="work-img" src="作品集/專案/天子傳奇S/01 (1).png" alt="天子介面1">
                 </div>
-                
+
                 <div class="work-info">
                     <div class="work-meta-row">
                         <span class="work-category">天子傳奇S</span>
@@ -621,15 +622,13 @@
                 </div>
             </article>
 
-<article class="work-card" data-category="legend-s" 
-                     data-title="天子傳奇S" 
-                     data-year="2021~2023"
-                     data-tech="blender、Substance painter"
-                     data-images="作品集/專案/天子傳奇S/02 (1).png,作品集/專案/天子傳奇S/02 (2).png,作品集/專案/天子傳奇S/02 (3).png,作品集/專案/天子傳奇S/02 (4).png,作品集/專案/天子傳奇S/02.png">
+            <article class="work-card" data-category="legend-s" data-title="天子傳奇S" data-year="2021~2023"
+                data-tech="blender、Substance painter"
+                data-images="作品集/專案/天子傳奇S/02 (1).png,作品集/專案/天子傳奇S/02 (2).png,作品集/專案/天子傳奇S/02 (3).png,作品集/專案/天子傳奇S/02 (4).png,作品集/專案/天子傳奇S/02.png">
                 <div class="work-img-wrapper">
                     <img class="work-img" src="作品集/專案/天子傳奇S/02 (1).png" alt="天子場景2">
                 </div>
-                
+
                 <div class="work-info">
                     <div class="work-meta-row">
                         <span class="work-category">天子傳奇S</span>
@@ -641,15 +640,13 @@
                 </div>
             </article>
 
-<article class="work-card" data-category="legend-s" 
-                     data-title="天子傳奇S" 
-                     data-year="2021~2023"
-                     data-tech="blender、Substance painter"
-                     data-images="作品集/專案/天子傳奇S/03 (1).png,作品集/專案/天子傳奇S/03 (6).png,作品集/專案/天子傳奇S/03 (7).png,作品集/專案/天子傳奇S/03 (8).png,作品集/專案/天子傳奇S/03 (9).png,作品集/專案/天子傳奇S/03 (10).png,作品集/專案/天子傳奇S/03 (11).png">
+            <article class="work-card" data-category="legend-s" data-title="天子傳奇S" data-year="2021~2023"
+                data-tech="blender、Substance painter"
+                data-images="作品集/專案/天子傳奇S/03 (1).png,作品集/專案/天子傳奇S/03 (6).png,作品集/專案/天子傳奇S/03 (7).png,作品集/專案/天子傳奇S/03 (8).png,作品集/專案/天子傳奇S/03 (9).png,作品集/專案/天子傳奇S/03 (10).png,作品集/專案/天子傳奇S/03 (11).png">
                 <div class="work-img-wrapper">
                     <img class="work-img" src="作品集/專案/天子傳奇S/03 (1).png" alt="天子雕刻3">
                 </div>
-                
+
                 <div class="work-info">
                     <div class="work-meta-row">
                         <span class="work-category">天子傳奇S</span>
@@ -661,15 +658,13 @@
                 </div>
             </article>
 
-<article class="work-card" data-category="legend-s" 
-                     data-title="天子傳奇S" 
-                     data-year="2021~2023"
-                     data-tech="blender、Substance painter"
-                     data-images="作品集/專案/天子傳奇S/04 (1).png,作品集/專案/天子傳奇S/04 (2).png,作品集/專案/天子傳奇S/04 (3).png,作品集/專案/天子傳奇S/04 (4).png,作品集/專案/天子傳奇S/04 (5).png,作品集/專案/天子傳奇S/04 (6).png,作品集/專案/天子傳奇S/04 (7).png">
+            <article class="work-card" data-category="legend-s" data-title="天子傳奇S" data-year="2021~2023"
+                data-tech="blender、Substance painter"
+                data-images="作品集/專案/天子傳奇S/04 (1).png,作品集/專案/天子傳奇S/04 (2).png,作品集/專案/天子傳奇S/04 (3).png,作品集/專案/天子傳奇S/04 (4).png,作品集/專案/天子傳奇S/04 (5).png,作品集/專案/天子傳奇S/04 (6).png,作品集/專案/天子傳奇S/04 (7).png">
                 <div class="work-img-wrapper">
                     <img class="work-img" src="作品集/專案/天子傳奇S/04 (1).png" alt="天子武器4">
                 </div>
-                
+
                 <div class="work-info">
                     <div class="work-meta-row">
                         <span class="work-category">天子傳奇S</span>
@@ -681,15 +676,12 @@
                 </div>
             </article>
 
-<article class="work-card" data-category="legend-s" 
-                     data-title="天子傳奇S" 
-                     data-year="2021~2023"
-                     data-tech="blender、Substance painter"
-                     data-images="作品集/專案/天子傳奇S/05 (1).png,作品集/專案/天子傳奇S/05 (2).png">
+            <article class="work-card" data-category="legend-s" data-title="天子傳奇S" data-year="2021~2023"
+                data-tech="blender、Substance painter" data-images="作品集/專案/天子傳奇S/05 (1).png,作品集/專案/天子傳奇S/05 (2).png">
                 <div class="work-img-wrapper">
                     <img class="work-img" src="作品集/專案/天子傳奇S/05 (1).png" alt="天子合成5">
                 </div>
-                
+
                 <div class="work-info">
                     <div class="work-meta-row">
                         <span class="work-category">天子傳奇S</span>
@@ -702,15 +694,13 @@
             </article>
 
             <!-- ── 飄流幻境RE 系列 (展開為 9 張卡片) ── -->
-<article class="work-card" data-category="wonderland-re" 
-                     data-title="飄流幻境RE" 
-                     data-year="2023~2025"
-                     data-tech="blender、GPT、GEMINI、TRIPO、Hunyuan3D"
-                     data-images="作品集/專案/飄流幻境RE/01 (1).png,作品集/專案/飄流幻境RE/01 (2).png">
+            <article class="work-card" data-category="wonderland-re" data-title="飄流幻境RE" data-year="2023~2025"
+                data-tech="blender、GPT、GEMINI、TRIPO、Hunyuan3D"
+                data-images="作品集/專案/飄流幻境RE/01 (1).png,作品集/專案/飄流幻境RE/01 (2).png">
                 <div class="work-img-wrapper">
                     <img class="work-img" src="作品集/專案/飄流幻境RE/01 (1).png" alt="飄流1">
                 </div>
-                
+
                 <div class="work-info">
                     <div class="work-meta-row">
                         <span class="work-category">飄流幻境RE</span>
@@ -722,15 +712,13 @@
                 </div>
             </article>
 
-<article class="work-card" data-category="wonderland-re" 
-                     data-title="飄流幻境RE" 
-                     data-year="2023~2025"
-                     data-tech="blender、GPT、GEMINI、TRIPO、Hunyuan3D"
-                     data-images="作品集/專案/飄流幻境RE/02 (1).png,作品集/專案/飄流幻境RE/02 (2).png">
+            <article class="work-card" data-category="wonderland-re" data-title="飄流幻境RE" data-year="2023~2025"
+                data-tech="blender、GPT、GEMINI、TRIPO、Hunyuan3D"
+                data-images="作品集/專案/飄流幻境RE/02 (1).png,作品集/專案/飄流幻境RE/02 (2).png">
                 <div class="work-img-wrapper">
                     <img class="work-img" src="作品集/專案/飄流幻境RE/02 (1).png" alt="飄流2">
                 </div>
-                
+
                 <div class="work-info">
                     <div class="work-meta-row">
                         <span class="work-category">飄流幻境RE</span>
@@ -742,15 +730,13 @@
                 </div>
             </article>
 
-<article class="work-card" data-category="wonderland-re" 
-                     data-title="飄流幻境RE" 
-                     data-year="2023~2025"
-                     data-tech="blender、GPT、GEMINI、TRIPO、Hunyuan3D"
-                     data-images="作品集/專案/飄流幻境RE/03 (1).png,作品集/專案/飄流幻境RE/03 (2).png">
+            <article class="work-card" data-category="wonderland-re" data-title="飄流幻境RE" data-year="2023~2025"
+                data-tech="blender、GPT、GEMINI、TRIPO、Hunyuan3D"
+                data-images="作品集/專案/飄流幻境RE/03 (1).png,作品集/專案/飄流幻境RE/03 (2).png">
                 <div class="work-img-wrapper">
                     <img class="work-img" src="作品集/專案/飄流幻境RE/03 (1).png" alt="飄流3">
                 </div>
-                
+
                 <div class="work-info">
                     <div class="work-meta-row">
                         <span class="work-category">飄流幻境RE</span>
@@ -762,15 +748,12 @@
                 </div>
             </article>
 
-<article class="work-card" data-category="wonderland-re" 
-                     data-title="飄流幻境RE" 
-                     data-year="2023~2025"
-                     data-tech="blender、GPT、GEMINI、TRIPO"
-                     data-images="作品集/專案/飄流幻境RE/04 (1).png,作品集/專案/飄流幻境RE/04 (2).png">
+            <article class="work-card" data-category="wonderland-re" data-title="飄流幻境RE" data-year="2023~2025"
+                data-tech="blender、GPT、GEMINI、TRIPO" data-images="作品集/專案/飄流幻境RE/04 (1).png,作品集/專案/飄流幻境RE/04 (2).png">
                 <div class="work-img-wrapper">
                     <img class="work-img" src="作品集/專案/飄流幻境RE/04 (1).png" alt="飄流4">
                 </div>
-                
+
                 <div class="work-info">
                     <div class="work-meta-row">
                         <span class="work-category">飄流幻境RE</span>
@@ -782,15 +765,12 @@
                 </div>
             </article>
 
-<article class="work-card" data-category="wonderland-re" 
-                     data-title="飄流幻境RE" 
-                     data-year="2023~2025"
-                     data-tech="blender、GPT、GEMINI"
-                     data-images="作品集/專案/飄流幻境RE/05 (1).png,作品集/專案/飄流幻境RE/05 (2).png">
+            <article class="work-card" data-category="wonderland-re" data-title="飄流幻境RE" data-year="2023~2025"
+                data-tech="blender、GPT、GEMINI" data-images="作品集/專案/飄流幻境RE/05 (1).png,作品集/專案/飄流幻境RE/05 (2).png">
                 <div class="work-img-wrapper">
                     <img class="work-img" src="作品集/專案/飄流幻境RE/05 (1).png" alt="飄流5">
                 </div>
-                
+
                 <div class="work-info">
                     <div class="work-meta-row">
                         <span class="work-category">飄流幻境RE</span>
@@ -802,15 +782,13 @@
                 </div>
             </article>
 
-<article class="work-card" data-category="wonderland-re" 
-                     data-title="飄流幻境RE" 
-                     data-year="2023~2025"
-                     data-tech="blender、GPT、GEMINI"
-                     data-images="作品集/專案/飄流幻境RE/06 (1).png,作品集/專案/飄流幻境RE/06 (2).png,作品集/專案/飄流幻境RE/06 (3).png,作品集/專案/飄流幻境RE/06 (4).png">
+            <article class="work-card" data-category="wonderland-re" data-title="飄流幻境RE" data-year="2023~2025"
+                data-tech="blender、GPT、GEMINI"
+                data-images="作品集/專案/飄流幻境RE/06 (1).png,作品集/專案/飄流幻境RE/06 (2).png,作品集/專案/飄流幻境RE/06 (3).png,作品集/專案/飄流幻境RE/06 (4).png">
                 <div class="work-img-wrapper">
                     <img class="work-img" src="作品集/專案/飄流幻境RE/06 (1).png" alt="飄流6">
                 </div>
-                
+
                 <div class="work-info">
                     <div class="work-meta-row">
                         <span class="work-category">飄流幻境RE</span>
@@ -822,15 +800,12 @@
                 </div>
             </article>
 
-<article class="work-card" data-category="wonderland-re" 
-                     data-title="飄流幻境RE" 
-                     data-year="2023~2025"
-                     data-tech="blender、GPT、GEMINI"
-                     data-images="作品集/專案/飄流幻境RE/07 (1).png,作品集/專案/飄流幻境RE/07 (2).png">
+            <article class="work-card" data-category="wonderland-re" data-title="飄流幻境RE" data-year="2023~2025"
+                data-tech="blender、GPT、GEMINI" data-images="作品集/專案/飄流幻境RE/07 (1).png,作品集/專案/飄流幻境RE/07 (2).png">
                 <div class="work-img-wrapper">
                     <img class="work-img" src="作品集/專案/飄流幻境RE/07 (1).png" alt="飄流7">
                 </div>
-                
+
                 <div class="work-info">
                     <div class="work-meta-row">
                         <span class="work-category">飄流幻境RE</span>
@@ -842,15 +817,12 @@
                 </div>
             </article>
 
-<article class="work-card" data-category="wonderland-re" 
-                     data-title="飄流幻境RE" 
-                     data-year="2023~2025"
-                     data-tech="blender、GPT、TRIPO"
-                     data-images="作品集/專案/飄流幻境RE/08.png">
+            <article class="work-card" data-category="wonderland-re" data-title="飄流幻境RE" data-year="2023~2025"
+                data-tech="blender、GPT、TRIPO" data-images="作品集/專案/飄流幻境RE/08.png">
                 <div class="work-img-wrapper">
                     <img class="work-img" src="作品集/專案/飄流幻境RE/08.png" alt="飄流8">
                 </div>
-                
+
                 <div class="work-info">
                     <div class="work-meta-row">
                         <span class="work-category">飄流幻境RE</span>
@@ -862,15 +834,13 @@
                 </div>
             </article>
 
-<article class="work-card" data-category="wonderland-re" 
-                     data-title="飄流幻境RE" 
-                     data-year="2023~2025"
-                     data-tech="blender、GPT"
-                     data-images="作品集/專案/飄流幻境RE/09 (1).png,作品集/專案/飄流幻境RE/09 (2).png,作品集/專案/飄流幻境RE/09 (3).png,作品集/專案/飄流幻境RE/09 (4).png">
+            <article class="work-card" data-category="wonderland-re" data-title="飄流幻境RE" data-year="2023~2025"
+                data-tech="blender、GPT"
+                data-images="作品集/專案/飄流幻境RE/09 (1).png,作品集/專案/飄流幻境RE/09 (2).png,作品集/專案/飄流幻境RE/09 (3).png,作品集/專案/飄流幻境RE/09 (4).png">
                 <div class="work-img-wrapper">
                     <img class="work-img" src="作品集/專案/飄流幻境RE/09 (1).png" alt="飄流9">
                 </div>
-                
+
                 <div class="work-info">
                     <div class="work-meta-row">
                         <span class="work-category">飄流幻境RE</span>
@@ -883,16 +853,16 @@
             </article>
 
             <!-- ── 自製 3D 系列 (展開為 2 張卡片) ── -->
-<article class="work-card" data-category="self-3d" 
-                     data-title="自製3D - 螞蟻系列虛擬場景漫遊" 
-                     data-year=""
-                     data-tech="blender、Substance painter、Unreal"
-                     data-images="作品集/自製3D/螞蟻/MyProject - Unreal Editor 2025-09-29 16-39-41.mp4,作品集/自製3D/螞蟻/Screenshot_2.png,作品集/自製3D/螞蟻/Screenshot_3.png,作品集/自製3D/螞蟻/Screenshot_4.png,作品集/自製3D/螞蟻/lyh_et-b1a-2048.jpg,作品集/自製3D/螞蟻/lyh_et-b2a-2048.jpg,作品集/自製3D/螞蟻/lyh_et-b3a-2048.jpg,作品集/自製3D/螞蟻/02.jpg,作品集/自製3D/螞蟻/03.jpg,作品集/自製3D/螞蟻/05.jpg">
+            <article class="work-card" data-category="self-3d" data-title="自製3D - 螞蟻系列虛擬場景漫遊" data-year=""
+                data-tech="blender、Substance painter、Unreal"
+                data-images="作品集/自製3D/螞蟻/MyProject - Unreal Editor 2025-09-29 16-39-41.mp4,作品集/自製3D/螞蟻/Screenshot_2.png,作品集/自製3D/螞蟻/Screenshot_3.png,作品集/自製3D/螞蟻/Screenshot_4.png,作品集/自製3D/螞蟻/lyh_et-b1a-2048.jpg,作品集/自製3D/螞蟻/lyh_et-b2a-2048.jpg,作品集/自製3D/螞蟻/lyh_et-b3a-2048.jpg,作品集/自製3D/螞蟻/02.jpg,作品集/自製3D/螞蟻/03.jpg,作品集/自製3D/螞蟻/05.jpg">
                 <div class="work-img-wrapper">
                     <span class="video-badge">VIDEO / 3D</span>
-                    <video class="work-img" style="object-fit:cover;" src="作品集/自製3D/螞蟻/MyProject - Unreal Editor 2025-09-29 16-39-41.mp4" muted loop autoplay playsinline preload="metadata"></video>
+                    <video class="work-img" style="object-fit:cover;"
+                        src="作品集/自製3D/螞蟻/MyProject - Unreal Editor 2025-09-29 16-39-41.mp4" muted loop autoplay
+                        playsinline preload="metadata"></video>
                 </div>
-                
+
                 <div class="work-info">
                     <div class="work-meta-row">
                         <span class="work-category">自製3D</span>
@@ -904,15 +874,13 @@
                 </div>
             </article>
 
-<article class="work-card" data-category="self-3d" 
-                     data-title="自製3D - PBR幾何設計與概念建模" 
-                     data-year=""
-                     data-tech="blender"
-                     data-images="作品集/自製3D/設計/b (1).png,作品集/自製3D/設計/b (2).png,作品集/自製3D/設計/b (3).png,作品集/自製3D/設計/b (4).png">
+            <article class="work-card" data-category="self-3d" data-title="自製3D - PBR幾何設計與概念建模" data-year=""
+                data-tech="blender"
+                data-images="作品集/自製3D/設計/b (1).png,作品集/自製3D/設計/b (2).png,作品集/自製3D/設計/b (3).png,作品集/自製3D/設計/b (4).png">
                 <div class="work-img-wrapper">
                     <img class="work-img" src="作品集/自製3D/設計/b (1).png" alt="自製3D設計">
                 </div>
-                
+
                 <div class="work-info">
                     <div class="work-meta-row">
                         <span class="work-category">自製3D</span>
@@ -925,16 +893,15 @@
             </article>
 
             <!-- ── AI 2D 系列 (2 張卡片) ── -->
-<article class="work-card" data-category="ai-2d" 
-                     data-title="AI 2D 楓之谷風格角色設計" 
-                     data-year="2025~2026"
-                     data-tech="GPT、GEMINI、GEMINI GEM、VEO"
-                     data-images="作品集/AI 2D/楓之谷造型/msw_czUdrpOPmu.mp4,作品集/AI 2D/楓之谷造型/msw_dET2sBT8b0.mp4">
+            <article class="work-card" data-category="ai-2d" data-title="AI 2D 楓之谷風格角色設計" data-year="2025~2026"
+                data-tech="GPT、GEMINI、GEMINI GEM、VEO"
+                data-images="作品集/AI 2D/楓之谷造型/msw_czUdrpOPmu.mp4,作品集/AI 2D/楓之谷造型/msw_dET2sBT8b0.mp4">
                 <div class="work-img-wrapper">
                     <span class="video-badge">VIDEO / 2D</span>
-                    <video class="work-img" style="object-fit:cover;" src="作品集/AI 2D/楓之谷造型/msw_czUdrpOPmu.mp4" muted loop autoplay playsinline preload="metadata"></video>
+                    <video class="work-img" style="object-fit:cover;" src="作品集/AI 2D/楓之谷造型/msw_czUdrpOPmu.mp4" muted
+                        loop autoplay playsinline preload="metadata"></video>
                 </div>
-                
+
                 <div class="work-info">
                     <div class="work-meta-row">
                         <span class="work-category">AI 2D</span>
@@ -946,15 +913,13 @@
                 </div>
             </article>
 
-<article class="work-card" data-category="ai-2d" 
-                     data-title="AI 2D - 二維 AI 風格寫意動畫與概念插畫" 
-                     data-year="2025~2026"
-                     data-tech="GPT、GEMINI、GEMINI GEM、VEO"
-                     data-images="作品集/AI 2D/自製系列/windmill-1.png,作品集/AI 2D/自製系列/Grass.png,作品集/AI 2D/自製系列/house01.png,作品集/AI 2D/自製系列/懺悔的鐘徒.mp4,作品集/AI 2D/自製系列/聚合主母·「厄兆結」.mp4">
+            <article class="work-card" data-category="ai-2d" data-title="AI 2D - 二維 AI 風格寫意動畫與概念插畫"
+                data-year="2025~2026" data-tech="GPT、GEMINI、GEMINI GEM、VEO"
+                data-images="作品集/AI 2D/自製系列/windmill-1.png,作品集/AI 2D/自製系列/Grass.png,作品集/AI 2D/自製系列/house01.png,作品集/AI 2D/自製系列/懺悔的鐘徒.mp4,作品集/AI 2D/自製系列/聚合主母·「厄兆結」.mp4">
                 <div class="work-img-wrapper">
                     <img class="work-img" src="作品集/AI 2D/自製系列/windmill-1.png" alt="AI 2D">
                 </div>
-                
+
                 <div class="work-info">
                     <div class="work-meta-row">
                         <span class="work-category">AI 2D</span>
@@ -967,15 +932,13 @@
             </article>
 
             <!-- ── AI 3D 系列 (4 張卡片) ── -->
-<article class="work-card" data-category="ai-3d" 
-                     data-title="AI 3D 巨魔角色建模與神經雕刻" 
-                     data-year="2025~2026"
-                     data-tech="blender、GPT、GEMINI、TRIPO、Hunyuan3D、GEMINI GEM"
-                     data-images="作品集/AI 3D/巨魔/ai3d_1.png,作品集/AI 3D/巨魔/ai3d_2.png,作品集/AI 3D/巨魔/ai3d_3.png">
+            <article class="work-card" data-category="ai-3d" data-title="AI 3D 巨魔角色建模與神經雕刻" data-year="2025~2026"
+                data-tech="blender、GPT、GEMINI、TRIPO、Hunyuan3D、GEMINI GEM"
+                data-images="作品集/AI 3D/巨魔/ai3d_1.png,作品集/AI 3D/巨魔/ai3d_2.png,作品集/AI 3D/巨魔/ai3d_3.png">
                 <div class="work-img-wrapper">
                     <img class="work-img" src="作品集/AI 3D/巨魔/ai3d_1.png" alt="AI 3D 巨魔">
                 </div>
-                
+
                 <div class="work-info">
                     <div class="work-meta-row">
                         <span class="work-category">AI 3D</span>
@@ -987,15 +950,13 @@
                 </div>
             </article>
 
-<article class="work-card" data-category="ai-3d" 
-                     data-title="AI 3D 石頭人雕像快速建模" 
-                     data-year="2025~2026"
-                     data-tech="blender、GPT、GEMINI、TRIPO、Hunyuan3D、GEMINI GEM"
-                     data-images="作品集/AI 3D/石頭人/ai3d_4.png,作品集/AI 3D/石頭人/ai3d_5.png,作品集/AI 3D/石頭人/ai3d_6.png,作品集/AI 3D/石頭人/ai3d_7.png">
+            <article class="work-card" data-category="ai-3d" data-title="AI 3D 石頭人雕像快速建模" data-year="2025~2026"
+                data-tech="blender、GPT、GEMINI、TRIPO、Hunyuan3D、GEMINI GEM"
+                data-images="作品集/AI 3D/石頭人/ai3d_4.png,作品集/AI 3D/石頭人/ai3d_5.png,作品集/AI 3D/石頭人/ai3d_6.png,作品集/AI 3D/石頭人/ai3d_7.png">
                 <div class="work-img-wrapper">
                     <img class="work-img" src="作品集/AI 3D/石頭人/ai3d_4.png" alt="AI 3D 石頭人">
                 </div>
-                
+
                 <div class="work-info">
                     <div class="work-meta-row">
                         <span class="work-category">AI 3D</span>
@@ -1007,15 +968,13 @@
                 </div>
             </article>
 
-<article class="work-card" data-category="ai-3d" 
-                     data-title="AI 3D 兔子餐車概念渲染" 
-                     data-year="2025~2026"
-                     data-tech="blender、GPT、GEMINI、TRIPO、Hunyuan3D、GEMINI GEM"
-                     data-images="作品集/AI 3D/兔子餐車/ai3d_9.png,作品集/AI 3D/兔子餐車/ai3d_8.png">
+            <article class="work-card" data-category="ai-3d" data-title="AI 3D 兔子餐車概念渲染" data-year="2025~2026"
+                data-tech="blender、GPT、GEMINI、TRIPO、Hunyuan3D、GEMINI GEM"
+                data-images="作品集/AI 3D/兔子餐車/ai3d_9.png,作品集/AI 3D/兔子餐車/ai3d_8.png">
                 <div class="work-img-wrapper">
                     <img class="work-img" src="作品集/AI 3D/兔子餐車/ai3d_9.png" alt="AI 3D 兔子餐車">
                 </div>
-                
+
                 <div class="work-info">
                     <div class="work-meta-row">
                         <span class="work-category">AI 3D</span>
@@ -1027,15 +986,13 @@
                 </div>
             </article>
 
-<article class="work-card" data-category="ai-3d" 
-                     data-title="AI 3D 埃及宮殿 (飄流幻境專案)" 
-                     data-year="2025~2026"
-                     data-tech="blender、GPT、GEMINI、TRIPO、Hunyuan3D、GEMINI GEM"
-                     data-images="作品集/AI 3D/埃及宮殿_飄流幻境專案/ai3d_10.png,作品集/AI 3D/埃及宮殿_飄流幻境專案/ai3d_11.png">
+            <article class="work-card" data-category="ai-3d" data-title="AI 3D 埃及宮殿 (飄流幻境專案)" data-year="2025~2026"
+                data-tech="blender、GPT、GEMINI、TRIPO、Hunyuan3D、GEMINI GEM"
+                data-images="作品集/AI 3D/埃及宮殿_飄流幻境專案/ai3d_10.png,作品集/AI 3D/埃及宮殿_飄流幻境專案/ai3d_11.png">
                 <div class="work-img-wrapper">
                     <img class="work-img" src="作品集/AI 3D/埃及宮殿_飄流幻境專案/ai3d_10.png" alt="AI 3D 埃及宮殿">
                 </div>
-                
+
                 <div class="work-info">
                     <div class="work-meta-row">
                         <span class="work-category">AI 3D</span>
@@ -1048,111 +1005,136 @@
             </article>
 
             <!-- ── AI 系統 系列 (2 張卡片) ── -->
-<article class="work-card" data-category="ai-system" 
-                     data-title="AI 數據集自動標註系統" 
-                     data-year="2025~2026"
-                     data-tech="Antigravity"
-                     data-images="作品集/AI系統/AI自動標註/Labeler_V1.mp4,作品集/AI系統/AI自動標註/Labeler00.png,作品集/AI系統/AI自動標註/Labeler01.png,作品集/AI系統/AI自動標註/Labeler02.png,作品集/AI系統/AI自動標註/Labeler03.png,作品集/AI系統/AI自動標註/Labeler04.png,作品集/AI系統/AI自動標註/Labeler_V2.mp4,作品集/AI系統/AI自動標註/Labeler_V3.mp4">
+            <article class="work-card" data-category="ai-system" data-title="AI 數據集自動標註系統" data-year="2025~2026"
+                data-tech="AI Agent"
+                data-images="作品集/AI系統/AI自動標註/Labeler_V1.mp4,作品集/AI系統/AI自動標註/Labeler00.png,作品集/AI系統/AI自動標註/Labeler01.png,作品集/AI系統/AI自動標註/Labeler02.png,作品集/AI系統/AI自動標註/Labeler03.png,作品集/AI系統/AI自動標註/Labeler04.png,作品集/AI系統/AI自動標註/Labeler_V2.mp4,作品集/AI系統/AI自動標註/Labeler_V3.mp4">
                 <div class="work-img-wrapper">
                     <span class="video-badge">VIDEO / SYSTEM</span>
                     <img class="work-img" src="作品集/AI系統/AI自動標註/Labeler00.png" alt="AI 自動標註">
                 </div>
-                
+
                 <div class="work-info">
                     <div class="work-meta-row">
                         <span class="work-category">AI系統</span>
                         <span class="work-year">2025~2026</span>
                     </div>
                     <div class="work-footer">
-                        <span>Antigravity</span>
+                        <span>AI Agent</span>
                     </div>
                 </div>
             </article>
 
-<article class="work-card" data-category="ai-system" 
-                     data-title="AI PIXEL 像素化風格轉換" 
-                     data-year="2025~2026"
-                     data-tech="Antigravity"
-                     data-images="作品集/AI系統/PIXEL轉換/PIXEL02.mp4,作品集/AI系統/PIXEL轉換/PIXEL01.png">
+            <article class="work-card" data-category="ai-system" data-title="AI PIXEL 像素化風格轉換" data-year="2025~2026"
+                data-tech="AI Agent" data-images="作品集/AI系統/PIXEL轉換/PIXEL02.mp4,作品集/AI系統/PIXEL轉換/PIXEL01.png">
                 <div class="work-img-wrapper">
                     <span class="video-badge">VIDEO / ART</span>
                     <img class="work-img" src="作品集/AI系統/PIXEL轉換/PIXEL01.png" alt="像素轉換">
                 </div>
-                
+
                 <div class="work-info">
                     <div class="work-meta-row">
                         <span class="work-category">AI系統</span>
                         <span class="work-year">2025~2026</span>
                     </div>
                     <div class="work-footer">
-                        <span>Antigravity</span>
+                        <span>AI Agent</span>
                     </div>
                 </div>
             </article>
 
             <!-- ── 嵌入式 AI 系列 (展開為 3 張卡片) ── -->
             <!-- 1. 邊緣端點即時識別與知識蒸餾系統 -->
-            <article class="work-card" data-category="embedded-ai" 
-                     data-title="邊緣端點即時識別與知識蒸餾系統" 
-                     data-year="2025~2026"
-                     data-tech="Antigravity、python、YOLO、LabelImg"
-                     data-images="作品集/嵌入式AI影像應用班/SSC_YOLOv8.mp4,作品集/嵌入式AI影像應用班/a.png,作品集/嵌入式AI影像應用班/01.jpg">
+            <article class="work-card" data-category="embedded-ai" data-title="邊緣端點即時識別與知識蒸餾系統" data-year="2025~2026"
+                data-tech="AI Agent、python、YOLO、LabelImg"
+                data-images="作品集/嵌入式AI影像應用班/SSC_YOLOv8.mp4,作品集/嵌入式AI影像應用班/a.png,作品集/嵌入式AI影像應用班/01.jpg">
                 <div class="work-img-wrapper">
                     <span class="video-badge">VIDEO / EDGE AI</span>
                     <img class="work-img" src="作品集/嵌入式AI影像應用班/a.png" alt="邊緣偵測">
                 </div>
-                
+
                 <div class="work-info">
                     <div class="work-meta-row">
                         <span class="work-category">嵌入式AI</span>
                         <span class="work-year">2025~2026</span>
                     </div>
                     <div class="work-footer">
-                        <span>Antigravity、python、YOLO、LabelImg</span>
+                        <span>AI Agent、python、YOLO、LabelImg</span>
                     </div>
                 </div>
             </article>
 
             <!-- 2. Smart Safety Care 互動系統網頁 -->
-            <article class="work-card" data-category="embedded-ai" 
-                     data-title="Smart Safety Care 互動系統網頁" 
-                     data-year="2025~2026"
-                     data-tech="Antigravity、python、YOLO、LabelImg"
-                     data-images="作品集/嵌入式AI影像應用班/SSC.html">
+            <article class="work-card" data-category="embedded-ai" data-title="Smart Safety Care 互動系統網頁"
+                data-year="2025~2026" data-tech="AI Agent、python、YOLO、LabelImg" data-images="作品集/嵌入式AI影像應用班/SSC.html">
                 <div class="work-img-wrapper">
                     <span class="video-badge">HTML / INTERACTIVE</span>
                     <img class="work-img" src="作品集/嵌入式AI影像應用班/01.jpg" alt="智慧照護網頁">
                 </div>
-                
+
                 <div class="work-info">
                     <div class="work-meta-row">
                         <span class="work-category">嵌入式AI</span>
                         <span class="work-year">2025~2026</span>
                     </div>
                     <div class="work-footer">
-                        <span>Antigravity、python、YOLO、LabelImg</span>
+                        <span>AI Agent、python、YOLO、LabelImg</span>
                     </div>
                 </div>
             </article>
 
             <!-- 3. Smart Safety Care 智慧照護應用實踐 -->
-            <article class="work-card" data-category="embedded-ai" 
-                     data-title="Smart Safety Care 智慧照護應用實踐" 
-                     data-year="2025~2026"
-                     data-tech="Antigravity、python、YOLO、LabelImg"
-                     data-images="作品集/嵌入式AI影像應用班/Smart Safety Care.mp4">
+            <article class="work-card" data-category="embedded-ai" data-title="Smart Safety Care 智慧照護應用實踐"
+                data-year="2025~2026" data-tech="AI Agent、python、YOLO、LabelImg"
+                data-images="作品集/嵌入式AI影像應用班/Smart Safety Care.mp4">
                 <div class="work-img-wrapper">
                     <span class="video-badge">VIDEO / SAFETY</span>
-                    <video class="work-img" style="object-fit:cover;" src="作品集/嵌入式AI影像應用班/Smart Safety Care.mp4" muted loop autoplay playsinline preload="metadata"></video>
+                    <video class="work-img" style="object-fit:cover;" src="作品集/嵌入式AI影像應用班/Smart Safety Care.mp4" muted
+                        loop autoplay playsinline preload="metadata"></video>
                 </div>
-                
+
                 <div class="work-info">
                     <div class="work-meta-row">
                         <span class="work-category">嵌入式AI</span>
                         <span class="work-year">2025~2026</span>
                     </div>
                     <div class="work-footer">
-                        <span>Antigravity、python、YOLO、LabelImg</span>
+                        <span>AI Agent、python、YOLO、LabelImg</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- AI系統: 圖片批次處理工具 -->
+            <article class="work-card" data-category="ai-system" data-title="圖片批次處理工具" data-year="2025"
+                data-tech="Python" data-images="作品集/AI系統/圖片批次處理工具/Screenshot_3.png">
+                <div class="work-img-wrapper">
+                    <img class="work-img" src="作品集/AI系統/圖片批次處理工具/Screenshot_3.png" alt="圖片批次處理工具">
+                </div>
+
+                <div class="work-info">
+                    <div class="work-meta-row">
+                        <span class="work-category">AI系統</span>
+                        <span class="work-year">2025</span>
+                    </div>
+                    <div class="work-footer">
+                        <span>AI Agent</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- AI系統: 影像快速擷取 -->
+            <article class="work-card" data-category="ai-system" data-title="影像快速擷取" data-year="2025" data-tech="Python"
+                data-images="作品集/AI系統/影像快速擷取/Screenshot_3.png">
+                <div class="work-img-wrapper">
+                    <img class="work-img" src="作品集/AI系統/影像快速擷取/Screenshot_3.png" alt="影像快速擷取">
+                </div>
+
+                <div class="work-info">
+                    <div class="work-meta-row">
+                        <span class="work-category">AI系統</span>
+                        <span class="work-year">2025</span>
+                    </div>
+                    <div class="work-footer">
+                        <span>AI Agent</span>
                     </div>
                 </div>
             </article>
@@ -1165,11 +1147,12 @@
         <div class="modal-backdrop" id="modalBackdrop"></div>
         <div class="modal-content">
             <button class="close-btn" id="modalClose" aria-label="關閉彈窗">&times;</button>
-            
+
             <!-- 左側媒體區 -->
             <div class="modal-media-pane">
                 <button class="slider-arrow arrow-left" id="slidePrev" aria-label="上一張">&larr;</button>
-                <div id="modalMediaContainer" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
+                <div id="modalMediaContainer"
+                    style="width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
                     <!-- 動態寫入 video 或 img -->
                 </div>
                 <button class="slider-arrow arrow-right" id="slideNext" aria-label="下一張">&rarr;</button>
@@ -1180,7 +1163,7 @@
             <div class="modal-detail-pane">
                 <span class="modal-category" id="modalCategory">3D RENDER</span>
                 <h2 class="modal-title" id="modalTitle">專案名稱</h2>
-                
+
 
                 <div class="modal-meta-list">
                     <div class="modal-meta-item">
@@ -1211,7 +1194,7 @@
     }
     </script>
     <script type="module" src="cursor-bug.js?v=5"></script>
-    
+
     <!-- ── 頁面邏輯 (Filter, Transition, Lightbox) ── -->
     <script>
         function resetTransitionState() {
@@ -1261,15 +1244,15 @@
             const closeBtn = document.getElementById('modalClose');
             const backdrop = document.getElementById('modalBackdrop');
             const container = document.getElementById('modalMediaContainer');
-            
+
             const mCategory = document.getElementById('modalCategory');
             const mTitle = document.getElementById('modalTitle');
-            
-            
+
+
             const metaCategory = document.getElementById('metaCategory');
             const metaYear = document.getElementById('metaYear');
             const metaTech = document.getElementById('metaTech');
-            
+
             const prevBtn = document.getElementById('slidePrev');
             const nextBtn = document.getElementById('slideNext');
             const counter = document.getElementById('slideCounter');
@@ -1282,14 +1265,14 @@
                     // 獲取屬性
                     const title = card.getAttribute('data-title');
                     const category = card.getAttribute('data-category');
-                    
+
                     const year = card.getAttribute('data-year');
                     const tech = card.getAttribute('data-tech');
-                    
+
                     mTitle.textContent = title;
                     mCategory.textContent = card.querySelector('.work-category').textContent.toUpperCase();
-                    
-                    
+
+
                     metaCategory.textContent = card.querySelector('.work-category').textContent.toUpperCase();
                     metaYear.textContent = year || '';
                     metaTech.textContent = tech || 'N/A';
@@ -1317,7 +1300,7 @@
                     }
 
                     showMedia(0);
-                    
+
                     // 開啟 Modal
                     modal.style.display = 'flex';
                     // 強迫 Reflow
@@ -1398,7 +1381,7 @@
             backdrop.addEventListener('click', closeModal);
             document.addEventListener('keydown', (e) => {
                 if (!modal.classList.contains('open')) return;
-                
+
                 if (e.key === 'Escape') {
                     closeModal();
                 } else if (e.key === 'ArrowLeft' || e.key === 'Left') {
@@ -1414,4 +1397,5 @@
         });
     </script>
 </body>
+
 </html>
