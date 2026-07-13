@@ -44,38 +44,6 @@ if (window.__bugCursorLoaded) {
     });
     document.body.appendChild(canvas);
 
-    // 建立 Debug 狀態面板，方便在畫面上直接看見狀態，免去快取或 F12 的溝通誤差
-    const debugDiv = document.createElement('div');
-    debugDiv.id = 'bug-cursor-debug';
-    Object.assign(debugDiv.style, {
-        position: 'fixed',
-        bottom: '10px',
-        left: '10px',
-        background: 'rgba(0, 0, 0, 0.85)',
-        color: '#00ff00',
-        padding: '10px 15px',
-        fontFamily: 'monospace',
-        fontSize: '11px',
-        borderRadius: '5px',
-        zIndex: '10000000',
-        pointerEvents: 'none',
-        lineHeight: '1.5',
-        boxShadow: '0 0 10px rgba(0,0,0,0.5)',
-        border: '1px solid #00ff00'
-    });
-    document.body.appendChild(debugDiv);
-
-    function updateDebugPanel() {
-        debugDiv.innerHTML = `
-            <b>[BugCursor Debug V7]</b><br>
-            Loaded: ${isModelLoaded}<br>
-            Hovering: ${isHoveringInteractive}<br>
-            Eating: ${isEatingMode}<br>
-            FlyGroup: ${flyGroup ? (flyGroup.visible ? 'VISIBLE' : 'HIDDEN') : 'null'}<br>
-            FoldGroup: ${foldGroup ? (foldGroup.visible ? 'VISIBLE' : 'HIDDEN') : 'null'}
-        `;
-    }
-
 // 注入煙霧效果所需的 CSS 樣式
 const smokeStyle = document.createElement('style');
 smokeStyle.textContent = `
@@ -177,7 +145,6 @@ let lastMoveTime = performance.now();
 
 // 偵測是否懸停在可點擊元素上 (nav-link, btn-request, a, button)
 let isHoveringInteractive = false;
-let lastHoverState = null; // 用於控制台切換狀態只打印一次的快取變數
 
 // 翅膀驅動資料
 // 翅膀驅動資料
@@ -299,7 +266,6 @@ window.addEventListener('mouseover', (e) => {
             return;
         }
         isHoveringInteractive = true;
-        console.log('[BugCursor] Mouse over interactive element:', clickable.tagName, clickable.className || '(no class)');
     } else {
         isHoveringInteractive = false;
     }
@@ -678,17 +644,9 @@ function animate() {
     // 依據懸停狀態，動態切換飛行 (A01+A02+A03) 與收翅 (A04) 模型
     if (isModelLoaded) {
         if (isHoveringInteractive && !isEatingMode) {
-            if (lastHoverState !== true) {
-                console.log('[BugCursor] State change: Hovering -> Show foldGroup (A04), Hide flyGroup (A01+A02+A03)');
-                lastHoverState = true;
-            }
             flyGroup.visible = false;
             foldGroup.visible = true;
         } else {
-            if (lastHoverState !== false) {
-                console.log('[BugCursor] State change: Flying -> Show flyGroup (A01+A02+A03), Hide foldGroup (A04)');
-                lastHoverState = false;
-            }
             flyGroup.visible = true;
             foldGroup.visible = false;
         }
@@ -865,7 +823,6 @@ function animate() {
         }
     }
 
-    updateDebugPanel();
     renderer.render(scene, camera);
 }
 animate();
