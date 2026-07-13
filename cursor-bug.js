@@ -131,6 +131,7 @@ let lastMoveTime = performance.now();
 
 // 偵測是否懸停在可點擊元素上 (nav-link, btn-request, a, button)
 let isHoveringInteractive = false;
+let lastHoverState = null; // 用於控制台切換狀態只打印一次的快取變數
 
 // 翅膀驅動資料
 // 翅膀驅動資料
@@ -252,6 +253,7 @@ window.addEventListener('mouseover', (e) => {
             return;
         }
         isHoveringInteractive = true;
+        console.log('[BugCursor] Mouse over interactive element:', clickable.tagName, clickable.className || '(no class)');
     } else {
         isHoveringInteractive = false;
     }
@@ -624,9 +626,17 @@ function animate() {
     // 依據懸停狀態，動態切換飛行 (A01+A02+A03) 與收翅 (A04) 模型
     if (isModelLoaded) {
         if (isHoveringInteractive && !isEatingMode) {
+            if (lastHoverState !== true) {
+                console.log('[BugCursor] State change: Hovering -> Show foldGroup (A04), Hide flyGroup (A01+A02+A03)');
+                lastHoverState = true;
+            }
             flyGroup.visible = false;
             foldGroup.visible = true;
         } else {
+            if (lastHoverState !== false) {
+                console.log('[BugCursor] State change: Flying -> Show flyGroup (A01+A02+A03), Hide foldGroup (A04)');
+                lastHoverState = false;
+            }
             flyGroup.visible = true;
             foldGroup.visible = false;
         }
