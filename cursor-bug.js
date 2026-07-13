@@ -44,6 +44,38 @@ if (window.__bugCursorLoaded) {
     });
     document.body.appendChild(canvas);
 
+    // 建立 Debug 狀態面板，方便在畫面上直接看見狀態，免去快取或 F12 的溝通誤差
+    const debugDiv = document.createElement('div');
+    debugDiv.id = 'bug-cursor-debug';
+    Object.assign(debugDiv.style, {
+        position: 'fixed',
+        bottom: '10px',
+        left: '10px',
+        background: 'rgba(0, 0, 0, 0.85)',
+        color: '#00ff00',
+        padding: '10px 15px',
+        fontFamily: 'monospace',
+        fontSize: '11px',
+        borderRadius: '5px',
+        zIndex: '10000000',
+        pointerEvents: 'none',
+        lineHeight: '1.5',
+        boxShadow: '0 0 10px rgba(0,0,0,0.5)',
+        border: '1px solid #00ff00'
+    });
+    document.body.appendChild(debugDiv);
+
+    function updateDebugPanel() {
+        debugDiv.innerHTML = `
+            <b>[BugCursor Debug V7]</b><br>
+            Loaded: ${isModelLoaded}<br>
+            Hovering: ${isHoveringInteractive}<br>
+            Eating: ${isEatingMode}<br>
+            FlyGroup: ${flyGroup ? (flyGroup.visible ? 'VISIBLE' : 'HIDDEN') : 'null'}<br>
+            FoldGroup: ${foldGroup ? (foldGroup.visible ? 'VISIBLE' : 'HIDDEN') : 'null'}
+        `;
+    }
+
 // 注入煙霧效果所需的 CSS 樣式
 const smokeStyle = document.createElement('style');
 smokeStyle.textContent = `
@@ -827,6 +859,7 @@ function animate() {
         }
     }
 
+    updateDebugPanel();
     renderer.render(scene, camera);
 }
 animate();
