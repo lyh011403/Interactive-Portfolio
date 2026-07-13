@@ -14,21 +14,35 @@
 import * as THREE       from 'three';
 import { FBXLoader }    from 'three/addons/loaders/FBXLoader.js';
 
-// ═══════════════════════════════════════════════════════════
-// 1. Canvas overlay
-// ═══════════════════════════════════════════════════════════
-const canvas = document.createElement('canvas');
-canvas.id    = 'bug-cursor-canvas';
-Object.assign(canvas.style, {
-    position:      'fixed',
-    top:           '0',
-    left:          '0',
-    width:         '100vw',
-    height:        '100vh',
-    pointerEvents: 'none',
-    zIndex:        '1000000',   // 高於彈窗 (100000) 確保昆蟲游標在彈窗開啟時仍然顯示在最上層
-});
-document.body.appendChild(canvas);
+if (window.__bugCursorLoaded) {
+    console.warn('[BugCursor] 偵測到重複載入，已自動忽略此 Instance。');
+} else {
+    window.__bugCursorLoaded = true;
+
+    // 清理舊的 Canvas，防止重複載入時產生疊影
+    const oldCanvas = document.getElementById('bug-cursor-canvas');
+    if (oldCanvas) {
+        try {
+            oldCanvas.remove();
+            console.log('[BugCursor] 已成功清理舊的 Canvas。');
+        } catch (e) {}
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // 1. Canvas overlay
+    // ═══════════════════════════════════════════════════════════
+    const canvas = document.createElement('canvas');
+    canvas.id    = 'bug-cursor-canvas';
+    Object.assign(canvas.style, {
+        position:      'fixed',
+        top:           '0',
+        left:          '0',
+        width:         '100vw',
+        height:        '100vh',
+        pointerEvents: 'none',
+        zIndex:        '1000000',   // 高於彈窗 (100000) 確保昆蟲游標在彈窗開啟時仍然顯示在最上層
+    });
+    document.body.appendChild(canvas);
 
 // 注入煙霧效果所需的 CSS 樣式
 const smokeStyle = document.createElement('style');
@@ -820,13 +834,14 @@ animate();
 // ═══════════════════════════════════════════════════════════
 // 9. 視窗 resize 處理
 // ═══════════════════════════════════════════════════════════
-window.addEventListener('resize', () => {
-    const w = window.innerWidth;
-    const h = window.innerHeight;
-    camera.aspect = w / h;
-    camera.updateProjectionMatrix();
-    renderer.setSize(w, h);
-    const wh = computeWorldHalf();
-    worldHalfH = wh.halfH;
-    worldHalfW = wh.halfW;
-});
+    window.addEventListener('resize', () => {
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+        renderer.setSize(w, h);
+        const wh = computeWorldHalf();
+        worldHalfH = wh.halfH;
+        worldHalfW = wh.halfW;
+    });
+}
