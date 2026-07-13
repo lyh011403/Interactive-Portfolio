@@ -449,148 +449,164 @@ loader.load(BASE_URL + 'A04.fbx',
 // 7. 組裝昆蟲：縮放、對齊、識別翅膀、建立翅根軸
 // ═══════════════════════════════════════════════════════════
 function buildInsect() {
-    const body = fbxObjs.body;
-    const w1   = fbxObjs.w1;
-    const w2   = fbxObjs.w2;
-    const fold = fbxObjs.fold;
+    try {
+        const body = fbxObjs.body;
+        const w1   = fbxObjs.w1;
+        const w2   = fbxObjs.w2;
+        const fold = fbxObjs.fold;
 
-    // ── 7.0 暫時重置 bugGroup 的旋轉、位置與縮放，防止 BBox 在載入時受滑鼠動畫影響而偏移 ──
-    const savedPos   = bugGroup.position.clone();
-    const savedRot   = bugGroup.rotation.clone();
-    const savedScale = bugGroup.scale.clone();
-    bugGroup.position.set(0, 0, 0);
-    bugGroup.rotation.set(0, 0, 0);
-    bugGroup.scale.set(1, 1, 1);
-    bugGroup.updateMatrixWorld(true);
+        // ── 7.0 暫時重置 bugGroup 的旋轉、位置與縮放，防止 BBox 在載入時受滑鼠動畫影響而偏移 ──
+        const savedPos   = bugGroup.position.clone();
+        const savedRot   = bugGroup.rotation.clone();
+        const savedScale = bugGroup.scale.clone();
+        bugGroup.position.set(0, 0, 0);
+        bugGroup.rotation.set(0, 0, 0);
+        bugGroup.scale.set(1, 1, 1);
+        bugGroup.updateMatrixWorld(true);
 
-    // ── 7.05 套用手動載入的貼圖與材質（設定為雙面渲染）──
-    const insectMaterial = new THREE.MeshStandardMaterial({
-        map: basecolorMap,
-        normalMap: normalMap,
-        roughness: 0.6,
-        metalness: 0.2,
-        side: THREE.DoubleSide
-    });
-
-    [body, w1, w2, fold].forEach(obj => {
-        obj.traverse(child => {
-            if (child.isMesh) {
-                child.material = insectMaterial;
-            }
+        // ── 7.05 套用手動載入的貼圖與材質（設定為雙面渲染）──
+        const insectMaterial = new THREE.MeshStandardMaterial({
+            map: basecolorMap,
+            normalMap: normalMap,
+            roughness: 0.6,
+            metalness: 0.2,
+            side: THREE.DoubleSide
         });
-    });
 
-    // ── 7.1 計算身體原始大小，推導縮放比例 ──────────────
-    // 先把 body 暫時加入 bugGroup 以便計算 world bbox
-    bugGroup.add(body);
-    bugGroup.updateMatrixWorld(true);
+        [body, w1, w2, fold].forEach(obj => {
+            obj.traverse(child => {
+                if (child.isMesh) {
+                    child.material = insectMaterial;
+                }
+            });
+        });
 
-    const bodyBBoxOrig = new THREE.Box3().setFromObject(body);
-    const bodySizeOrig = bodyBBoxOrig.getSize(new THREE.Vector3());
-    const bodyMaxDim   = Math.max(bodySizeOrig.x, bodySizeOrig.y, bodySizeOrig.z);
+        // ── 7.1 計算身體原始大小，推導縮放比例 ──────────────
+        // 先把 body 暫時加入 bugGroup 以便計算 world bbox
+        bugGroup.add(body);
+        bugGroup.updateMatrixWorld(true);
 
-    // 目標大小：約螢幕 5% 高度的世界單位（作為游標適當大小）
-    const TARGET_SIZE  = worldHalfH * 0.13;  // ~0.13x world half-height ≈ 40-60px
-    const scaleFactor  = TARGET_SIZE / bodyMaxDim;
+        const bodyBBoxOrig = new THREE.Box3().setFromObject(body);
+        const bodySizeOrig = bodyBBoxOrig.getSize(new THREE.Vector3());
+        const bodyMaxDim   = Math.max(bodySizeOrig.x, bodySizeOrig.y, bodySizeOrig.z);
 
-    const bodyCenterOrig = bodyBBoxOrig.getCenter(new THREE.Vector3());
+        // 目標大小：約螢幕 5% 高度的世界單位（作為游標適當大小）
+        const TARGET_SIZE  = worldHalfH * 0.13;  // ~0.13x world half-height ≈ 40-60px
+        const scaleFactor  = TARGET_SIZE / bodyMaxDim;
 
-    console.log(`[BugCursor] bodyMaxDim=${bodyMaxDim.toFixed(3)}, scaleFactor=${scaleFactor.toFixed(5)}, TARGET_SIZE=${TARGET_SIZE.toFixed(3)}`);
+        const bodyCenterOrig = bodyBBoxOrig.getCenter(new THREE.Vector3());
 
-    // 移除暫時加入的 body
-    bugGroup.remove(body);
+        console.log(`[BugCursor] bodyMaxDim=${bodyMaxDim.toFixed(3)}, scaleFactor=${scaleFactor.toFixed(5)}, TARGET_SIZE=${TARGET_SIZE.toFixed(3)}`);
 
-    // ── 7.2 套用統一縮放與置中 ────────────────────────────
-    // 身體、翅膀、收翅模型都從 Blender 同一場景匯出，共享座標系
-    // 套用相同縮放 + 偏移即可對齊
-    const offset = bodyCenterOrig.clone().multiplyScalar(-scaleFactor);  // 置中偏移
+        // 移除暫時加入的 body
+        bugGroup.remove(body);
 
-    [body, w1, w2, fold].forEach(obj => {
-        obj.scale.setScalar(scaleFactor);
-        obj.position.copy(offset);
-    });
+        // ── 7.2 套用統一縮放與置中 ────────────────────────────
+        // 身體、翅膀、收翅模型都從 Blender 同一場景匯出，共享座標系
+        // 套用相同縮放 + 偏移即可對齊
+        const offset = bodyCenterOrig.clone().multiplyScalar(-scaleFactor);  // 置中偏移
 
-    // 建立飛行與收翅的子群組
-    flyGroup = new THREE.Group();
-    foldGroup = new THREE.Group();
-    bugGroup.add(flyGroup);
-    bugGroup.add(foldGroup);
+        [body, w1, w2, fold].forEach(obj => {
+            obj.scale.setScalar(scaleFactor);
+            obj.position.copy(offset);
+        });
 
-    // 將各自模型分配至對應組別
-    flyGroup.add(body);
-    flyGroup.add(w1);
-    flyGroup.add(w2);
-    foldGroup.add(fold);
+        // 建立飛行與收翅的子群組
+        flyGroup = new THREE.Group();
+        foldGroup = new THREE.Group();
+        bugGroup.add(flyGroup);
+        bugGroup.add(foldGroup);
 
-    // 預設飛行顯示，收翅隱藏
-    flyGroup.visible = true;
-    foldGroup.visible = false;
+        // 將各自模型分配至對應組別
+        flyGroup.add(body);
+        flyGroup.add(w1);
+        flyGroup.add(w2);
+        foldGroup.add(fold);
 
-    flyGroup.updateMatrixWorld(true);
-    foldGroup.updateMatrixWorld(true);
+        // 預設飛行顯示，收翅隱藏
+        flyGroup.visible = true;
+        foldGroup.visible = false;
 
-    // ── 7.3 識別左右翅膀（A02.fbx 固定為左翅，A03.fbx 固定為右翅）──
-    const leftWing   = w1; // A02.fbx
-    const rightWing  = w2; // A03.fbx
-    const leftLabel  = 'A02';
-    const rightLabel = 'A03';
+        flyGroup.updateMatrixWorld(true);
+        foldGroup.updateMatrixWorld(true);
 
-    console.log(`[BugCursor] 翅膀載入定位完成: 左翅: ${leftLabel}, 右翅: ${rightLabel}`);
+        // ── 7.3 識別左右翅膀（A02.fbx 固定為左翅，A03.fbx 固定為右翅）──
+        const leftWing   = w1; // A02.fbx
+        const rightWing  = w2; // A03.fbx
+        const leftLabel  = 'A02';
+        const rightLabel = 'A03';
 
-    // ── 7.4 計算翅根位置並建立 pivot group ───────────────
-    function makePivotGroup(wingObj, isRight) {
-        const bbox    = new THREE.Box3().setFromObject(wingObj);
-        const center  = bbox.getCenter(new THREE.Vector3());
+        console.log(`[BugCursor] 翅膀載入定位完成: 左翅: ${leftLabel}, 右翅: ${rightLabel}`);
 
-        // 右翅：min.x 那側（最左邊）最近 body；左翅：max.x 那側
-        const rootX   = isRight ? bbox.min.x : bbox.max.x;
-        const rootPos = new THREE.Vector3(rootX, center.y, center.z);
+        // ── 7.4 計算翅根位置並建立 pivot group ───────────────
+        function makePivotGroup(wingObj, isRight) {
+            const bbox    = new THREE.Box3().setFromObject(wingObj);
+            const center  = bbox.getCenter(new THREE.Vector3());
 
-        console.log(`[BugCursor] ${isRight ? '右' : '左'}翅 rootPos =`,
-            rootPos.toArray().map(v => v.toFixed(3)));
+            // 右翅：min.x 那側（最左邊）最近 body；左翅：max.x 那側
+            const rootX   = isRight ? bbox.min.x : bbox.max.x;
+            const rootPos = new THREE.Vector3(rootX, center.y, center.z);
 
-        // 建立 pivot group，放在翅根位置
-        const pivot = new THREE.Group();
-        pivot.position.copy(rootPos);
-        flyGroup.add(pivot);
+            console.log(`[BugCursor] ${isRight ? '右' : '左'}翅 rootPos =`,
+                rootPos.toArray().map(v => v.toFixed(3)));
 
-        // 把 wingObj 從 flyGroup 移到 pivot，更新 position 以相對 pivot
-        flyGroup.remove(wingObj);
-        wingObj.position.sub(rootPos);   // 在 flyGroup local space 重新計算相對位置
-        pivot.add(wingObj);
+            // 建立 pivot group，放在翅根位置
+            const pivot = new THREE.Group();
+            pivot.position.copy(rootPos);
+            flyGroup.add(pivot);
 
-        return pivot;
+            // 把 wingObj 從 flyGroup 移到 pivot，更新 position 以相對 pivot
+            flyGroup.remove(wingObj);
+            wingObj.position.sub(rootPos);   // 在 flyGroup local space 重新計算相對位置
+            pivot.add(wingObj);
+
+            return pivot;
+        }
+
+        const rightPivot = makePivotGroup(rightWing, true);
+        const leftPivot  = makePivotGroup(leftWing,  false);
+
+        // ── 7.5 登記翅膀動畫資料（相位差讓效果更自然）─────
+        wingAnimData.push({
+            pivot:   rightPivot,
+            isRight: true,
+            freq:    20,           // 振翅頻率 Hz
+            ampZ:    0.55,         // 主振幅（Z 軸傾斜 = 俯視時上下）
+            ampX:    0.08,         // 次振幅（X 軸前後）
+            phase:   0             // 基準相位
+        });
+        wingAnimData.push({
+            pivot:   leftPivot,
+            isRight: false,
+            freq:    20,
+            ampZ:    0.55,
+            ampX:    0.08,
+            phase:   0.18          // 小相位差讓雙翅略有不同步感
+        });
+
+        // ── 7.6 恢復 bugGroup 載入前的旋轉與位置 ──
+        bugGroup.position.copy(savedPos);
+        bugGroup.rotation.copy(savedRot);
+        bugGroup.scale.copy(savedScale);
+        bugGroup.updateMatrixWorld(true);
+
+        isModelLoaded = true; // 模型載入完成
+        console.log('[BugCursor] ✅ 昆蟲組裝完成，共', bugGroup.children.length, '個子節點');
+    } catch (err) {
+        console.error('[BugCursor] Error building insect:', err);
+        const errDiv = document.createElement('div');
+        errDiv.style.position = 'fixed';
+        errDiv.style.bottom = '10px';
+        errDiv.style.right = '10px';
+        errDiv.style.background = 'red';
+        errDiv.style.color = 'white';
+        errDiv.style.padding = '15px';
+        errDiv.style.fontFamily = 'monospace';
+        errDiv.style.fontSize = '12px';
+        errDiv.style.zIndex = '999999';
+        errDiv.innerText = '[BugCursor Build Error] ' + err.message + '\nStack: ' + err.stack;
+        document.body.appendChild(errDiv);
     }
-
-    const rightPivot = makePivotGroup(rightWing, true);
-    const leftPivot  = makePivotGroup(leftWing,  false);
-
-    // ── 7.5 登記翅膀動畫資料（相位差讓效果更自然）─────
-    wingAnimData.push({
-        pivot:   rightPivot,
-        isRight: true,
-        freq:    20,           // 振翅頻率 Hz
-        ampZ:    0.55,         // 主振幅（Z 軸傾斜 = 俯視時上下）
-        ampX:    0.08,         // 次振幅（X 軸前後）
-        phase:   0             // 基準相位
-    });
-    wingAnimData.push({
-        pivot:   leftPivot,
-        isRight: false,
-        freq:    20,
-        ampZ:    0.55,
-        ampX:    0.08,
-        phase:   0.18          // 小相位差讓雙翅略有不同步感
-    });
-
-    // ── 7.6 恢復 bugGroup 載入前的旋轉與位置 ──
-    bugGroup.position.copy(savedPos);
-    bugGroup.rotation.copy(savedRot);
-    bugGroup.scale.copy(savedScale);
-    bugGroup.updateMatrixWorld(true);
-
-    isModelLoaded = true; // 模型載入完成
-    console.log('[BugCursor] ✅ 昆蟲組裝完成，共', bugGroup.children.length, '個子節點');
 }
 
 // ═══════════════════════════════════════════════════════════
