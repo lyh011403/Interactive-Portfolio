@@ -520,12 +520,12 @@ if (window.__bugCursorLoaded) {
     // 6. 載入 FBX
     // ═══════════════════════════════════════════════════════════
     const loader = new FBXLoader();
-    const BASE_URL = '/守宮/3D%20BUG/';
+    const BASE_URL = '守宮/3D%20BUG/';
 
     // 手動載入貼圖以防止路徑解析與編碼問題
     const texLoader = new THREE.TextureLoader();
-    const basecolorMap = texLoader.load('/守宮/3D%20BUG/beetle_3d_model_basecolor.JPEG');
-    const normalMap = texLoader.load('/守宮/3D%20BUG/beetle_3d_model_normal.JPEG');
+    const basecolorMap = texLoader.load('守宮/3D%20BUG/beetle_3d_model_basecolor.JPEG');
+    const normalMap = texLoader.load('守宮/3D%20BUG/beetle_3d_model_normal.JPEG');
     basecolorMap.colorSpace = THREE.SRGBColorSpace;
 
     let loadedCnt = 0;
