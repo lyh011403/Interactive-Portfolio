@@ -73,9 +73,15 @@
         if (!ready) return;
         if (window.isBugEaten) return; // 正在咬食中，不接收滑鼠控制影片
 
-        if (prevX === null) {
+        // 「瞬移」偵測：如果這次位移量大到不合理（例如跨螢幕移動、或視窗失焦/mouseleave
+        // 沒有確實觸發導致 prevX 停留在舊座標），就不要用增量公式去算，
+        // 直接當成「首次進入」重新絕對對齊，避免視線卡在錯誤方向直到重新整理頁面。
+        var TELEPORT_THRESHOLD = window.innerWidth * 0.5;
+        var isTeleport = prevX !== null && Math.abs(currentX - prevX) > TELEPORT_THRESHOLD;
+
+        if (prevX === null || isTeleport) {
             prevX = currentX;
-            // 第一次偵測到滑鼠（或滑鼠離屏重入）時，絕對對齊滑鼠坐標，徹底解決初始偏差與雙螢幕偏移問題
+            // 第一次偵測到滑鼠（或滑鼠離屏重入、或偵測到瞬移）時，絕對對齊滑鼠坐標
             targetTime = (1.0 - (currentX / window.innerWidth)) * duration;
             targetTime = Math.max(0, Math.min(duration, targetTime));
             doSeek();
@@ -149,6 +155,16 @@
         /* 滑鼠離開視窗時重置 prevX，防止重新進入時發生大幅跳躍 */
         document.addEventListener('mouseleave', function () {
             prevX = null;
+        });
+
+        /* 保險：mouseleave 在雙螢幕/視窗跨屏移動時有時不會確實觸發，
+           額外用「視窗失焦」與「分頁切換到背景」也重置 prevX，
+           確保下一次滑鼠移動一定會重新絕對對齊，不會卡在錯誤方向 */
+        window.addEventListener('blur', function () {
+            prevX = null;
+        });
+        document.addEventListener('visibilitychange', function () {
+            if (document.hidden) prevX = null;
         });
 
         /* 實作咬食影片播控 */
