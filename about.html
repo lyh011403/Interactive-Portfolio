@@ -23,6 +23,7 @@
         /* 覆寫 style.css 中的 body 固定寬高，以允許長網頁滾動與隱藏滑鼠游標 */
         .about-body {
             overflow-y: scroll !important;
+            overflow-x: hidden !important; /* 徹底防堵橫向溢出與左右滑動 */
             height: auto !important;
             min-height: 100vh !important;
             background-color: var(--bg);
@@ -428,6 +429,10 @@
         /* 響應式佈局支援                                     */
         /* -------------------------------------------------- */
         @media (max-width: 860px) {
+            .about-container {
+                padding: 100px 16px 50px; /* 手機版縮小上下左右內距，讓內容更適配 */
+            }
+
             .hero-section {
                 grid-template-columns: 1fr;
                 gap: 32px;

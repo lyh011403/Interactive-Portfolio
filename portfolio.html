@@ -447,6 +447,20 @@
 
         /* ── 響應式配置 ── */
         @media (max-width: 900px) {
+            .portfolio-body {
+                overflow-x: hidden !important; /* 徹底防堵手機版左右滑動 */
+            }
+
+            .portfolio-container {
+                margin: 95px auto 60px;
+                padding: 0 16px; /* 手機版縮小 padding 放大內容空間 */
+            }
+
+            .works-grid {
+                grid-template-columns: 1fr; /* 改為單欄，避免 minmax(360px) 撐破畫面 */
+                gap: 24px;
+            }
+
             .modal-content {
                 grid-template-columns: 1fr;
                 max-height: 90vh;
