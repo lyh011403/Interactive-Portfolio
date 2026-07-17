@@ -611,7 +611,6 @@ body.transition-active #bug-cursor-canvas {
 .leaf-layer {
     position: fixed; /* 使用 fixed 固定在背景，不隨內容捲動 */
     inset: -12%; /* 預留活動空間，避免位移時露出邊界 */
-    z-index: -1; /* 放在所有內容底層 */
     pointer-events: none;
     user-select: none;
     will-change: transform;
@@ -625,8 +624,9 @@ body.transition-active #bug-cursor-canvas {
     mix-blend-mode: multiply; /* 白底或透明皆可疊加成陰影 */
 }
 
-/* 圖 1：遠景、柔和、慢速的偏斜橢圓路徑 */
+/* 圖 1：遠景、柔和、慢速的偏斜橢圓路徑，在所有內容後方 */
 .leaf-layer--back {
+    z-index: -1;
     opacity: 0.08;
     filter: grayscale(1) blur(6px);
     animation: driftBack 41s cubic-bezier(.45, .05, .55, .95) -13s infinite alternate;
@@ -640,8 +640,9 @@ body.transition-active #bug-cursor-canvas {
     100% { transform: translate3d(-28px, 5px, 0) rotate(-0.8deg) scale(1.02); }
 }
 
-/* 圖 2：近景、較清楚、不同節奏與反向不規則路徑 */
+/* 圖 2：近景、較清楚、不同節奏與反向不規則路徑，蓋在所有內容前方 */
 .leaf-layer--front {
+    z-index: 9998; /* 置於最前方，略低於轉場遮罩(99999) */
     opacity: 0.13;
     filter: grayscale(1) blur(2px);
     animation: driftFront 27s cubic-bezier(.42, 0, .58, 1) -8s infinite alternate;
