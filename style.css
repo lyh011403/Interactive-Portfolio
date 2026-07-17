@@ -610,7 +610,7 @@ body.transition-active #bug-cursor-canvas {
 /* ── 雙層葉影投影背景 (Dual Leaf Shadow Overlay) ── */
 .leaf-layer {
     position: fixed; /* 使用 fixed 固定在背景，不隨內容捲動 */
-    inset: -12%; /* 預留活動空間，避免位移時露出邊界 */
+    inset: -35px;    /* 縮小 inset（原為 -12% 導致邊緣葉子被裁切在螢幕外），僅保留動畫位移安全空間 */
     pointer-events: none;
     user-select: none;
     will-change: transform;
@@ -620,15 +620,15 @@ body.transition-active #bug-cursor-canvas {
     display: block;
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: fill; /* 改為 fill 確保方形圖片拉伸填滿，不裁剪邊緣的任何葉片 */
     mix-blend-mode: multiply; /* 白底或透明皆可疊加成陰影 */
 }
 
 /* 圖 1：遠景、柔和、慢速的偏斜橢圓路徑，在所有內容後方 */
 .leaf-layer--back {
     z-index: -1;
-    opacity: 0.08;
-    filter: grayscale(1) blur(6px);
+    opacity: 0.28; /* 提高不透明度，確保清晰可見 */
+    filter: grayscale(1) blur(4px); /* 降低模糊值 */
     animation: driftBack 41s cubic-bezier(.45, .05, .55, .95) -13s infinite alternate;
 }
 
@@ -643,8 +643,8 @@ body.transition-active #bug-cursor-canvas {
 /* 圖 2：近景、較清楚、不同節奏與反向不規則路徑，蓋在所有內容前方 */
 .leaf-layer--front {
     z-index: 9998; /* 置於最前方，略低於轉場遮罩(99999) */
-    opacity: 0.13;
-    filter: grayscale(1) blur(2px);
+    opacity: 0.38; /* 提高不透明度，讓前景葉影有明顯透光覆蓋感 */
+    filter: grayscale(1) blur(1.5px); /* 降低模糊使邊緣更清晰 */
     animation: driftFront 27s cubic-bezier(.42, 0, .58, 1) -8s infinite alternate;
 }
 
