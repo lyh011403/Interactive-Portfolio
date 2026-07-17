@@ -337,6 +337,34 @@ if (window.__bugCursorLoaded) {
     });
 
     // ═══════════════════════════════════════════════════════════
+    // 5.55 左鍵按下 / 放開 → 擠壓彈跳動畫（Pressed State）
+    // ═══════════════════════════════════════════════════════════
+    let isPressed = false;
+    let pressAnim = 0;        // 0 = 未按，1.0 = 完全按壓，平滑插值
+    const PRESS_IN   = 0.28;  // 按下進入速度（快）
+    const PRESS_OUT  = 0.08;  // 放開彈出速度（慢，有彈性）
+
+    window.addEventListener('mousedown', () => {
+        if (window.isBugEaten || isEatingMode || isRespawning) return;
+        isPressed = true;
+    });
+
+    window.addEventListener('mouseup', () => {
+        isPressed = false;
+    });
+
+    // 觸控裝置支援
+    window.addEventListener('touchstart', () => {
+        if (window.isBugEaten || isEatingMode || isRespawning) return;
+        isPressed = true;
+    }, { passive: true });
+
+    window.addEventListener('touchend', () => {
+        isPressed = false;
+    }, { passive: true });
+
+
+    // ═══════════════════════════════════════════════════════════
     // 5.6 點擊選單 (nav-link) 觸發吃蟲與網頁轉場效果
     // ═══════════════════════════════════════════════════════════
     let isEatingMode = false;
@@ -878,7 +906,22 @@ if (window.__bugCursorLoaded) {
             // 正常跟隨滑鼠
             curX += (mouseWorldX - curX) * LERP_POS;
             curY += (mouseWorldY - curY) * LERP_POS;
-            bugGroup.scale.setScalar(1.0);
+
+            // 8.1.5 Pressed 擠壓彈跳動畫
+            // pressAnim 從 0（未按）平滑插值到 1（完全按壓），放開時以較慢速度彈回
+            const pressTarget = isPressed ? 1.0 : 0.0;
+            const lerpSpeed = isPressed ? PRESS_IN : PRESS_OUT;
+            pressAnim += (pressTarget - pressAnim) * lerpSpeed;
+
+            if (pressAnim > 0.001) {
+                // 擠壓形變：按下時 XY 縮小（壓扁）+ Z 拉長（彈出），產生果凍擠壓感
+                const squeeze  = 1.0 - pressAnim * 0.28;   // XY: 1.0 → 0.72
+                const stretch  = 1.0 + pressAnim * 0.18;   // Z:  1.0 → 1.18
+                bugGroup.scale.set(squeeze, squeeze, stretch);
+            } else {
+                bugGroup.scale.setScalar(1.0);
+                pressAnim = 0; // 完全歸零，避免浮點漂移
+            }
         }
 
         // 8.2 懸浮呼吸感（輕微 Y 波動）
@@ -962,13 +1005,20 @@ if (window.__bugCursorLoaded) {
 
         // 8.6 翅膀振翅（每片翅膀獨立旋轉軸）
         for (const wd of wingAnimData) {
-            // 如果正在被吸入嘴巴（掙扎中），振翅頻率變為 2.5 倍
-            const speedMultiplier = isEatingMode ? 2.5 : 1.0;
+            // 速度倍率：吃蟲掙扎中 2.5×；按壓驚嚇 1.8×；其他 1.0×
+            let speedMultiplier = isEatingMode ? 2.5 : 1.0;
+            // 按下時翅膀急速煽動（panic flutter）—根據 pressAnim 程度疊加
+            const panicBoost = 1.0 + pressAnim * 0.8;   // 最大 1.8×
+            if (!isEatingMode) speedMultiplier = panicBoost;
+
+            // 按下時振幅也瞬間增大（翅膀大幅張開向外掙扎）
+            const ampBoost = 1.0 + pressAnim * 0.8;     // 最大 1.8×
+
             const wave = Math.sin(t * Math.PI * 2 * wd.freq * speedMultiplier + wd.phase);
             // 移除手動鏡像負號（FBX 已內建鏡像座標），使雙翅對稱上下振動
-            wd.pivot.rotation.z = wave * wd.ampZ;
+            wd.pivot.rotation.z = wave * wd.ampZ * ampBoost;
             // X 旋轉 = 翅膀輕微的前後扭動
-            wd.pivot.rotation.x = wave * wd.ampX;
+            wd.pivot.rotation.x = wave * wd.ampX * ampBoost;
             // Y 旋轉 永遠為 0
             wd.pivot.rotation.y = 0;
         }

@@ -114,13 +114,19 @@
 
         <!-- 底部水平 Ticker 分隔線 -->
         <footer class="hero-footer">
-            <div class="ticker-line">
-                <span class="ticker-content" aria-hidden="true">
-                    觀者即參與者 &nbsp;·&nbsp; VIEWER IS PARTICIPANT &nbsp;·&nbsp;
-                    生物感應 &nbsp;·&nbsp; BIOMETRIC RESPONSE &nbsp;·&nbsp;
-                    視線交換 &nbsp;·&nbsp; GAZE EXCHANGE &nbsp;·&nbsp;
-                    觀者即參與者 &nbsp;·&nbsp; VIEWER IS PARTICIPANT &nbsp;·&nbsp;
-                </span>
+            <div class="ticker-line" aria-hidden="true">
+                <!-- 雙份相同內容：動畫跑完第一份（-50%）時，視覺上剛好接上第二份起點，實現真正無縫循環 -->
+                <div class="ticker-track">
+                    <span class="ticker-content">
+                        觀者即參與者 &nbsp;·&nbsp; VIEWER IS PARTICIPANT &nbsp;·&nbsp;
+                        生物感應 &nbsp;·&nbsp; BIOMETRIC RESPONSE &nbsp;·&nbsp;
+                        視線交換 &nbsp;·&nbsp; GAZE EXCHANGE &nbsp;·&nbsp;
+                    </span><span class="ticker-content">
+                        觀者即參與者 &nbsp;·&nbsp; VIEWER IS PARTICIPANT &nbsp;·&nbsp;
+                        生物感應 &nbsp;·&nbsp; BIOMETRIC RESPONSE &nbsp;·&nbsp;
+                        視線交換 &nbsp;·&nbsp; GAZE EXCHANGE &nbsp;·&nbsp;
+                    </span>
+                </div>
             </div>
             <p class="footer-caption">移動滑鼠 &mdash; 與牠對視</p>
         </footer>
