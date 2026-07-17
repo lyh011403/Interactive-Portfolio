@@ -361,14 +361,15 @@ body {
     padding: 8px 0;
 }
 
-/* ticker-track：承載兩份相同的 ticker-content，用 flex 並排 */
+/* ticker-track：JS 會動態注入 animation（精確像素 keyframes），CSS 只負責排列 */
 .ticker-track {
     display: flex;
-    width: max-content;           /* 讓 track 自動撐至兩份內容的總寬 */
-    animation: ticker 30s linear infinite;
+    width: max-content;   /* 自動撐至所有複製份數的總寬 */
+    /* animation 由 JS 依實際寬度動態注入，這裡不設定，避免覆蓋 */
 }
 
-/* ticker-content：兩份等寬的 inline 文字區塊 */
+/* ticker-seed / ticker-content：共用的字體樣式 */
+.ticker-seed,
 .ticker-content {
     display: inline-block;
     white-space: nowrap;
@@ -376,12 +377,8 @@ body {
     font-size: 0.7rem;
     letter-spacing: 0.15em;
     color: var(--dim);
-}
-
-/* 動畫只跑一份的長度（50% of track），結尾剛好視覺無縫接軌 */
-@keyframes ticker {
-    from { transform: translateX(0); }
-    to   { transform: translateX(-50%); }
+    /* 確保相鄰 span 間不產生空白 */
+    vertical-align: top;
 }
 
 .footer-caption {
@@ -390,14 +387,12 @@ body {
     font-weight: 300;
     letter-spacing: 0.2em;
     color: var(--muted);
-    /* caption 保留適度左右間距 */
     padding: 0 5vw;
 }
 
-
 /* ── 縮減動畫 (prefers-reduced-motion) ── */
 @media (prefers-reduced-motion: reduce) {
-    .ticker-content { animation: none; }
+    .ticker-track { animation: none !important; }
     .dot-pulse { animation: none; }
     .nav-link::after { transition: none; }
 }

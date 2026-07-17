@@ -115,17 +115,8 @@
         <!-- 底部水平 Ticker 分隔線 -->
         <footer class="hero-footer">
             <div class="ticker-line" aria-hidden="true">
-                <!-- 雙份相同內容：動畫跑完第一份（-50%）時，視覺上剛好接上第二份起點，實現真正無縫循環 -->
-                <div class="ticker-track">
-                    <span class="ticker-content">
-                        觀者即參與者 &nbsp;·&nbsp; VIEWER IS PARTICIPANT &nbsp;·&nbsp;
-                        生物感應 &nbsp;·&nbsp; BIOMETRIC RESPONSE &nbsp;·&nbsp;
-                        視線交換 &nbsp;·&nbsp; GAZE EXCHANGE &nbsp;·&nbsp;
-                    </span><span class="ticker-content">
-                        觀者即參與者 &nbsp;·&nbsp; VIEWER IS PARTICIPANT &nbsp;·&nbsp;
-                        生物感應 &nbsp;·&nbsp; BIOMETRIC RESPONSE &nbsp;·&nbsp;
-                        視線交換 &nbsp;·&nbsp; GAZE EXCHANGE &nbsp;·&nbsp;
-                    </span>
+                <div class="ticker-track" id="tickerTrack">
+                    <!-- JS 將從這份複製足夠份數，注意 span 間不要有换行避免不明空白 --><span class="ticker-seed">觀者即參與者 · VIEWER IS PARTICIPANT · 生物感應 · BIOMETRIC RESPONSE · 視線交換 · GAZE EXCHANGE · </span>
                 </div>
             </div>
             <p class="footer-caption">移動滑鼠 &mdash; 與牠對視</p>
@@ -147,6 +138,43 @@
         }
         window.addEventListener('pageshow', resetTransitionState);
         window.addEventListener('DOMContentLoaded', resetTransitionState);
+
+        // 跑馬燈真正無縮循環：用 JS 測量實際像素寬度，動態填充足夠份數，再用精確像素字紹設定動画
+        // 動画終點就是「一份寬度」，開始跟終點視覺完全相同，100% 無縮、無跳幀。
+        document.addEventListener('DOMContentLoaded', function () {
+            const track = document.getElementById('tickerTrack');
+            if (!track) return;
+
+            const seed = track.querySelector('.ticker-seed');
+            if (!seed) return;
+
+            // 測量單份像素寬度
+            const seedW = seed.getBoundingClientRect().width;
+            if (seedW === 0) return;
+
+            // 需要的份數：至少覆蓋【視窗寬度 × 3】，確保任何尺寸都無空白
+            const copies = Math.ceil((window.innerWidth * 3) / seedW) + 2;
+
+            // 填充就圖（第一份 seed 已在 DOM 裡，從第二份開始複製）
+            for (let i = 1; i < copies; i++) {
+                const clone = seed.cloneNode(true);
+                track.appendChild(clone);
+            }
+
+            // 用精確像素字紹建立 @keyframes，動画終點 = 一份寬度，讓下一循環完美超接
+            const duration = seedW / 60; // 60px/秒 的滾動速度
+            const styleEl = document.createElement('style');
+            styleEl.textContent = [
+                '@keyframes tickerSeamless {',
+                '  from { transform: translateX(0px); }',
+                '  to   { transform: translateX(-' + Math.round(seedW) + 'px); }',
+                '}',
+                '#tickerTrack {',
+                '  animation: tickerSeamless ' + duration.toFixed(2) + 's linear infinite;',
+                '}'
+            ].join('\n');
+            document.head.appendChild(styleEl);
+        });
     </script>
 
     <script src="script.js?v=5"></script>
