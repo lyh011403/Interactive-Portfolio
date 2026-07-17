@@ -42,14 +42,20 @@
 
         duration = d; // 先取得 duration，供 isFullyBuffered 使用
 
-        if (!isFullyBuffered()) return; // 影片還沒完整緩衝完，先不要開放互動
+        // 偵測行動裝置（手機/平板）或無 hover 能力的觸控螢幕
+        var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) 
+            || (window.matchMedia && window.matchMedia("(any-hover: none)").matches);
+
+        // 桌機端：要求必須完整緩衝才啟用，以達極致 seek 體驗；
+        // 行動端：因手機瀏覽器有強制的流量省電限制，不允許背景預下載整支影片，因此只要 readyState 就緒便直接啟用
+        if (!isMobile && !isFullyBuffered()) return;
 
         ready      = true;
         targetTime = d / 2; // 預設視線停在正中間（看著正前方）
 
         try { video.currentTime = d / 2; } catch (e) {}
 
-        console.log('[HAIN] 影片就緒（已完整緩衝），duration =', duration.toFixed(3), 's');
+        console.log('[HAIN] 影片就緒，duration =', duration.toFixed(3), 's, mobile =', isMobile);
     }
 
     function doSeek() {
