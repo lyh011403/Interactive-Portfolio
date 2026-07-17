@@ -627,8 +627,8 @@ body.transition-active #bug-cursor-canvas {
 /* 圖 1：遠景、柔和、慢速的偏斜橢圓路徑，在所有內容後方 */
 .leaf-layer--back {
     z-index: -1;
-    opacity: 0.12; /* 調低不透明度，使背景簡潔乾淨 */
-    filter: grayscale(1) blur(5px);
+    opacity: 0.22; /* 調高背景透明度，增加後景葉影細節 */
+    filter: grayscale(1) blur(4px); /* 稍微調清晰一點點 */
     animation: driftBack 41s cubic-bezier(.45, .05, .55, .95) -13s infinite alternate;
 }
 
@@ -647,8 +647,8 @@ body.transition-active #bug-cursor-canvas {
 /* 圖 2：近景、較清楚、不同節奏與反向不規則路徑，蓋在所有內容前方 */
 .leaf-layer--front {
     z-index: 9998; /* 置於最前方，略低於轉場遮罩(99999) */
-    opacity: 0.16; /* 調低不透明度，讓疊在文字上的前景陰影非常細微，不顯雜亂 */
-    filter: grayscale(1) blur(2px);
+    opacity: 0.06; /* 大幅降低前景透明度（僅剩 6%），使其極為隱約，不干擾文字與視覺 */
+    filter: grayscale(1) blur(3px); /* 增加模糊度，讓它在前方自然暈開，不搶戲 */
     animation: driftFront 27s cubic-bezier(.42, 0, .58, 1) -8s infinite alternate;
 }
 
