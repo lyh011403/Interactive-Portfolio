@@ -607,44 +607,71 @@ body.transition-active #bug-cursor-canvas {
     filter: blur(8px) brightness(0.55) contrast(1.4); /* 增加動態模糊與高對比暗化特效 */
 }
 
-/* ── 葉影投影背景 (Leaf Shadow Overlay) ── */
-.leaf-shadow {
-    position: fixed; /* 使用 fixed 以在滾動時保持固定在背景，營造深度感 */
-    z-index: -1;     /* 放最底層，若有背景色則放背景色之上 (確保 html/body bg 可以透出) */
+/* ── 雙層葉影投影背景 (Dual Leaf Shadow Overlay) ── */
+.leaf-layer {
+    position: fixed; /* 使用 fixed 固定在背景，不隨內容捲動 */
+    inset: -12%; /* 預留活動空間，避免位移時露出邊界 */
+    z-index: -1; /* 放在所有內容底層 */
     pointer-events: none;
     user-select: none;
-    
-    /* 調整透明度與模糊以符合微陰影質感 */
-    opacity: 0.16;
-    filter: grayscale(1) blur(4px);
-    mix-blend-mode: multiply; /* 白底黑影的 JPG 用 multiply 疊加會只剩下陰影 */
-    transform-origin: center;
-    
-    /* 葉影微動態漂浮 */
-    animation: leafDrift 12s ease-in-out infinite alternate;
+    will-change: transform;
 }
 
-.leaf-shadow--full {
-    width: 100vw;
-    height: 100vh;
-    top: 0;
-    left: 0;
+.leaf-layer img {
+    display: block;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
+    mix-blend-mode: multiply; /* 白底或透明皆可疊加成陰影 */
 }
 
-@keyframes leafDrift {
-    from {
-        translate: -8px -4px;
-        rotate: -1deg;
+/* 圖 1：遠景、柔和、慢速的偏斜橢圓路徑 */
+.leaf-layer--back {
+    opacity: 0.08;
+    filter: grayscale(1) blur(6px);
+    animation: driftBack 41s cubic-bezier(.45, .05, .55, .95) -13s infinite alternate;
+}
+
+@keyframes driftBack {
+    0% { transform: translate3d(-22px, -16px, 0) rotate(-0.6deg) scale(1.015); }
+    22% { transform: translate3d(18px, -8px, 0) rotate(0.3deg) scale(1.03); }
+    51% { transform: translate3d(26px, 20px, 0) rotate(0.8deg) scale(1.045); }
+    76% { transform: translate3d(-12px, 28px, 0) rotate(0.1deg) scale(1.025); }
+    100% { transform: translate3d(-28px, 5px, 0) rotate(-0.8deg) scale(1.02); }
+}
+
+/* 圖 2：近景、較清楚、不同節奏與反向不規則路徑 */
+.leaf-layer--front {
+    opacity: 0.13;
+    filter: grayscale(1) blur(2px);
+    animation: driftFront 27s cubic-bezier(.42, 0, .58, 1) -8s infinite alternate;
+}
+
+@keyframes driftFront {
+    0% { transform: translate3d(20px, 14px, 0) rotate(0.9deg) scale(1.035); }
+    17% { transform: translate3d(2px, -22px, 0) rotate(0.1deg) scale(1.055); }
+    43% { transform: translate3d(-26px, -10px, 0) rotate(-1deg) scale(1.04); }
+    69% { transform: translate3d(-16px, 24px, 0) rotate(-0.4deg) scale(1.06); }
+    100% { transform: translate3d(25px, 6px, 0) rotate(1.1deg) scale(1.045); }
+}
+
+/* 行動裝置：動畫更克制 */
+@media (max-width: 768px) {
+    .leaf-layer {
+        inset: -18%;
     }
-    to {
-        translate: 8px 6px;
-        rotate: 1deg;
+    .leaf-layer--back {
+        opacity: 0.055;
+    }
+    .leaf-layer--front {
+        opacity: 0.09;
     }
 }
 
+/* 無障礙：依使用者系統偏好關閉動畫 */
 @media (prefers-reduced-motion: reduce) {
-    .leaf-shadow {
+    .leaf-layer--back,
+    .leaf-layer--front {
         animation: none !important;
     }
 }
