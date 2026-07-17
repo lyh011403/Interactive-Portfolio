@@ -607,80 +607,44 @@ body.transition-active #bug-cursor-canvas {
     filter: blur(8px) brightness(0.55) contrast(1.4); /* 增加動態模糊與高對比暗化特效 */
 }
 
-/* ── 雙層葉影投影背景 (Dual Leaf Shadow Overlay) ── */
-.leaf-layer {
-    position: fixed; /* 使用 fixed 固定在背景，不隨內容捲動 */
-    inset: -6%;      /* 預留活動與適度隱藏空間，只讓葉尖探入畫面，避免過於雜亂 */
+/* ── 葉影投影背景 (Leaf Shadow Overlay) ── */
+.leaf-shadow {
+    position: fixed; /* 使用 fixed 以在滾動時保持固定在背景，營造深度感 */
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover; /* 讓圖片覆蓋滿版且不變形 */
+    z-index: -1;     /* 放最底層，確保 body bg 可以透出 */
     pointer-events: none;
     user-select: none;
-    will-change: transform;
+    
+    /* 調整透明度與模糊以符合微陰影質感 */
+    opacity: 0.16;
+    filter: grayscale(1) blur(4px);
+    mix-blend-mode: multiply; /* 用 multiply 疊加會將背景色自然融入 */
+    transform-origin: center;
+    
+    /* 稍微放大，避免漂移時邊緣漏白 */
+    transform: scale(1.05);
+    /* 葉影微動態漂浮 */
+    animation: leafDrift 16s ease-in-out infinite alternate;
 }
 
-.leaf-layer img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover; /* 改回 cover 保持比例不變形，允許適度裁剪 */
-    mix-blend-mode: multiply; /* 白底或透明皆可疊加成陰影 */
-}
 
-/* 圖 1：遠景、柔和、慢速的偏斜橢圓路徑，在所有內容後方 */
-.leaf-layer--back {
-    z-index: -1;
-    opacity: 0.22; /* 調高背景透明度，增加後景葉影細節 */
-    filter: grayscale(1) blur(4px); /* 稍微調清晰一點點 */
-    animation: driftBack 41s cubic-bezier(.45, .05, .55, .95) -13s infinite alternate;
-}
-
-.leaf-layer--back img {
-    object-position: center; /* 居中裁剪 */
-}
-
-@keyframes driftBack {
-    0% { transform: translate3d(-22px, -16px, 0) rotate(-0.6deg) scale(1.015); }
-    22% { transform: translate3d(18px, -8px, 0) rotate(0.3deg) scale(1.03); }
-    51% { transform: translate3d(26px, 20px, 0) rotate(0.8deg) scale(1.045); }
-    76% { transform: translate3d(-12px, 28px, 0) rotate(0.1deg) scale(1.025); }
-    100% { transform: translate3d(-28px, 5px, 0) rotate(-0.8deg) scale(1.02); }
-}
-
-/* 圖 2：近景、較清楚、不同節奏與反向不規則路徑，蓋在所有內容前方 */
-.leaf-layer--front {
-    z-index: 9998; /* 置於最前方，略低於轉場遮罩(99999) */
-    opacity: 0.06; /* 大幅降低前景透明度（僅剩 6%），使其極為隱約，不干擾文字與視覺 */
-    filter: grayscale(1) blur(3px); /* 增加模糊度，讓它在前方自然暈開，不搶戲 */
-    animation: driftFront 27s cubic-bezier(.42, 0, .58, 1) -8s infinite alternate;
-}
-
-.leaf-layer--front img {
-    object-position: bottom center; /* 釘住底部，確保 t2-p.png 的底端葉片一定會從下邊界探出 */
-}
-
-@keyframes driftFront {
-    0% { transform: translate3d(20px, 14px, 0) rotate(0.9deg) scale(1.035); }
-    17% { transform: translate3d(2px, -22px, 0) rotate(0.1deg) scale(1.055); }
-    43% { transform: translate3d(-26px, -10px, 0) rotate(-1deg) scale(1.04); }
-    69% { transform: translate3d(-16px, 24px, 0) rotate(-0.4deg) scale(1.06); }
-    100% { transform: translate3d(25px, 6px, 0) rotate(1.1deg) scale(1.045); }
-}
-
-/* 行動裝置：動畫更克制 */
-@media (max-width: 768px) {
-    .leaf-layer {
-        inset: -18%;
+@keyframes leafDrift {
+    from {
+        translate: -8px -4px;
+        rotate: -1deg;
     }
-    .leaf-layer--back {
-        opacity: 0.055;
-    }
-    .leaf-layer--front {
-        opacity: 0.09;
+    to {
+        translate: 8px 6px;
+        rotate: 1deg;
     }
 }
 
-/* 無障礙：依使用者系統偏好關閉動畫 */
 @media (prefers-reduced-motion: reduce) {
-    .leaf-layer--back,
-    .leaf-layer--front {
+    .leaf-shadow {
         animation: none !important;
     }
 }
