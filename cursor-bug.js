@@ -534,14 +534,6 @@ if (window.__bugCursorLoaded) {
     function onFbxLoaded(key, fbx) {
         fbxObjs[key] = fbx;
         loadedCnt++;
-        console.log(`[BugCursor] FBX loaded: ${key} (${loadedCnt}/4)`);
-
-        // 列出每個 mesh 的名稱
-        fbx.traverse(c => {
-            if (c.isMesh) {
-                console.log(`  mesh name: "${c.name || '(unnamed)'}"`);
-            }
-        });
 
         if (loadedCnt === 4) buildInsect();
     }

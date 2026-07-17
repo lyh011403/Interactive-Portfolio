@@ -170,7 +170,8 @@ body {
     grid-template-rows: 1fr auto;
     align-items: center;
     justify-items: center;
-    padding: 0 5vw;
+    /* padding 只給左右子欄，不給整個 grid，使 footer 可以突破到 100vw */
+    padding: 0;
     gap: 0;
 }
 
@@ -180,7 +181,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 28px;
-    padding-left: 2vw;
+    padding-left: 5vw;
     padding-top: 80px; /* 避開導覽列 */
 }
 
@@ -281,7 +282,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 32px;
-    padding-right: 2vw;
+    padding-right: 5vw;
     padding-top: 80px;
     text-align: right;
 }
@@ -342,7 +343,8 @@ body {
 /* ── 底部 Ticker 與說明文字 ── */
 .hero-footer {
     grid-column: 1 / -1;
-    width: 100%;
+    /* 用負 margin 突破父層 padding，實現 full-width breakout */
+    width: 100vw;
     display: flex;
     flex-direction: column;
     gap: 14px;
@@ -351,11 +353,17 @@ body {
 }
 
 .ticker-line {
-    width: 100%;
+    /* 寬度與視窗等寬，完全不受任何 padding 影響 */
+    width: 100vw;
     overflow: hidden;
     border-top: 1px solid var(--dim);
     border-bottom: 1px solid var(--dim);
     padding: 8px 0;
+}
+
+.footer-caption {
+    /* caption 保留適度左右間距 */
+    padding: 0 5vw;
 }
 
 .ticker-content {
@@ -389,27 +397,59 @@ body {
     .nav-link::after { transition: none; }
 }
 
-/* ── 響應式 ── */
+/* ── 響應式（手機 RWD）── */
 @media (max-width: 900px) {
     .hero-section {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto 1fr auto auto;
-        padding: 100px 5vw 0;
+        /* 改為 flex column，確保元素垂直排列且 footer 能置底 */
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: stretch;
+        padding: 0;
+        height: 100dvh; /* 使用 dvh 避免手機瀏覽器網址列影響高度 */
         overflow: hidden;
     }
 
-    .hero-left { padding-top: 0; padding-left: 0; }
-    .hero-right { display: none; }
-    
+    /* 上方資訊區塊（hero-left 包裝用） */
+    .hero-left {
+        padding-top: 90px; /* 避開導覽列 */
+        padding-left: 5vw;
+        padding-right: 5vw;
+        flex-shrink: 0;
+    }
+
+    /* 影片佔滿中間剩餘高度 */
     .video-wrapper {
-        height: 55vw;
+        flex: 1;
         width: 100%;
         max-width: 100%;
+        height: auto;
+        min-height: 0; /* flex 子元素必要設定，允許縮小 */
         padding-top: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .video-wrapper video {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+
+    /* 右側欄位隱藏 */
+    .hero-right { display: none; }
+
+    /* footer 跑馬燈固定在底部 */
+    .hero-footer {
+        flex-shrink: 0;
+        padding-bottom: 2vh;
+        width: 100vw;
     }
 
     .nav-links { display: none; }
     .v-title { font-size: clamp(1.8rem, 7vw, 3rem); }
+    .v-intro { max-width: 90vw; }
 }
 
 /* ── 轉場特效 (Lizard Mouth Transition) ── */
