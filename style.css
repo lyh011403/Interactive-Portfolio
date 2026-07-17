@@ -607,3 +607,50 @@ body.transition-active #bug-cursor-canvas {
     filter: blur(8px) brightness(0.55) contrast(1.4); /* 增加動態模糊與高對比暗化特效 */
 }
 
+/* ── 葉影投影背景 (Leaf Shadow Overlay) ── */
+.leaf-shadow {
+    position: fixed; /* 使用 fixed 以在滾動時保持固定在背景，營造深度感 */
+    z-index: -1;     /* 放最底層，若有背景色則放背景色之上 (確保 html/body bg 可以透出) */
+    pointer-events: none;
+    user-select: none;
+    
+    /* 調整透明度與模糊以符合微陰影質感 */
+    opacity: 0.16;
+    filter: grayscale(1) blur(4px);
+    mix-blend-mode: multiply; /* 白底黑影的 JPG 用 multiply 疊加會只剩下陰影 */
+    transform-origin: center;
+    
+    /* 葉影微動態漂浮 */
+    animation: leafDrift 12s ease-in-out infinite alternate;
+}
+
+.leaf-shadow--left {
+    width: min(52vw, 720px);
+    top: -8vh;
+    left: -12vw;
+    transform: rotate(-16deg);
+}
+
+.leaf-shadow--right {
+    width: min(48vw, 680px);
+    top: -6vh;
+    right: -14vw;
+    transform: rotate(18deg) scaleX(-1);
+}
+
+@keyframes leafDrift {
+    from {
+        translate: -8px -4px;
+        rotate: -1deg;
+    }
+    to {
+        translate: 8px 6px;
+        rotate: 1deg;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .leaf-shadow {
+        animation: none !important;
+    }
+}
