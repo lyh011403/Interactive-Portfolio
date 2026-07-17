@@ -50,7 +50,21 @@
                 <li><a href="about.html" class="nav-link">關於</a></li>
             </ul>
             <a href="about.html#contact" class="btn-request">聯繫</a>
+            <!-- 手機漢堡選單按鈕 -->
+            <button class="menu-toggle" id="menuToggle" aria-label="開啟選單" aria-expanded="false">
+                <span class="menu-bar"></span>
+                <span class="menu-bar"></span>
+                <span class="menu-bar"></span>
+            </button>
         </nav>
+        <!-- 手機展開選單（導覽列下方滑下展開） -->
+        <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+            <ul class="mobile-nav-links" role="list">
+                <li><a href="portfolio.html" class="mobile-nav-link">作品</a></li>
+                <li><a href="about.html" class="mobile-nav-link">關於</a></li>
+                <li><a href="about.html#contact" class="mobile-nav-link mobile-nav-accent">聯繫</a></li>
+            </ul>
+        </div>
     </header>
 
     <!-- 主視覺 Hero 區域 -->
@@ -179,5 +193,6 @@
 
     <script src="script.js?v=5"></script>
     <script type="module" src="cursor-bug.js?v=5"></script>
+    <script src="nav.js?v=1"></script>
 </body>
 </html>
