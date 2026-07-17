@@ -344,24 +344,7 @@ if (window.__bugCursorLoaded) {
     const PRESS_IN   = 0.28;  // 按下進入速度（快）
     const PRESS_OUT  = 0.08;  // 放開彈出速度（慢，有彈性）
 
-    window.addEventListener('mousedown', () => {
-        if (window.isBugEaten || isEatingMode || isRespawning) return;
-        isPressed = true;
-    });
 
-    window.addEventListener('mouseup', () => {
-        isPressed = false;
-    });
-
-    // 觸控裝置支援
-    window.addEventListener('touchstart', () => {
-        if (window.isBugEaten || isEatingMode || isRespawning) return;
-        isPressed = true;
-    }, { passive: true });
-
-    window.addEventListener('touchend', () => {
-        isPressed = false;
-    }, { passive: true });
 
 
     // ═══════════════════════════════════════════════════════════
