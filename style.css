@@ -607,44 +607,64 @@ body.transition-active #bug-cursor-canvas {
     filter: blur(8px) brightness(0.55) contrast(1.4); /* 增加動態模糊與高對比暗化特效 */
 }
 
-/* ── 葉影投影背景 (Leaf Shadow Overlay) ── */
-.leaf-shadow {
-    position: fixed; /* 使用 fixed 以在滾動時保持固定在背景，營造深度感 */
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    object-fit: cover; /* 讓圖片覆蓋滿版且不變形 */
+/* ── 葉影投影背景 (Leaf Shadow Overlay - 外層負責移動) ── */
+.leaf-layer {
+    position: fixed; /* 使用 fixed 以在滾動時保持固定在背景，營造景深感 */
+    inset: -14%;    /* 讓圖片超出容器，移動時不會露出邊緣 */
     z-index: -1;     /* 放最底層，確保 body bg 可以透出 */
     pointer-events: none;
     user-select: none;
-    
-    /* 調整透明度與模糊以符合微陰影質感 */
-    opacity: 0.16;
-    filter: grayscale(1) blur(4px);
-    mix-blend-mode: multiply; /* 用 multiply 疊加會將背景色自然融入 */
-    transform-origin: center;
-    
-    /* 稍微放大，避免漂移時邊緣漏白 */
-    transform: scale(1.05);
-    /* 葉影微動態漂浮 */
-    animation: leafDrift 16s ease-in-out infinite alternate;
+    will-change: transform;
+
+    /* 32s 緩慢且高級的漂移 */
+    animation: leafDrift 32s cubic-bezier(.45, .05, .55, .95) infinite;
 }
 
+/* 內層只負責圖片外觀 */
+.leaf-layer img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
 
+    /* 白底 JPG 用 multiply 可以完全融入紙張背景 */
+    mix-blend-mode: multiply;
+
+    opacity: 0.12;
+    filter: grayscale(1) blur(3px);
+}
+
+/* 以不規則四點形成緩慢環形漂移，100% 回到 0% */
 @keyframes leafDrift {
-    from {
-        translate: -8px -4px;
-        rotate: -1deg;
+    0%, 100% {
+        transform: translate3d(-16px, -12px, 0) rotate(-0.5deg) scale(1.03);
     }
-    to {
-        translate: 8px 6px;
-        rotate: 1deg;
+    24% {
+        transform: translate3d(20px, -7px, 0) rotate(0.4deg) scale(1.05);
+    }
+    53% {
+        transform: translate3d(13px, 22px, 0) rotate(0.8deg) scale(1.06);
+    }
+    77% {
+        transform: translate3d(-22px, 16px, 0) rotate(-0.2deg) scale(1.04);
     }
 }
 
+/* 手機降低移動距離與強度 */
+@media (max-width: 768px) {
+    .leaf-layer {
+        inset: -20%;
+        animation-duration: 38s;
+    }
+    .leaf-layer img {
+        opacity: 0.09;
+        filter: grayscale(1) blur(2px);
+    }
+}
+
+/* 使用者偏好減少動畫時，停止背景動態 */
 @media (prefers-reduced-motion: reduce) {
-    .leaf-shadow {
+    .leaf-layer {
         animation: none !important;
     }
 }
