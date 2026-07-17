@@ -624,18 +624,12 @@ body.transition-active #bug-cursor-canvas {
     animation: leafDrift 12s ease-in-out infinite alternate;
 }
 
-.leaf-shadow--left {
-    width: min(52vw, 720px);
-    top: -8vh;
-    left: -12vw;
-    transform: rotate(-16deg);
-}
-
-.leaf-shadow--right {
-    width: min(48vw, 680px);
-    top: -6vh;
-    right: -14vw;
-    transform: rotate(18deg) scaleX(-1);
+.leaf-shadow--full {
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    object-fit: cover;
 }
 
 @keyframes leafDrift {
