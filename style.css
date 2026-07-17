@@ -610,7 +610,7 @@ body.transition-active #bug-cursor-canvas {
 /* ── 雙層葉影投影背景 (Dual Leaf Shadow Overlay) ── */
 .leaf-layer {
     position: fixed; /* 使用 fixed 固定在背景，不隨內容捲動 */
-    inset: -35px;    /* 縮小 inset（原為 -12% 導致邊緣葉子被裁切在螢幕外），僅保留動畫位移安全空間 */
+    inset: -6%;      /* 預留活動與適度隱藏空間，只讓葉尖探入畫面，避免過於雜亂 */
     pointer-events: none;
     user-select: none;
     will-change: transform;
@@ -620,16 +620,20 @@ body.transition-active #bug-cursor-canvas {
     display: block;
     width: 100%;
     height: 100%;
-    object-fit: fill; /* 改為 fill 確保方形圖片拉伸填滿，不裁剪邊緣的任何葉片 */
+    object-fit: cover; /* 改回 cover 保持比例不變形，允許適度裁剪 */
     mix-blend-mode: multiply; /* 白底或透明皆可疊加成陰影 */
 }
 
 /* 圖 1：遠景、柔和、慢速的偏斜橢圓路徑，在所有內容後方 */
 .leaf-layer--back {
     z-index: -1;
-    opacity: 0.28; /* 提高不透明度，確保清晰可見 */
-    filter: grayscale(1) blur(4px); /* 降低模糊值 */
+    opacity: 0.12; /* 調低不透明度，使背景簡潔乾淨 */
+    filter: grayscale(1) blur(5px);
     animation: driftBack 41s cubic-bezier(.45, .05, .55, .95) -13s infinite alternate;
+}
+
+.leaf-layer--back img {
+    object-position: center; /* 居中裁剪 */
 }
 
 @keyframes driftBack {
@@ -643,9 +647,13 @@ body.transition-active #bug-cursor-canvas {
 /* 圖 2：近景、較清楚、不同節奏與反向不規則路徑，蓋在所有內容前方 */
 .leaf-layer--front {
     z-index: 9998; /* 置於最前方，略低於轉場遮罩(99999) */
-    opacity: 0.38; /* 提高不透明度，讓前景葉影有明顯透光覆蓋感 */
-    filter: grayscale(1) blur(1.5px); /* 降低模糊使邊緣更清晰 */
+    opacity: 0.16; /* 調低不透明度，讓疊在文字上的前景陰影非常細微，不顯雜亂 */
+    filter: grayscale(1) blur(2px);
     animation: driftFront 27s cubic-bezier(.42, 0, .58, 1) -8s infinite alternate;
+}
+
+.leaf-layer--front img {
+    object-position: bottom center; /* 釘住底部，確保 t2-p.png 的底端葉片一定會從下邊界探出 */
 }
 
 @keyframes driftFront {
