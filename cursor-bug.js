@@ -802,7 +802,13 @@ if (window.__bugCursorLoaded) {
             bugGroup.scale.copy(savedScale);
             bugGroup.updateMatrixWorld(true);
 
+            // 瞬間將平滑跟隨位置移到目前滑鼠位置，防止載入完成時從中央 (0,0) 跳躍/滑動
+            curX = mouseWorldX;
+            curY = mouseWorldY;
+            bugGroup.position.set(curX, curY, 0);
+
             isModelLoaded = true; // 模型載入完成
+            window.dispatchEvent(new CustomEvent('bug-model-loaded'));
             console.log('[BugCursor] ✅ 昆蟲組裝完成，共', bugGroup.children.length, '個子節點');
         } catch (err) {
             console.error('[BugCursor] Error building insect:', err);

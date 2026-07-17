@@ -167,6 +167,12 @@
             if (document.hidden) prevX = null;
         });
 
+        /* 當 3D 昆蟲模型載入組裝完成時，重置 prevX 以進行精準的重新絕對對齊，
+           防止載入期間的 CPU 卡頓/影格遺失導致相對增量計算產生視線漂移 */
+        window.addEventListener('bug-model-loaded', function () {
+            prevX = null;
+        });
+
         /* 實作咬食影片播控 */
         window.playGeckoEat = function () {
             if (!eatVideo) return;
