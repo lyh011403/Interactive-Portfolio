@@ -25,6 +25,13 @@
     var seekTimeout = null; // 解鎖安全定時器，避免 Chrome 在無 Range 請求伺服器下 seek 永久鎖死
 
     /* ── 初始化 ────────────────────────────────────── */
+    function isFullyBuffered() {
+        if (!video) return false;
+        if (!video.buffered || video.buffered.length === 0) return false;
+        // 確認緩衝範圍涵蓋了影片結尾（留一點誤差容忍度）
+        return video.buffered.end(video.buffered.length - 1) >= duration - 0.1;
+    }
+
     function tryInit() {
         if (ready) return;
         if (!video) return;
@@ -33,13 +40,16 @@
         var d = video.duration;
         if (!d || d !== d || !isFinite(d) || d <= 0) return; // NaN / Infinity / 0
 
-        duration   = d;
+        duration = d; // 先取得 duration，供 isFullyBuffered 使用
+
+        if (!isFullyBuffered()) return; // 影片還沒完整緩衝完，先不要開放互動
+
         ready      = true;
         targetTime = d / 2; // 預設視線停在正中間（看著正前方）
 
         try { video.currentTime = d / 2; } catch (e) {}
 
-        console.log('[HAIN] 影片就緒，duration =', duration.toFixed(3), 's');
+        console.log('[HAIN] 影片就緒（已完整緩衝），duration =', duration.toFixed(3), 's');
     }
 
     function doSeek() {
