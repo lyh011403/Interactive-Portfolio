@@ -13,3 +13,23 @@ temp/
 .idea/
 .agents/
 .gemini/
+
+# 3D Source files & backups (Web doesn't need raw models)
+*.blend
+*.blend1
+*.blend2
+*.max
+*.mb
+*.ma
+**/beetle+3d+model/
+
+# Uncompressed raw videos
+守宮/eat原.mp4
+守宮/背景純白色.mp4
+守宮轉.mp4
+
+# Draft generated images & raw pngs in 守宮/
+守宮/Gemini_Generated_Image_*.png
+守宮/pixel-*.png
+守宮/*去背*.png
+

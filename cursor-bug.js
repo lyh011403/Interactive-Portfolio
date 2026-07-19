@@ -152,6 +152,7 @@ if (window.__bugCursorLoaded) {
     scene.add(bugGroup);
 
     let flyGroup, foldGroup; // 飛行與收翅的獨立子群組
+    let adaptiveLevel = 0;   // 0 = 正常, 1 = 降低像素比, 2 = 關閉粒子軌跡, 3 = 完全關閉 3D 游標
 
     // 游標跟隨狀態（世界座標）
     let mouseWorldX = 0;
@@ -228,40 +229,50 @@ if (window.__bugCursorLoaded) {
     const vaporTexture = IS_SPIRIT_FORM ? createHoloVaporTexture() : createVaporTexture();
     const particleGeo = new THREE.PlaneGeometry(0.12, 0.12); // 放大拉線厚度，使其更為明顯
 
+    // 建立 InstancedMesh，合併 200 個獨立 Mesh 粒子的 Draw Call 為 1，極大提升顯卡渲染流暢度
+    const particleMaterial = new THREE.MeshBasicMaterial({
+        map: vaporTexture,
+        transparent: true,
+        depthWrite: false,
+        blending: IS_SPIRIT_FORM ? THREE.AdditiveBlending : THREE.NormalBlending,
+    });
+    const instancedMesh = new THREE.InstancedMesh(particleGeo, particleMaterial, maxParticles);
+
+    // 初始隱藏所有實例
+    const dummy = new THREE.Object3D();
     for (let i = 0; i < maxParticles; i++) {
-        const mat = new THREE.MeshBasicMaterial({
-            map: vaporTexture,
-            transparent: true,
-            depthWrite: false,
-            // 靈體頁用 Additive 疊加發光；一般水墨頁維持原本的 Normal 混合
-            blending: IS_SPIRIT_FORM ? THREE.AdditiveBlending : THREE.NormalBlending,
-            opacity: 0
-        });
-        const mesh = new THREE.Mesh(particleGeo, mat);
-        mesh.visible = false;
-        scene.add(mesh);
+        dummy.position.set(9999, 9999, 9999);
+        dummy.scale.set(0, 0, 0);
+        dummy.updateMatrix();
+        instancedMesh.setMatrixAt(i, dummy.matrix);
+
         particlePool.push({
-            mesh,
-            mat,
+            position: new THREE.Vector3(),
+            scale: 0,
             age: 0,
             maxAge: 0,
+            visible: false,
             baseScale: 1
         });
     }
+    instancedMesh.instanceMatrix.needsUpdate = true;
+    scene.add(instancedMesh);
 
     function spawnContrailParticle(x, y) {
+        // 自適應降級 Level 2 以上時關閉粒子生成，節省 CPU/GPU 開銷
+        if (adaptiveLevel >= 2) return;
+
         // 尋找閒置中的粒子
-        const p = particlePool.find(item => !item.mesh.visible);
+        const p = particlePool.find(item => !item.visible);
         if (!p) return;
 
-        p.mesh.position.set(x, y, -0.015); // 略低於昆蟲，防止遮擋
-        p.mesh.visible = true;
-        p.mat.opacity = IS_SPIRIT_FORM ? 0.85 : 0.7; // 靈體光尾稍微更亮
+        p.position.set(x, y, -0.015); // 略低於昆蟲，防止遮擋
+        p.visible = true;
         p.age = 0;
         // 靈體光尾拖得更久一些，較有能量拖曳感
         p.maxAge = IS_SPIRIT_FORM ? (55 + Math.random() * 35) : (40 + Math.random() * 25);
         p.baseScale = 0.5 + Math.random() * 0.4;
-        p.mesh.scale.setScalar(p.baseScale);
+        p.scale = p.baseScale;
     }
 
     // ═══════════════════════════════════════════════════════════
@@ -365,12 +376,44 @@ if (window.__bugCursorLoaded) {
         const navLink = e.target.closest('.nav-link, .btn-request');
         if (!navLink) return;
 
+        const href = navLink.getAttribute('href') || '';
+
+        // 1. 排除郵件、電話、javascript等協議，以及在新分頁開啟的連結，不攔截預設行為
+        if (
+            href.startsWith('mailto:') ||
+            href.startsWith('tel:') ||
+            href.startsWith('javascript:') ||
+            navLink.getAttribute('target') === '_blank'
+        ) {
+            return;
+        }
+
+        // 2. 解析 URL 以判斷是否為當前頁面的有效錨點跳轉
+        try {
+            const targetUrl = new URL(href, window.location.href);
+            const currentUrl = new URL(window.location.href);
+
+            // 判斷是否為同一頁面的有效錨點 (有 hash 且 hash 不僅僅是 '#')
+            if (
+                targetUrl.origin === currentUrl.origin &&
+                targetUrl.pathname === currentUrl.pathname &&
+                targetUrl.search === currentUrl.search &&
+                targetUrl.hash !== '' &&
+                targetUrl.hash !== '#'
+            ) {
+                // 當前頁面的有效錨點跳轉，不做攔截與轉場，由瀏覽器預設行為處理
+                return;
+            }
+        } catch (err) {
+            console.warn('[BugCursor] 解析 URL 失敗:', err);
+        }
+
         e.preventDefault();
 
         // 若已經被咬食、正在被吸入中或正在轉場中，則跳過
         if (window.isBugEaten || isEatingMode || isRespawning) return;
 
-        transitionTargetHref = navLink.getAttribute('href') || '#';
+        transitionTargetHref = href;
 
         // 檢查目前頁面是否含有守宮影片背景，若無（例如在 portfolio.html），則不執行咬食與縮放，改行純黑幕漸變跳轉
         const hasLizard = document.getElementById('bg-video') !== null;
@@ -539,36 +582,82 @@ if (window.__bugCursorLoaded) {
     const normalMap = texLoader.load('守宮/3D%20BUG/beetle_3d_model_normal.JPEG');
     basecolorMap.colorSpace = THREE.SRGBColorSpace;
 
-    let loadedCnt = 0;
     const fbxObjs = { body: null, w1: null, w2: null, fold: null };
 
-    function onFbxLoaded(key, fbx) {
-        fbxObjs[key] = fbx;
-        loadedCnt++;
-
-        if (loadedCnt === 4) buildInsect();
+    // 關閉 3D 游標，恢復系統預設游標的優雅降級函式
+    function disable3dCursor() {
+        window.__bugCursorDisabled = true;
+        if (canvas) {
+            canvas.style.display = 'none';
+        }
+        // 恢復網頁預設游標
+        document.body.style.cursor = 'default';
+        const styleEl = document.createElement('style');
+        styleEl.textContent = `
+            body, body *, .about-body, .about-body *, .portfolio-body, .portfolio-body *, .modal, .modal * {
+                cursor: default !important;
+            }
+        `;
+        document.head.appendChild(styleEl);
+        console.warn('[BugCursor] 已停用 3D 游標並恢復系統預設游標。');
     }
 
-    loader.load(BASE_URL + 'A01.fbx',
-        fbx => onFbxLoaded('body', fbx),
-        undefined,
-        err => console.error('[BugCursor] A01 load error:', err)
-    );
-    loader.load(BASE_URL + 'A02.fbx',
-        fbx => onFbxLoaded('w1', fbx),
-        undefined,
-        err => console.error('[BugCursor] A02 load error:', err)
-    );
-    loader.load(BASE_URL + 'A03.fbx',
-        fbx => onFbxLoaded('w2', fbx),
-        undefined,
-        err => console.error('[BugCursor] A03 load error:', err)
-    );
-    loader.load(BASE_URL + 'A04.fbx',
-        fbx => onFbxLoaded('fold', fbx),
-        undefined,
-        err => console.error('[BugCursor] A04 load error:', err)
-    );
+    // 帶有 8 秒超時與 3 次自動重試的模型載入函式
+    function loadFbxWithRetry(key, url, retries = 3, timeoutMs = 8000) {
+        return new Promise((resolve, reject) => {
+            let done = false;
+            const timer = setTimeout(() => {
+                if (done) return;
+                done = true;
+                console.warn(`[BugCursor] 載入模型 ${key} 超時 (${timeoutMs}ms)`);
+                if (retries > 0) {
+                    console.log(`[BugCursor] 正在嘗試重新載入 ${key} (剩餘重試次數: ${retries})`);
+                    loadFbxWithRetry(key, url, retries - 1, timeoutMs).then(resolve).catch(reject);
+                } else {
+                    reject(new Error(`模型 ${key} 載入超時且重試次數已達上限。`));
+                }
+            }, timeoutMs);
+
+            loader.load(url,
+                (fbx) => {
+                    if (done) return;
+                    clearTimeout(timer);
+                    done = true;
+                    resolve(fbx);
+                },
+                undefined,
+                (err) => {
+                    if (done) return;
+                    clearTimeout(timer);
+                    done = true;
+                    console.warn(`[BugCursor] 載入模型 ${key} 失敗:`, err);
+                    if (retries > 0) {
+                        console.log(`[BugCursor] 正在嘗試重新載入 ${key} (剩餘重試次數: ${retries})`);
+                        loadFbxWithRetry(key, url, retries - 1, timeoutMs).then(resolve).catch(reject);
+                    } else {
+                        reject(err);
+                    }
+                }
+            );
+        });
+    }
+
+    // 使用 Promise.all 同步載入模型，並設定載入失敗時的降級處理
+    Promise.all([
+        loadFbxWithRetry('body', BASE_URL + 'A01.fbx'),
+        loadFbxWithRetry('w1', BASE_URL + 'A02.fbx'),
+        loadFbxWithRetry('w2', BASE_URL + 'A03.fbx'),
+        loadFbxWithRetry('fold', BASE_URL + 'A04.fbx')
+    ]).then(([body, w1, w2, fold]) => {
+        fbxObjs.body = body;
+        fbxObjs.w1 = w1;
+        fbxObjs.w2 = w2;
+        fbxObjs.fold = fold;
+        buildInsect();
+    }).catch(err => {
+        console.error('[BugCursor] 3D 模型載入失敗，啟動優雅降級機制:', err);
+        disable3dCursor();
+    });
 
     // ═══════════════════════════════════════════════════════════
     // 6.5 靈體全息材質 (Fresnel Holographic Material)
@@ -785,12 +874,15 @@ if (window.__bugCursorLoaded) {
             bugGroup.scale.copy(savedScale);
             bugGroup.updateMatrixWorld(true);
 
-            // 瞬間將平滑跟隨位置移到目前滑鼠位置，防止載入完成時從中央 (0,0) 跳躍/滑動
+            // 初始讓昆蟲從螢幕下方飛入（即使滑鼠不動也能啟動平滑飛入登場，避免靜止不動）
             curX = mouseWorldX;
-            curY = mouseWorldY;
+            curY = -worldHalfH * 1.5; // 從畫面底部外側飛入
             bugGroup.position.set(curX, curY, 0);
+            bugGroup.scale.set(0, 0, 0); // 配合 respawn 的放大
 
             isModelLoaded = true; // 模型載入完成
+            isRespawning = true;  // 觸發飛入與放大動畫
+            respawnProgress = 0;
             window.dispatchEvent(new CustomEvent('bug-model-loaded'));
             console.log('[BugCursor] ✅ 昆蟲組裝完成，共', bugGroup.children.length, '個子節點');
         } catch (err) {
@@ -817,9 +909,40 @@ if (window.__bugCursorLoaded) {
     const LERP_ROT = 0.07;   // 旋轉跟隨速度
 
     let t0 = performance.now();
+    let fpsFrames = 0;
+    let fpsLastTime = performance.now();
 
     function animate() {
+        if (window.__bugCursorDisabled) return; // 停止動畫循環，徹底釋放資源
         requestAnimationFrame(animate);
+
+        // FPS 監測與自適應性能降級系統
+        fpsFrames++;
+        const now = performance.now();
+        if (now - fpsLastTime >= 1000) {
+            const fps = Math.round((fpsFrames * 1000) / (now - fpsLastTime));
+            fpsFrames = 0;
+            fpsLastTime = now;
+
+            // 僅在模型載入完成，且頁面處於顯示狀態時進行效能監測，避免背景分頁誤判
+            if (isModelLoaded && !document.hidden) {
+                if (fps < 40 && adaptiveLevel === 0) {
+                    adaptiveLevel = 1;
+                    renderer.setPixelRatio(1.0); // 降至 1x 像素比，減少像素著色開銷
+                    console.warn(`[BugCursor] 檢測到幀率偏低 (${fps} FPS)，已自動降低渲染解析度至 1x 像素比。`);
+                } else if (fps < 30 && adaptiveLevel === 1) {
+                    adaptiveLevel = 2;
+                    instancedMesh.visible = false; // 停用軌跡粒子
+                    console.warn(`[BugCursor] 檢測到幀率極低 (${fps} FPS)，已自動關閉軌跡粒子特效。`);
+                } else if (fps < 20 && adaptiveLevel === 2) {
+                    adaptiveLevel = 3;
+                    disable3dCursor(); // 嚴重卡頓，完全關閉 3D 游標並恢復預設游標
+                    console.warn(`[BugCursor] 幀率過低 (${fps} FPS) 已嚴重影響體驗，已自動停用 3D 游標。`);
+                    return;
+                }
+            }
+        }
+
         const t = (performance.now() - t0) / 1000;  // 秒
 
         // 靈體全息材質：持續更新 uTime，驅動掃描光帶與呼吸閃爍
@@ -1013,27 +1136,86 @@ if (window.__bugCursorLoaded) {
         }
 
         // 8.7 更新飛機拉線軌跡粒子
-        for (const p of particlePool) {
-            if (p.mesh.visible) {
-                p.age++;
-                const progress = p.age / p.maxAge;
+        if (adaptiveLevel < 2) {
+            // 更新粒子屬性 (生命週期與縮放)
+            for (let i = 0; i < maxParticles; i++) {
+                const p = particlePool[i];
+                if (p.visible) {
+                    p.age++;
+                    const progress = p.age / p.maxAge;
 
-                // 飛機凝結尾特性：隨時間線條收縮變窄 (1.0 -> 0.15)
-                const scale = p.baseScale * (1.0 - progress * 0.85);
-                p.mesh.scale.setScalar(scale);
+                    // 凝結尾收縮特性：隨時間線條縮小至 0
+                    p.scale = p.baseScale * (1.0 - progress);
 
-                // 漸漸淡出
-                p.mat.opacity = 0.7 * (1.0 - progress);
-
-                if (p.age >= p.maxAge) {
-                    p.mesh.visible = false;
+                    if (p.age >= p.maxAge) {
+                        p.visible = false;
+                        p.scale = 0;
+                    }
                 }
             }
+
+            // 更新 InstancedMesh 的 Instance Matrix
+            const dummyObj = new THREE.Object3D();
+            for (let i = 0; i < maxParticles; i++) {
+                const p = particlePool[i];
+                if (p.visible && p.scale > 0.001) {
+                    dummyObj.position.copy(p.position);
+                    dummyObj.scale.setScalar(p.scale);
+                    dummyObj.updateMatrix();
+                    instancedMesh.setMatrixAt(i, dummyObj.matrix);
+                } else {
+                    // 隱藏的實例：縮放為 0 並放置在極遠處
+                    dummyObj.position.set(9999, 9999, 9999);
+                    dummyObj.scale.set(0, 0, 0);
+                    dummyObj.updateMatrix();
+                    instancedMesh.setMatrixAt(i, dummyObj.matrix);
+                }
+            }
+            instancedMesh.instanceMatrix.needsUpdate = true;
         }
 
         renderer.render(scene, camera);
     }
     animate();
+
+    // ═══════════════════════════════════════════════════════════
+    // 8.8 全站開屏載入頁面 (Site Loader) 控制與保底退場
+    // ═══════════════════════════════════════════════════════════
+    const loaderEl = document.getElementById('site-loader');
+
+    // 開啟載入頁面時，暫時將 body 游標改為預設，讓使用者在加載期間看得到指標
+    if (loaderEl) {
+        document.body.style.cursor = 'default';
+    }
+
+    function fadeOutLoader() {
+        if (loaderEl && !loaderEl.classList.contains('fade-out')) {
+            loaderEl.classList.add('fade-out');
+
+            // 載入完成，若未降級，則隱藏預設游標以啟用 3D 游標
+            if (adaptiveLevel < 3 && !window.__bugCursorDisabled) {
+                document.body.style.cursor = 'none';
+            } else {
+                document.body.style.cursor = 'default';
+            }
+
+            // 動畫結束後徹底移出 DOM 樹，釋放記憶體
+            setTimeout(() => {
+                try { loaderEl.remove(); } catch (e) {}
+            }, 850);
+        }
+    }
+
+    // 1. 模型成功加載並組裝完畢時，觸發淡出
+    window.addEventListener('bug-model-loaded', fadeOutLoader);
+
+    // 2. 8 秒超時安全保底，防堵加載異常導致的開屏畫面卡死
+    setTimeout(() => {
+        if (loaderEl && !loaderEl.classList.contains('fade-out')) {
+            console.warn('[BugCursor] 3D 模型載入超時保底，強制關閉載入畫面並降級。');
+            fadeOutLoader();
+        }
+    }, 8000);
 
     // ═══════════════════════════════════════════════════════════
     // 9. 視窗 resize 處理
