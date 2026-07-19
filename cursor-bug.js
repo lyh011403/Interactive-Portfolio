@@ -396,36 +396,39 @@ if (window.__bugCursorLoaded) {
         const navLink = e.target.closest('.nav-link, .btn-request');
         if (!navLink) return;
 
-        const href = navLink.getAttribute('href') || '';
+        // 雙重防護：確保元素確實包含精確的 nav-link 或 btn-request 類別，排除 mobile-nav-link 等潛在干擾
+        const hasExactClass = navLink.classList.contains('nav-link') || navLink.classList.contains('btn-request');
+        if (!hasExactClass) return;
 
-        // 1. 排除郵件、電話、javascript等協議，以及在新分頁開啟的連結，不攔截預設行為
-        if (
-            href.startsWith('mailto:') ||
-            href.startsWith('tel:') ||
-            href.startsWith('javascript:') ||
-            navLink.getAttribute('target') === '_blank'
-        ) {
+        // 排除在新分頁開啟的連結
+        if (navLink.getAttribute('target') === '_blank') {
             return;
         }
 
-        // 2. 解析 URL 以判斷是否為當前頁面的有效錨點跳轉
+        const href = navLink.getAttribute('href') || '';
+
+        // 解析 URL 以進行精準的協定與路徑過濾
         try {
             const targetUrl = new URL(href, window.location.href);
             const currentUrl = new URL(window.location.href);
 
-            // 判斷是否為同一頁面的有效錨點 (有 hash 且 hash 不僅僅是 '#')
+            // 1. 排除非 http/https 的協定 (例如 mailto:, tel:, javascript:)，直接放行
+            if (targetUrl.protocol !== 'http:' && targetUrl.protocol !== 'https:') {
+                return;
+            }
+
+            // 2. 排除所有指向當前頁面的連結 (不管是同頁錨點定位，還是重新整理自己)
             if (
                 targetUrl.origin === currentUrl.origin &&
                 targetUrl.pathname === currentUrl.pathname &&
-                targetUrl.search === currentUrl.search &&
-                targetUrl.hash !== '' &&
-                targetUrl.hash !== '#'
+                targetUrl.search === currentUrl.search
             ) {
-                // 當前頁面的有效錨點跳轉，不做攔截與轉場，由瀏覽器預設行為處理
                 return;
             }
         } catch (err) {
-            console.warn('[BugCursor] 解析 URL 失敗:', err);
+            // 解析失敗（例如無效連結、特殊語法等），一律直接放行，絕不攔截預設行為
+            console.warn('[BugCursor] 點擊 URL 解析失敗，已安全放行:', err);
+            return;
         }
 
         e.preventDefault();
