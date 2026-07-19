@@ -20,24 +20,115 @@ if (window.__bugCursorLoaded) {
     window.__bugCursorLoaded = true;
 
     // ═══════════════════════════════════════════════════════════
-    // 0.1 動態建立全站載入畫面 (Site Loader)
+    // 0.1 動態建立全站載入畫面 (Site Loader) 與 Canvas 2D 粒子引擎
     // ═══════════════════════════════════════════════════════════
     const loaderEl = document.createElement('div');
     loaderEl.id = 'site-loader';
     loaderEl.className = 'site-loader';
     loaderEl.style.cursor = 'default';
     loaderEl.innerHTML = `
+        <canvas id="loader-canvas"></canvas>
         <div class="loader-content">
             <span class="loader-mark">&#x25C6;</span>
             <span class="loader-brand">HAIN</span>
             <div class="loader-line-track">
                 <div class="loader-line-fill"></div>
             </div>
-            <span class="loader-text">載入中 / LOADING</span>
+            <span class="loader-text">資源預載中 / PRELOADING</span>
         </div>
     `;
     document.body.appendChild(loaderEl);
     document.body.style.cursor = 'default';
+
+    // ── Canvas 2D 硃砂水墨粒子動畫 ──
+    const lCanvas = loaderEl.querySelector('#loader-canvas');
+    const ctx = lCanvas.getContext('2d');
+    let lAnimId = null;
+    let particles = [];
+    let loadProgress = 0; // 0.0 到 1.0
+    let isLoaderFading = false;
+    let loadedCount = 0;
+
+    function resizeLoaderCanvas() {
+        const dpr = window.devicePixelRatio || 1;
+        lCanvas.width = window.innerWidth * dpr;
+        lCanvas.height = window.innerHeight * dpr;
+        ctx.setTransform(1, 0, 0, 1, 0, 0); // 重置
+        ctx.scale(dpr, dpr);
+    }
+    resizeLoaderCanvas();
+    window.addEventListener('resize', resizeLoaderCanvas);
+
+    // 建立 40 顆硃砂紅水墨粒子
+    for (let i = 0; i < 40; i++) {
+        particles.push({
+            x: Math.random() * window.innerWidth,
+            y: Math.random() * window.innerHeight,
+            baseX: Math.random() * window.innerWidth,
+            baseY: Math.random() * window.innerHeight,
+            size: Math.random() * 3 + 1,
+            speedX: (Math.random() - 0.5) * 0.4,
+            speedY: (Math.random() - 0.5) * 0.4,
+            alpha: Math.random() * 0.5 + 0.2,
+            angle: Math.random() * Math.PI * 2,
+            spinSpeed: (Math.random() - 0.5) * 0.01
+        });
+    }
+
+    function animateLoader() {
+        if (isLoaderFading && loadProgress >= 1.0) {
+            // 爆破散開淡出動畫
+            ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+            let activeCount = 0;
+            particles.forEach(p => {
+                p.x += Math.cos(p.angle) * 6;
+                p.y += Math.sin(p.angle) * 6;
+                p.alpha -= 0.015;
+                if (p.alpha > 0) {
+                    activeCount++;
+                    ctx.fillStyle = `rgba(178, 44, 34, ${p.alpha})`;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            });
+            if (activeCount === 0) {
+                cancelAnimationFrame(lAnimId);
+                return;
+            }
+        } else {
+            // 輕微殘影墨染效果
+            ctx.fillStyle = 'rgba(240, 235, 224, 0.15)';
+            ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
+
+            particles.forEach(p => {
+                p.angle += p.spinSpeed;
+                
+                // 凝聚：受進度引導往中心點收聚
+                const targetX = p.baseX + (centerX - p.baseX) * loadProgress;
+                const targetY = p.baseY + (centerY - p.baseY) * loadProgress;
+
+                p.x += (targetX - p.x) * 0.05 + p.speedX;
+                p.y += (targetY - p.y) * 0.05 + p.speedY;
+
+                // 繪製發光粒子
+                ctx.shadowBlur = 8;
+                ctx.shadowColor = 'rgba(178, 44, 34, 0.4)';
+                ctx.fillStyle = `rgba(178, 44, 34, ${p.alpha * (1 - loadProgress * 0.3)})`;
+                
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.shadowBlur = 0; // 重置 shadow
+            });
+        }
+        lAnimId = requestAnimationFrame(animateLoader);
+    }
+    animateLoader();
 
     // 全域判斷：此頁面是否為「離開首頁後的靈體頁」
     // index.html 才有 #bg-video（蜥蜴影片），其餘分頁沒有 → 代表昆蟲已被吞噬、以靈體重生
@@ -649,6 +740,11 @@ if (window.__bugCursorLoaded) {
                     if (done) return;
                     clearTimeout(timer);
                     done = true;
+
+                    // 每成功載入一個模型，更新 loadProgress
+                    loadedCount++;
+                    loadProgress = (loadedCount / 4) * 0.9;
+
                     resolve(fbx);
                 },
                 undefined,
@@ -668,20 +764,36 @@ if (window.__bugCursorLoaded) {
         });
     }
 
-    // 使用 Promise.all 同步載入模型，並設定載入失敗時的降級處理
+    // 影片預載 Promise (保底 3 秒超時，不阻礙模型加載)
+    const videoPreloadPromise = new Promise((resolve) => {
+        const videoEl = document.getElementById('bg-video');
+        if (!videoEl) {
+            resolve();
+        } else {
+            if (videoEl.readyState >= 3) {
+                resolve();
+            } else {
+                videoEl.addEventListener('canplaythrough', () => resolve(), { once: true });
+                setTimeout(resolve, 3000); // 3 秒超時保底，避免影片緩衝卡死網頁
+            }
+        }
+    });
+
+    // 使用 Promise.all 同步載入模型與預載背景影片，並設定載入失敗時的降級處理
     Promise.all([
         loadFbxWithRetry('body', BASE_URL + 'A01.fbx'),
         loadFbxWithRetry('w1', BASE_URL + 'A02.fbx'),
         loadFbxWithRetry('w2', BASE_URL + 'A03.fbx'),
-        loadFbxWithRetry('fold', BASE_URL + 'A04.fbx')
-    ]).then(([body, w1, w2, fold]) => {
+        loadFbxWithRetry('fold', BASE_URL + 'A04.fbx'),
+        videoPreloadPromise
+    ]).then(([body, w1, w2, fold, _video]) => {
         fbxObjs.body = body;
         fbxObjs.w1 = w1;
         fbxObjs.w2 = w2;
         fbxObjs.fold = fold;
         buildInsect();
     }).catch(err => {
-        console.error('[BugCursor] 3D 模型載入失敗，啟動優雅降級機制:', err);
+        console.error('[BugCursor] 3D 模型或影片預載失敗，啟動優雅降級機制:', err);
         disable3dCursor();
     });
 
@@ -1216,6 +1328,10 @@ if (window.__bugCursorLoaded) {
 
     function fadeOutLoader() {
         if (loaderEl && !loaderEl.classList.contains('fade-out')) {
+            // 觸發 Canvas 粒子爆破動畫
+            loadProgress = 1.0;
+            isLoaderFading = true;
+
             loaderEl.classList.add('fade-out');
 
             // 載入完成，若未降級，則隱藏預設游標以啟用 3D 游標
@@ -1225,9 +1341,12 @@ if (window.__bugCursorLoaded) {
                 document.body.style.cursor = 'default';
             }
 
-            // 動畫結束後徹底移出 DOM 樹，釋放記憶體
+            // 動畫結束後徹底移出 DOM 樹，釋放記憶體，並移出 resize 監聽器
             setTimeout(() => {
-                try { loaderEl.remove(); } catch (e) {}
+                try {
+                    window.removeEventListener('resize', resizeLoaderCanvas);
+                    loaderEl.remove();
+                } catch (e) {}
             }, 850);
         }
     }
