@@ -19,6 +19,26 @@ if (window.__bugCursorLoaded) {
 } else {
     window.__bugCursorLoaded = true;
 
+    // ═══════════════════════════════════════════════════════════
+    // 0.1 動態建立全站載入畫面 (Site Loader)
+    // ═══════════════════════════════════════════════════════════
+    const loaderEl = document.createElement('div');
+    loaderEl.id = 'site-loader';
+    loaderEl.className = 'site-loader';
+    loaderEl.style.cursor = 'default';
+    loaderEl.innerHTML = `
+        <div class="loader-content">
+            <span class="loader-mark">&#x25C6;</span>
+            <span class="loader-brand">HAIN</span>
+            <div class="loader-line-track">
+                <div class="loader-line-fill"></div>
+            </div>
+            <span class="loader-text">載入中 / LOADING</span>
+        </div>
+    `;
+    document.body.appendChild(loaderEl);
+    document.body.style.cursor = 'default';
+
     // 全域判斷：此頁面是否為「離開首頁後的靈體頁」
     // index.html 才有 #bg-video（蜥蜴影片），其餘分頁沒有 → 代表昆蟲已被吞噬、以靈體重生
     const IS_SPIRIT_FORM = document.getElementById('bg-video') === null;
@@ -600,6 +620,9 @@ if (window.__bugCursorLoaded) {
         `;
         document.head.appendChild(styleEl);
         console.warn('[BugCursor] 已停用 3D 游標並恢復系統預設游標。');
+
+        // 確保載入失敗時，開屏載入畫面也能立即淡出退場
+        fadeOutLoader();
     }
 
     // 帶有 8 秒超時與 3 次自動重試的模型載入函式
@@ -1181,7 +1204,7 @@ if (window.__bugCursorLoaded) {
     // ═══════════════════════════════════════════════════════════
     // 8.8 全站開屏載入頁面 (Site Loader) 控制與保底退場
     // ═══════════════════════════════════════════════════════════
-    const loaderEl = document.getElementById('site-loader');
+    // 使用最頂端動態建立的 loaderEl
 
     // 開啟載入頁面時，暫時將 body 游標改為預設，讓使用者在加載期間看得到指標
     if (loaderEl) {
